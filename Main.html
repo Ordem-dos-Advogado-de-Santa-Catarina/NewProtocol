@@ -19,16 +19,25 @@
 
     <!-- Divisão pro conteúdo principal pra rodapé ficar lá embaixo -->
     <div class="content-wrap">
-        <div class="search-bar">
-            <input type="text" placeholder="Pesquisar">
-            <button>🔎</button>
+        <!-- Container para a barra de pesquisa (fixa/sticky) e resultados -->
+        <div class="sticky-search-container">
+            <div class="search-bar">
+                <input type="text" placeholder="Pesquisar...">
+                <button>🔎</button>
+            </div>
+            <!-- Container para exibir os resultados da pesquisa -->
+            <div id="search-results-container">
+                <!-- Os resultados da pesquisa serão inseridos aqui pelo JavaScript -->
+            </div>
         </div>
 
+        <!-- Container de botões principal (este será empurrado para baixo pelo padding) -->
         <div class="buttons-container">
             <a href="./Setores/Secretaria.html" class="btn">Secretaria</a>
             <a href="./Setores/Tesouraria.html" class="btn">Tesouraria</a>
             <a href="./Setores/Protocolos.html" class="btn">Protocolos</a>
             <a href="404.html" class="btn">Outro</a>
+            <!-- Mais botões ou conteúdo podem ser adicionados aqui -->
         </div>
     </div>
 

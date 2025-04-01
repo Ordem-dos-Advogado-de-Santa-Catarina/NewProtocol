@@ -19,9 +19,16 @@
     </div>
 
     <div class="content-wrap">
-        <div class="search-bar">
-            <input type="text" placeholder="Pesquisar">
-            <button>🔎</button>
+        <!-- Container para a barra de pesquisa (fixa/sticky) e resultados -->
+        <div class="sticky-search-container">
+            <div class="search-bar">
+                <input type="text" placeholder="Pesquisar...">
+                <button>🔎</button>
+            </div>
+            <!-- Container para exibir os resultados da pesquisa -->
+            <div id="search-results-container">
+                <!-- Os resultados da pesquisa serão inseridos aqui pelo JavaScript -->
+            </div>
         </div>
 
         <div class="buttons-container">
