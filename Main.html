@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0; /* Light gray background */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center main content like search bar and buttons */
+            min-height: 100vh;
+            /* Removed padding-top as search bar is no longer fixed */
+        }
+
+        /* START HEADER STYLES */
+        .page-header {
+            width: 100%;
+            background-color: rgb(57, 73, 171); /* Header color */
+            padding: 5px 0; /* Reduced vertical padding */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow */
+            /* Ensure header stays at the top */
+            order: -1; /* Makes it the first flex item */
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column; /* Stack image and text vertically */
+            align-items: flex-start; /* Align items to the start (left) */
+            width: 100%; /* Make the container span the full header width */
+            padding: 5px 15px; /* Keep some horizontal padding for aesthetics */
+            box-sizing: border-box; /* Include padding in width calculation */
+        }
+
+        .header-image {
+             display: block;
+             height: auto;
+             margin-bottom: 5px;
+        }
+
+        .logo-inner-average {
+            min-width: 75px;
+            min-height: 50px;
+            max-height: 75px;
+            max-width: 90px;
+            object-fit: contain;
+        }
+
+        .header-bottom-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Align button and title to the left */
+            width: 100%; /* Take full width */
+        }
+
+        .home-button {
+            font-size: 16px;
+            text-decoration: none;
+            color: #ffffff; /* WHITE text color */
+            font-weight: bold; /* Make text BOLD */
+            margin-right: 10px; /* Keep margin if needed */
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .home-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        /* Removed .page-title as it's not needed on the main page */
+        /* END HEADER STYLES */
+
+        .content-wrap {
+             flex: 1; /* Takes up remaining vertical space */
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             width: 100%;
+        }
+
+        .search-bar {
+            width: 80%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            /* Removed fixed positioning properties */
+            /* position: fixed; */
+            /* top: 10%; */
+            /* left: 50%; */
+            /* transform: translateX(-50%); */
+            /* z-index: 10; */
+            margin-top: 20px; /* Add margin to space below header */
+            display: flex;
+            align-items: center;
+            /* Centered via body's align-items */
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 10px;
+            font-size: 16px;
+            background-color: transparent;
+        }
+
+        .search-bar button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #555;
+            padding: 8px 12px;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap; /* Allows buttons to wrap to the next line */
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px; /* Adjusted margin */
+            width: 80%;
+            max-width: 600px;
+            padding-bottom: 30px; /* Add padding at the bottom if content is short */
+        }
+
+        .btn {
+            /* Flex properties for 2 columns layout on wider screens */
+            flex: 1 1 45%; /* Grow, Shrink, Basis (approx 2 per row) */
+            padding: 15px;
+            text-align: center;
+            background-color: #0267a6;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            border: none;
+            display: inline-block;
+            box-sizing: border-box; /* Include padding in width calculation */
+            min-height: 50px; /* Consistent minimum height */
+            display: flex; /* Use flexbox for vertical centering */
+            align-items: center; /* Center text vertically */
+            justify-content: center; /* Center text horizontally */
+        }
+
+        .btn:hover {
+            background-color: #004a7d;
+        }
+
+        /* START FOOTER STYLES */
+        .page-footer {
+            width: 100%;
+            margin-top: auto; /* Pushes footer to the bottom */
+        }
+        /* END FOOTER STYLES */
+
+        /* Media query adjustments */
+        @media (max-width: 600px) {
+             .search-bar,
+             .buttons-container {
+                 width: 90%;
+             }
+             /* HEADER */
+             .header-content {
+                 padding: 5px 10px; /* Less padding on smaller screens */
+             }
+             .btn {
+                 /* Change flex-basis to 100% for single column layout */
+                flex: 1 1 100%;
+            }
+            /* Removed search-bar top adjustment */
+            /* Removed body padding-top adjustment */
+        }
+         @media (max-width: 450px) {
+             /* HEADER */
+             .logo-inner-average {
+                max-height: 65px;
+                max-width: 80px;
+             }
+             .home-button { /* Adjusted from page-title */
+                 font-size: 14px;
+            }
+             .header-content {
+                 padding: 5px 8px; /* Even less padding */
+             }
+             /* BODY CONTENT */
+             .btn {
+                flex: 1 1 100%; /* Ensure single column on very small screens */
+            }
+            .search-bar, .buttons-container {
+                margin-top: 15px; /* Adjust spacing for smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <div class="header-content"> <!-- Content aligns left due to CSS -->
+            <img src="./CabecalhoOAB.png" alt="Cabeçalho OAB" class="header-image logo-inner-average">
+             <div class="header-bottom-row">
+                <!-- Text "Pagina Inicial" is now bold via CSS -->
+                <!-- Link points to itself, acting as a home button/title -->
+                <a href="Main.html" class="home-button" title="Página Principal">🏠 Pagina Inicial</a>
+                <!-- Removed the secondary title (e.g., "> Secretaria") -->
+             </div>
+        </div>
+    </div>
+
+    <!-- Wrapper for main content to help push footer down -->
+    <div class="content-wrap">
+        <div class="search-bar">
+            <input type="text" placeholder="Pesquisar">
+            <button>🔎</button>
+        </div>
+
+        <!-- This container holds the buttons and will be positioned below the search bar -->
+        <div class="buttons-container">
+            <a href="Secretaria.html" class="btn">Secretaria</a>
+            <a href="Tesouraria.html" class="btn">Tesouraria</a>
+            <a href="404.html" class="btn">Conselho</a>
+            <a href="404.html" class="btn">Outro</a>
+        </div>
+    </div>
+
+    <footer id="Footer_footer" class="page-footer navbar-expand-lg font-small site-background-color" style="background-color:#3949AB !important; border-color: #3949AB !important;">
+        <div class="footer-copyright text-center py-3">
+           <small class="text-light">Desenvolvido por Elias Kersten</small>
+        </div>
+     </footer>
+
+</body>
+</html>

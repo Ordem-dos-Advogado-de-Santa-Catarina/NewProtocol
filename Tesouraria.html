@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0; /* Light gray background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            /* Add padding-top to push content below the fixed search bar */
+            padding-top: 150px; /* Adjust this value as needed */
+        }
+
+        .search-bar {
+            width: 80%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            /* Keep it fixed */
+            position: fixed;
+            top: 10%; /* Position from the top */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            z-index: 10; /* Ensure it stays on top */
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 10px;
+            font-size: 16px;
+            background-color: transparent;
+        }
+
+        .search-bar button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #555;
+            padding: 8px 12px;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap; /* Allows buttons to wrap to the next line */
+            justify-content: center;
+            gap: 20px;
+            /* Removed margin-top: 80px; body padding handles initial spacing */
+            margin-top: 30px; /* Optional: Add some space below the search bar area */
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .btn {
+            /* Flex properties for 2 columns layout on wider screens */
+            flex: 1 1 45%; /* Grow, Shrink, Basis (approx 2 per row) */
+            padding: 15px;
+            text-align: center;
+            background-color: #0267a6;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            border: none;
+            display: inline-block;
+            box-sizing: border-box; /* Include padding in width calculation */
+        }
+
+        .btn:hover {
+            background-color: #004a7d;
+        }
+
+        /* Media query for smaller screens */
+        @media (max-width: 600px) {
+            .btn {
+                 /* Change flex-basis to 100% for single column layout */
+                flex: 1 1 100%;
+            }
+            .search-bar {
+                width: 95%;
+                top: 5%; /* Adjust top position for smaller screens if needed */
+            }
+            body {
+                 /* Adjust padding for smaller screens if search bar position changed */
+                padding-top: 120px;
+            }
+        }
+         /* Optional: Slightly wider breakpoint if needed for 2 columns */
+        @media (max-width: 450px) {
+             .btn {
+                flex: 1 1 100%; /* Ensure single column on very small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="search-bar">
+        <input type="text" placeholder="Pesquisar">
+        <button>🔎</button>
+    </div>
+
+    <div class="buttons-container">
+        <a href="https://servicos.oab-sc.org.br/hbconselhos/AreaInscrito/Login/Login.aspx" class="btn">Boleto 2025</a>
+        <a href="https://servicos.oab-sc.org.br/hbconselhos/AreaInscrito/Login/Login.aspx" class="btn">Renegociação</a>
+    </div>
+</body>
+</html>
