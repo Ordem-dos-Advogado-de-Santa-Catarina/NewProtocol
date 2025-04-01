@@ -1,0 +1,353 @@
+/* Arquivo: css/style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f0f0f0; /* Light gray background */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure body takes full viewport height */
+    /* Removed align-items: center; - Let content flow naturally */
+}
+
+/* HEADER STYLES */
+.page-header {
+    width: 100%;
+    background-color: rgb(57, 73, 171); /* Header color */
+    padding: 5px 0; /* Reduced vertical padding */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow */
+    /* order: -1; removed, not needed with flex-direction column on body */
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column; /* Stack image and text vertically */
+    align-items: flex-start; /* Align items to the start (left) */
+    max-width: 1200px; /* Limit content width for larger screens */
+    margin: 0 auto; /* Center content */
+    width: 100%; /* Make the container span the full header width */
+    padding: 5px 15px; /* Keep some horizontal padding for aesthetics */
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.header-image {
+     display: block;
+     height: auto;
+     margin-bottom: 5px;
+}
+
+.logo-inner-average {
+    min-width: 75px;
+    min-height: 50px;
+    max-height: 75px;
+    max-width: 90px;
+    object-fit: contain;
+}
+
+.header-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Align button and title to the left */
+    width: 100%; /* Take full width */
+}
+
+.home-button {
+    font-size: 16px;
+    text-decoration: none;
+    color: #ffffff; /* WHITE text color */
+    font-weight: bold; /* Make text BOLD */
+    margin-right: 10px; /* Keep margin if needed */
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff; /* WHITE text color */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* END HEADER STYLES */
+
+.content-wrap {
+    flex: 1; /* Takes up remaining vertical space */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items within the content wrap */
+    width: 100%;
+    padding-bottom: 30px; /* Ensure space before footer */
+}
+
+.search-bar {
+    width: 80%;
+    max-width: 800px; /* Increased max-width */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    margin-top: 20px; /* Add margin to space below header */
+    display: flex;
+    align-items: center;
+}
+
+.search-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 16px;
+    background-color: transparent;
+}
+
+.search-bar button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+    padding: 8px 12px;
+}
+
+.buttons-container {
+    display: flex;
+    flex-wrap: wrap; /* Allows items to wrap */
+    justify-content: flex-start; /* Align items to the start */
+    gap: 20px; /* Gap between items */
+    margin-top: 20px;
+    width: 80%;
+    max-width: 800px; /* Match search bar width */
+    /* padding-bottom: 30px; /* Moved padding to content-wrap */
+}
+
+/* Default Button Styles (Shared by .btn and .collapsible-group) */
+.btn,
+.collapsible-group {
+    flex: 1 1 calc(50% - 10px); /* Two columns by default (minus half the gap) */
+    box-sizing: border-box;
+    min-height: 50px; /* Consistent minimum height */
+    display: flex; /* Needed for vertical alignment if content varies */
+    margin-bottom: 0; /* Override potential external styles */
+}
+
+/* Specific styles for normal buttons */
+.btn {
+    padding: 15px;
+    text-align: center;
+    background-color: #0267a6;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    border: none;
+    align-items: center; /* Center text vertically */
+    justify-content: center; /* Center text horizontally */
+}
+
+.btn:hover {
+    background-color: #004a7d;
+}
+
+/* COLLAPSIBLE STYLES */
+.collapsible-group {
+    flex-direction: column; /* Stack button and content vertically */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Important for border-radius and potential overflow */
+    /* Removed min-height here, handled by button */
+}
+
+.toggle-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Take full width of the group */
+    padding: 15px;
+    text-align: left;
+    background-color: #0267a6;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, border-radius 0.1s linear 0s; /* Adjust transition */
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: 8px; /* Apply radius initially */
+    min-height: 50px; /* Match .btn height */
+}
+
+/* Change radius only when content is NOT active */
+.toggle-btn:not(.active) {
+    transition-delay: 0.3s; /* Delay radius change until collapse completes */
+}
+
+/* Change radius immediately when opening */
+.toggle-btn.active {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    transition-delay: 0s;
+}
+
+
+.toggle-btn:hover {
+    background-color: #004a7d;
+}
+
+.toggle-btn::after {
+    content: '▼';
+    font-size: 14px;
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.toggle-btn.active::after {
+    transform: rotate(180deg);
+}
+
+.collapsible-content {
+    background-color: white;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 15px; /* Only horizontal padding when closed */
+    transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out;
+    box-sizing: border-box;
+    border-bottom-left-radius: 8px; /* Keep bottom radius */
+    border-bottom-right-radius: 8px;
+}
+
+/* Apply vertical padding only when active */
+.collapsible-content.active {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    overflow: visible; /* Allow content to be fully visible, max-height handles hiding */
+}
+
+/* Full width for expanded group on larger screens */
+/* We add the .group-expanded class via JS */
+.collapsible-group.group-expanded {
+     flex-basis: 100%; /* Takes full width, pushing others down */
+}
+
+
+.sub-link {
+    flex: 1 1 calc(50% - 10px); /* Two columns inside content */
+    padding: 12px;
+    text-align: center;
+    background-color: #e9ecef;
+    color: #333;
+    text-decoration: none;
+    font-size: 15px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border: 1px solid #ced4da;
+    box-sizing: border-box;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sub-link:hover {
+    background-color: #dee2e6;
+    color: #000;
+}
+/* END COLLAPSIBLE STYLES */
+
+/* FOOTER STYLES */
+.page-footer {
+    width: 100%;
+    margin-top: auto; /* Pushes footer to the bottom */
+    background-color: rgb(57, 73, 171); /* Same color as header */
+    color: #ffffff; /* White text */
+    text-align: center; /* Center text */
+    padding: 15px 0; /* Adjusted padding */
+    font-size: 14px; /* Optional: adjust font size if needed */
+}
+/* END FOOTER STYLES */
+
+/* Media query adjustments */
+
+/* Medium screens & Tablets (adjust breakpoint as needed) */
+@media (max-width: 768px) {
+     .search-bar,
+     .buttons-container {
+         width: 90%; /* More width on medium screens */
+         max-width: none; /* Remove max-width constraint */
+     }
+
+    /* Still 2 columns for buttons/groups on medium screens */
+    .btn,
+    .collapsible-group {
+        flex: 1 1 calc(50% - 10px);
+    }
+    .collapsible-group.group-expanded {
+         flex-basis: 100%;
+    }
+    .header-content {
+         padding: 5px 10px; /* Less padding on smaller screens */
+         max-width: none; /* Remove max-width */
+    }
+}
+
+
+/* Small screens (Mobile) */
+@media (max-width: 600px) {
+     .search-bar,
+     .buttons-container {
+         width: 95%; /* Almost full width */
+         gap: 15px; /* Reduce gap slightly */
+     }
+
+     /* Single column for buttons/groups on small screens */
+     .btn,
+     .collapsible-group {
+        flex: 1 1 100%; /* Force full width */
+     }
+
+     /* Expanded group naturally takes full width here, rule not strictly needed but kept for consistency */
+     .collapsible-group.group-expanded {
+        flex-basis: 100%;
+     }
+
+     .sub-link {
+        flex: 1 1 100%; /* Sub-links also become single column */
+     }
+
+     .logo-inner-average {
+        max-height: 65px;
+        max-width: 80px;
+     }
+     .page-title, .home-button {
+        font-size: 14px;
+     }
+     .home-button {
+        padding: 3px 6px;
+     }
+     .header-content {
+        padding: 5px 8px; /* Even less padding */
+     }
+     .search-bar, .buttons-container {
+        margin-top: 15px;
+     }
+}
