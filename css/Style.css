@@ -7,7 +7,6 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh; /* Ensure body takes full viewport height */
-    /* Removed align-items: center; - Let content flow naturally */
 }
 
 /* HEADER STYLES */
@@ -16,13 +15,11 @@ body {
     background-color: rgb(57, 73, 171); /* Header color */
     padding: 5px 0; /* Reduced vertical padding */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow */
-    /* order: -1; removed, not needed with flex-direction column on body */
 }
 
 .header-content {
     display: flex;
-    flex-direction: column; /* Stack image and text vertically */
-    align-items: flex-start; /* Align items to the start (left) */
+    align-items: center; /* Align items horizontally */
     max-width: 1200px; /* Limit content width for larger screens */
     margin: 0 auto; /* Center content */
     width: 100%; /* Make the container span the full header width */
@@ -31,9 +28,9 @@ body {
 }
 
 .header-image {
-     display: block;
-     height: auto;
-     margin-bottom: 5px;
+    display: block;
+    height: auto;
+    margin-right: 20px; /* Add spacing to the right of the logo */
 }
 
 .logo-inner-average {
@@ -125,26 +122,25 @@ body {
 .buttons-container {
     display: flex;
     flex-wrap: wrap; /* Allows items to wrap */
-    justify-content: flex-start; /* Align items to the start */
+    align-items: flex-start; /* Align items to the top of the container */
     gap: 20px; /* Gap between items */
     margin-top: 20px;
     width: 80%;
     max-width: 800px; /* Match search bar width */
-    /* padding-bottom: 30px; /* Moved padding to content-wrap */
 }
 
 /* Default Button Styles (Shared by .btn and .collapsible-group) */
 .btn,
 .collapsible-group {
-    flex: 1 1 calc(50% - 10px); /* Two columns by default (minus half the gap) */
+    /*flex: 1 1 calc(50% - 10px); /* Two columns by default (minus half the gap)*/
     box-sizing: border-box;
-    min-height: 50px; /* Consistent minimum height */
-    display: flex; /* Needed for vertical alignment if content varies */
-    margin-bottom: 0; /* Override potential external styles */
+    display: flex; /* Use flex for alignment */
+    /* Removed min-height - let content dictate height */
 }
 
 /* Specific styles for normal buttons */
 .btn {
+    flex: 1 1 calc(50% - 10px); /* Two columns by default (minus half the gap) */
     padding: 15px;
     text-align: center;
     background-color: #0267a6;
@@ -157,6 +153,7 @@ body {
     border: none;
     align-items: center; /* Center text vertically */
     justify-content: center; /* Center text horizontally */
+    min-height: 50px; /* Ensure minimum clickable area */
 }
 
 .btn:hover {
@@ -165,12 +162,13 @@ body {
 
 /* COLLAPSIBLE STYLES */
 .collapsible-group {
+    flex: 1 1 100%; /* Full width, single row */
     flex-direction: column; /* Stack button and content vertically */
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Important for border-radius and potential overflow */
-    /* Removed min-height here, handled by button */
+    border-radius: 8px; /* Rounded corners for the group */
+    overflow: hidden; /* Crucial for containing the content and rounding corners */
+    background-color: white; /* Background needed if content isn't full */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow to the group */
+    width: 100%; /* Ensure full width */
 }
 
 .toggle-btn {
@@ -184,26 +182,15 @@ body {
     color: white;
     font-size: 18px;
     font-weight: bold;
-    transition: background-color 0.3s ease, border-radius 0.1s linear 0s; /* Adjust transition */
+    transition: background-color 0.3s ease;
     border: none;
     cursor: pointer;
     box-sizing: border-box;
     border-radius: 8px; /* Apply radius initially */
     min-height: 50px; /* Match .btn height */
+    position: relative; /* Needed for potential absolute positioning inside if required */
+    z-index: 1; /* Ensure button is clickable over potentially overlapping content */
 }
-
-/* Change radius only when content is NOT active */
-.toggle-btn:not(.active) {
-    transition-delay: 0.3s; /* Delay radius change until collapse completes */
-}
-
-/* Change radius immediately when opening */
-.toggle-btn.active {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    transition-delay: 0s;
-}
-
 
 .toggle-btn:hover {
     background-color: #004a7d;
@@ -222,33 +209,24 @@ body {
 }
 
 .collapsible-content {
-    background-color: white;
+    background-color: white; /* Match group background */
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: space-between;
     max-height: 0;
-    overflow: hidden;
+    overflow: hidden; /* Keep hidden */
     padding: 0 15px; /* Only horizontal padding when closed */
     transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out;
     box-sizing: border-box;
-    border-bottom-left-radius: 8px; /* Keep bottom radius */
-    border-bottom-right-radius: 8px;
+    /* border-radius is handled by the parent .collapsible-group */
 }
 
 /* Apply vertical padding only when active */
 .collapsible-content.active {
     padding-top: 15px;
     padding-bottom: 15px;
-    overflow: visible; /* Allow content to be fully visible, max-height handles hiding */
 }
-
-/* Full width for expanded group on larger screens */
-/* We add the .group-expanded class via JS */
-.collapsible-group.group-expanded {
-     flex-basis: 100%; /* Takes full width, pushing others down */
-}
-
 
 .sub-link {
     flex: 1 1 calc(50% - 10px); /* Two columns inside content */
@@ -297,12 +275,11 @@ body {
      }
 
     /* Still 2 columns for buttons/groups on medium screens */
-    .btn,
-    .collapsible-group {
+    .btn {
         flex: 1 1 calc(50% - 10px);
     }
-    .collapsible-group.group-expanded {
-         flex-basis: 100%;
+    .collapsible-group {
+        flex: 1 1 100%;
     }
     .header-content {
          padding: 5px 10px; /* Less padding on smaller screens */
@@ -320,14 +297,11 @@ body {
      }
 
      /* Single column for buttons/groups on small screens */
-     .btn,
-     .collapsible-group {
+     .btn {
         flex: 1 1 100%; /* Force full width */
      }
-
-     /* Expanded group naturally takes full width here, rule not strictly needed but kept for consistency */
-     .collapsible-group.group-expanded {
-        flex-basis: 100%;
+     .collapsible-group {
+        flex: 1 1 100%; /* Force full width */
      }
 
      .sub-link {
