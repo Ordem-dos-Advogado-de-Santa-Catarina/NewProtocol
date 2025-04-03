@@ -337,12 +337,14 @@ body {
 /* ESTILOS DO RODAPÉ */
 .page-footer {
     width: 100%;
-    margin-top: auto; /* Empurra o rodapé para o final da página */
     background-color: rgb(57, 73, 171); /* Mesma cor do cabeçalho */
     color: #ffffff; /* Texto branco */
     text-align: center;
     padding: 15px 0;
     font-size: 14px;
+    position: sticky; /* Torna-o sticky */
+    bottom: 0; /* Cola na parte inferior */
+    z-index: 102; /* Garante que fique acima de outros elementos */
 }
 /* FIM DOS ESTILOS DO RODAPÉ */
 
@@ -376,6 +378,12 @@ body {
 
 /* Telas Pequenas (Mobile, ex: até 600px) */
 @media (max-width: 600px) {
+     /* Ajusta a escala para mobile */
+     html {
+         /* Reduz o tamanho base da fonte para evitar zoom excessivo */
+         font-size: 14px; /* Reduz o tamanho da fonte base */
+     }
+
      .sticky-search-container,
      .buttons-container {
          width: 95%; /* Quase largura total */
