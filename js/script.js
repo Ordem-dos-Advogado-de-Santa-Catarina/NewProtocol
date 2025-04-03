@@ -205,7 +205,7 @@ const filesToSearch = [
                         try {
                             const resolvedUrl = new URL(originalHref, baseUrl);
                             // Garante que o targetHref seja relativo à raiz também
-                            targetHref = resolvedUrl.pathname + resolvedUrl.search + resolvedUrl.hash;
+                            targetHref = resolvedUrl.href;
                         } catch (e) {
                              console.warn(`Não foi possível resolver o href: ${originalHref} na base ${baseUrl}. Usando fallback: ${rootRelativePath}`);
                              targetHref = rootRelativePath; // Fallback para a página onde foi encontrado
