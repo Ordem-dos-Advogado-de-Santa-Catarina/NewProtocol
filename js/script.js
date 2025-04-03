@@ -156,20 +156,20 @@ function setupSearch() {
         return; // Interrompe a configuração da pesquisa avançada se algum elemento faltar
     }
 
-    // --- Continua apenas se a estrutura completa for encontrada ---
-
-    // Lista de arquivos HTML para pesquisar (caminhos relativos à RAIZ do site)
+    // *** ALTERAÇÃO AQUI: Usar as URLs COMPLETAS dos arquivos, levando em conta o subdiretório ***
+    // Lista de arquivos HTML para pesquisar (caminhos RELATIVOS À RAIZ DO SITE)
     const filesToSearch = [
-        '/Main.html', // Página inicial
-        '../Setores/Secretaria.html',
-        '../Setores/Tesouraria.html',
-        '../Setores/Protocolos.html'
-        // Adicione mais arquivos aqui, sempre começando com '/'
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Main.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Secretaria.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tesouraria.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Protocolos.html'
     ];
 
     // Função assíncrona para buscar e processar um único arquivo HTML
+    // O parâmetro agora é 'rootRelativePath' para clareza
     async function fetchAndSearchFile(rootRelativePath, searchTerm) {
         try {
+            // Usa o caminho completo (URL) diretamente no fetch
             const response = await fetch(rootRelativePath);
             if (!response.ok) {
                 console.error(`Erro ao buscar ${rootRelativePath}: ${response.statusText}`);
@@ -191,37 +191,34 @@ function setupSearch() {
                 if (lowerElementText.includes(lowerSearchTerm)) {
                     let targetHref = rootRelativePath; // Link padrão é a página onde foi encontrado
 
+                    // Tenta resolver o href do link encontrado
                     if (element.tagName === 'A' && element.getAttribute('href')) {
                         const originalHref = element.getAttribute('href');
-                        if (originalHref.startsWith('http')) {
-                            targetHref = originalHref; // Absoluto
-                        } else if (originalHref.startsWith('#')) {
-                            targetHref = rootRelativePath + originalHref; // Âncora
-                        } else if (originalHref.startsWith('/')) {
-                            targetHref = originalHref; // Já root-relative
-                        } else {
-                            // Tenta resolver href relativo ao path do arquivo
-                             try {
-                                const fileUrl = new URL(rootRelativePath, window.location.origin);
-                                const resolvedUrl = new URL(originalHref, fileUrl);
-                                targetHref = resolvedUrl.pathname + resolvedUrl.search + resolvedUrl.hash;
-                             } catch (e) {
-                                 console.warn(`Não foi possível resolver o href relativo: ${originalHref} em ${rootRelativePath}`);
-                                 targetHref = rootRelativePath; // Fallback
-                             }
+                        // Usa a URL da página *onde o link foi encontrado* como base para resolver links relativos
+                        const baseUrl = new URL(rootRelativePath, window.location.origin);
+                        try {
+                            const resolvedUrl = new URL(originalHref, baseUrl);
+                            // Garante que o targetHref seja relativo à raiz também
+                            targetHref = resolvedUrl.pathname + resolvedUrl.search + resolvedUrl.hash;
+                        } catch (e) {
+                             console.warn(`Não foi possível resolver o href: ${originalHref} na base ${baseUrl}. Usando fallback: ${rootRelativePath}`);
+                             targetHref = rootRelativePath; // Fallback para a página onde foi encontrado
                         }
+
                     }
-                    // Para H2 e BUTTON, o targetHref permanece rootRelativePath
+                    // Para H2 e BUTTON, o targetHref permanece a página onde foi encontrado (rootRelativePath)
 
                     const linkResult = document.createElement('a');
+                    // Define o href do resultado da pesquisa como o caminho resolvido (ou fallback)
                     linkResult.href = targetHref;
                     linkResult.textContent = elementText;
                     linkResult.classList.add('search-result-item');
-                    linkResult.title = `Encontrado em: ${rootRelativePath}`; // Tooltip útil
+                    // Mostra em qual arquivo o termo foi encontrado
+                    linkResult.title = `Encontrado em: ${rootRelativePath}`;
 
                     matches.push({
-                        file: rootRelativePath,
-                        element: linkResult
+                        file: rootRelativePath, // Arquivo original onde foi encontrado
+                        element: linkResult      // Elemento <a> criado para o resultado
                     });
                 }
             });
@@ -236,7 +233,7 @@ function setupSearch() {
         }
     }
 
-    // Função para exibir os resultados na tela
+    // Função para exibir os resultados na tela (sem alterações)
     function displayResults(results) {
         resultsContainer.innerHTML = '';
         resultsContainer.classList.remove('active');
@@ -287,21 +284,18 @@ function setupSearch() {
         }
     }
 
-    // Função principal de pesquisa
+    // Função principal de pesquisa (sem alterações na lógica principal)
     async function performSearch() {
         const searchTerm = searchInput.value.trim();
 
         if (searchTerm.length < 2) {
-            resultsContainer.innerHTML = '';
-            resultsContainer.classList.remove('active');
-            resultsContainer.style.maxHeight = null;
-            resultsContainer.style.paddingTop = null;
-            resultsContainer.style.paddingBottom = null;
-            resultsContainer.style.overflowY = 'hidden';
+            // Limpa resultados se termo for muito curto
+            displayResults([]); // Chama displayResults com array vazio
             return;
         }
 
         let allResults = [];
+        // Mapeia os arquivos usando a função fetchAndSearchFile atualizada
         const searchPromises = filesToSearch.map(file => fetchAndSearchFile(file, searchTerm));
 
         try {
@@ -309,6 +303,7 @@ function setupSearch() {
             const combinedResults = resultsArrays.flat();
 
             // Filtra duplicatas GERAIS (mesmo link/texto de arquivos diferentes)
+            // Usa o href e textContent do elemento <a> gerado como chave
             allResults = Array.from(new Map(combinedResults.map(item => [`${item.element.href}-${item.element.textContent}`, item])).values());
 
             displayResults(allResults);
@@ -331,45 +326,40 @@ function setupSearch() {
         }
     }
 
-    // Adiciona listeners para input, botão e Enter
+    // Adiciona listeners para input, botão e Enter (sem alterações)
     const debouncedSearch = debounce(performSearch, 350);
     searchInput.addEventListener('input', debouncedSearch);
     searchButton.addEventListener('click', performSearch);
     searchInput.addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
-            event.preventDefault();
+            event.preventDefault(); // Impede envio de formulário, se houver
             performSearch();
         }
     });
 
-    // Limpa resultados se o campo for limpo
+    // Limpa resultados se o campo for limpo (sem alterações)
      searchInput.addEventListener('input', function() {
         if (searchInput.value.trim() === '') {
-            resultsContainer.innerHTML = '';
-            resultsContainer.classList.remove('active');
-            resultsContainer.style.maxHeight = null;
-            resultsContainer.style.paddingTop = null;
-            resultsContainer.style.paddingBottom = null;
-            resultsContainer.style.overflowY = 'hidden';
+           displayResults([]); // Chama displayResults com array vazio
         }
     });
 }
 
-// Função para fechar o container de resultados se clicar fora
+// Função para fechar o container de resultados se clicar fora (sem alterações)
 function handleClickOutside(event) {
     const resultsContainer = document.getElementById('search-results-container');
     const stickyContainer = document.querySelector('.sticky-search-container');
 
     // Só executa se a estrutura sticky existir e os resultados estiverem ativos
     if (stickyContainer && resultsContainer && resultsContainer.classList.contains('active')) {
-        // Verifica se o clique foi FORA do container sticky
+        // Verifica se o clique foi FORA do container sticky (que inclui a barra e os resultados)
         if (!stickyContainer.contains(event.target)) {
             resultsContainer.classList.remove('active');
             resultsContainer.style.maxHeight = null; // Anima fechamento
             resultsContainer.style.paddingTop = null;
             resultsContainer.style.paddingBottom = null;
             // Garante que scrollbar suma ao fechar
-            resultsContainer.style.overflowY = 'hidden';
+             resultsContainer.style.overflowY = 'hidden';
         }
     }
 }
