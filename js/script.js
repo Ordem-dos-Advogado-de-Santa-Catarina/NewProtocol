@@ -156,14 +156,20 @@ function setupSearch() {
         return; // Interrompe a configuração da pesquisa avançada se algum elemento faltar
     }
 
-    // *** ALTERAÇÃO AQUI: Usar as URLs COMPLETAS dos arquivos, levando em conta o subdiretório ***
-    // Lista de arquivos HTML para pesquisar (caminhos RELATIVOS À RAIZ DO SITE)
-    const filesToSearch = [
-        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Main.html',
-        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Secretaria.html',
-        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tesouraria.html',
-        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Protocolos.html'
-    ];
+// Lista de arquivos HTML para pesquisar (caminhos RELATIVOS À RAIZ DO SITE)
+const filesToSearch = [
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Main.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Secretaria.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tesouraria.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Protocolos.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/comissoes.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Conselho.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/examedeordem.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/inssdigital.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/outros.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Processos.html'
+];
+
 
     // Função assíncrona para buscar e processar um único arquivo HTML
     // O parâmetro agora é 'rootRelativePath' para clareza
