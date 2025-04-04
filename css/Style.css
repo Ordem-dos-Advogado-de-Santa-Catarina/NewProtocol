@@ -122,7 +122,7 @@ body {
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    border: 1px solid #3949AB; /* Adiciona borda azul */
+    border: 2px solid #0267a6; /* Adiciona borda azul */
 }
 
 .search-bar input {
@@ -246,11 +246,12 @@ body {
 .collapsible-group {
     flex: 1 1 100%; /* Largura total, uma linha */
     flex-direction: column; /* Empilha botão e conteúdo */
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden; /* Essencial para conter conteúdo e cantos */
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
+    border: 2px solid #0267a6; /* Adiciona a linha azul interna */
 }
 
 .toggle-btn {
@@ -274,8 +275,14 @@ body {
     z-index: 1; /* Garante que o botão fique clicável */
 }
 
+/* Estilos específicos para o botão quando está ativo (colapsado aberto) */
+.toggle-btn.active {
+    border-bottom-left-radius: 0; /* Remove o raio do canto inferior esquerdo */
+    border-bottom-right-radius: 0; /* Remove o raio do canto inferior direito */
+}
+
 .toggle-btn:hover {
-    background-color: #004a7d;
+    background-color: #0267a6;
 }
 
 .toggle-btn::after {
@@ -326,6 +333,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    outline: 2px solid #0267a6; /* Adiciona outline azul aos botões */
 }
 
 .sub-link:hover {
