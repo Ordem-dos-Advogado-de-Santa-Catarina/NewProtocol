@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>protocolos</title>
-    <link rel="stylesheet" href="../css/Style.css">
+    <title>Comissões</title>
+    <link rel="stylesheet" href="../css/style.css"> <!-- Link pro CSS externo -->
 </head>
 <body>
 
     <div class="page-header">
-        <div class="header-content"> <!-- O conteúdo alinha à esquerda por causa do CSS, sei lá por que -->
+        <div class="header-content"> <!-- O conteúdo alinha à esquerda -->
             <img src="../Images/CabecalhoOAB.png" alt="Cabeçalho OAB" class="header-image logo-inner-average">
              <div class="header-bottom-row">
                 <a href="../Main.html" class="home-button" title="Página Principal">🏠 Pagina Inicial</a>
-                <h2 class="page-title">> protocolos</h2>
+                <h2 class="page-title">> Comissões</h2> <!-- Título da página específica -->
              </div>
         </div>
     </div>
 
-     <!-- Essa div aqui é pra empurrar o rodapé pra baixo, pq se não ele sobe, mó trampo -->
+     <!-- Divisão pro conteúdo principal pra rodapé ficar lá embaixo -->
      <div class="content-wrap">
         <!-- Container para a barra de pesquisa (fixa/sticky) e resultados -->
         <div class="sticky-search-container">
@@ -32,24 +32,14 @@
             </div>
         </div>
 
+        <!-- Container de botões principal -->
         <div class="buttons-container">
 
-            <!-- Grupo 1: Requerimento de inscrição (seja lá o que isso quer dizer) -->
-            <div class="collapsible-group">
-                <button class="toggle-btn">Requerimento de inscrição</button>
-                <div class="collapsible-content">
-                    <a href="#link-estagiario" class="sub-link">Pedido de inscrição estagiário</a>
-                    <a href="#link-originaria" class="sub-link">Pedido de inscrição originária (Novos Advogados)</a>
-                    <a href="#link-suplementar" class="sub-link">Pedido de inscrição suplementar</a>
-                    <a href="#link-transferencia" class="sub-link">Pedido de inscrição transferência</a>
-                </div>
-            </div>
-
-            <!-- Grupo 2: Requerimentos Comissões (mais coisa chata...) -->
+            <!-- Grupo: Requerimentos Comissões -->
             <div class="collapsible-group">
                 <button class="toggle-btn">Requerimentos Comissões</button>
                 <div class="collapsible-content">
-                    <a href="#link-oab-elas" class="sub-link">OAB por Elas</a>
+                    <a href="#link-oab-por-elas" class="sub-link">OAB por Elas</a>
                     <a href="#link-assistencia-honorarios" class="sub-link">Pedido de Assistência - Honorários</a>
                     <a href="#link-assistencia-prerrogativas" class="sub-link">Pedido de Assistência - Prerrogativas</a>
                     <a href="#link-protocolo-comissoes" class="sub-link">Protocolo Comissões</a>
@@ -58,17 +48,15 @@
                 </div>
             </div>
 
-            </div>
-
-        </div>
-    </div>
+        </div> <!-- Fim buttons-container -->
+    </div> <!-- Fim content-wrap -->
 
     <footer id="Footer_footer" class="page-footer navbar-expand-lg font-small site-background-color" style="background-color:#3949AB !important; border-color: #3949AB !important;">
         <div class="footer-copyright text-center py-3">
-           <small class="text-light">Desenvolvido por Ordem dos Advogados - Santa Catarina</small>
+          <small class="text-light">Desenvolvido por Ordem dos Advogados - Santa Catarina</small>
         </div>
      </footer>
 
-    <script src="../js/script.js"></script>
+    <script src="../js/script.js"></script> <!-- Script para funcionalidade dos botões colapsáveis -->
 </body>
 </html>

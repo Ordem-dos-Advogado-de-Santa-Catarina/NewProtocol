@@ -3,22 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tesouraria</title>
+    <title>INSS Digital</title>
     <link rel="stylesheet" href="../css/style.css"> <!-- Link pro CSS externo -->
 </head>
 <body>
 
     <div class="page-header">
-        <div class="header-content">
+        <div class="header-content"> <!-- O conteúdo alinha à esquerda -->
             <img src="../Images/CabecalhoOAB.png" alt="Cabeçalho OAB" class="header-image logo-inner-average">
-            <div class="header-bottom-row">
+             <div class="header-bottom-row">
                 <a href="../Main.html" class="home-button" title="Página Principal">🏠 Pagina Inicial</a>
-                <h2 class="page-title">> Tesouraria</h2>
-            </div>
+                <h2 class="page-title">> INSS Digital</h2> <!-- Título da página específica -->
+             </div>
         </div>
     </div>
 
-    <div class="content-wrap">
+     <!-- Divisão pro conteúdo principal pra rodapé ficar lá embaixo -->
+     <div class="content-wrap">
         <!-- Container para a barra de pesquisa (fixa/sticky) e resultados -->
         <div class="sticky-search-container">
             <div class="search-bar">
@@ -31,18 +32,27 @@
             </div>
         </div>
 
+        <!-- Container de botões principal -->
         <div class="buttons-container">
-            <a href="https://servicos.oab-sc.org.br/hbconselhos/AreaInscrito/Login/Login.aspx" class="btn">Pedido INSS</a>
-            <a href="https://servicos.oab-sc.org.br/hbconselhos/AreaInscrito/Login/Login.aspx" class="btn">Chamado INSS</a>
-        </div>
-    </div>
+
+            <!-- Grupo: INSS -->
+            <div class="collapsible-group">
+                <button class="toggle-btn">INSS</button>
+                <div class="collapsible-content">
+                    <a href="#link-bloqueio-inss" class="sub-link">Bloqueio INSS</a>
+                    <a href="#link-cadastro-inss-digital" class="sub-link">Solicitação de Cadastro no INSS Digital</a>
+                </div>
+            </div>
+
+        </div> <!-- Fim buttons-container -->
+    </div> <!-- Fim content-wrap -->
 
     <footer id="Footer_footer" class="page-footer navbar-expand-lg font-small site-background-color" style="background-color:#3949AB !important; border-color: #3949AB !important;">
         <div class="footer-copyright text-center py-3">
-            <small class="text-light">Desenvolvido por Ordem dos Advogados - Santa Catarina</small>
+          <small class="text-light">Desenvolvido por Ordem dos Advogados - Santa Catarina</small>
         </div>
-    </footer>
+     </footer>
 
-    <script src="../js/script.js"></script> <!-- Link pro Javascript, pra fazer alguma coisa ai -->
+    <script src="../js/script.js"></script> <!-- Script para funcionalidade dos botões colapsáveis -->
 </body>
 </html>
