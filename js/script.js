@@ -161,8 +161,6 @@ const filesToSearch = [
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Main.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Secretaria.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tesouraria.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Protocolos.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/comissoes.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Conselho.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/examedeordem.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/inssdigital.html',
