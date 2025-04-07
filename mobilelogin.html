@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login OAB-SC</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            background-color: #f0f0f0; /* Cor de fundo geral */
+        }
+
+        .app-header {
+            background-color: #0056b3; /* Azul OAB ou cor do seu app */
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            flex-shrink: 0; /* Impede que o header encolha */
+        }
+
+        .iframe-container {
+            flex-grow: 1; /* Faz o container ocupar o espaço restante */
+            overflow: hidden; /* Esconde barras de rolagem do container */
+            padding: 5px; /* Pequeno espaço ao redor do iframe */
+            background-color: #ffffff; /* Fundo branco para a área do iframe */
+        }
+
+        .login-iframe {
+            width: 100%;
+            height: 100%;
+            border: none; /* Remove a borda padrão do iframe */
+        }
+
+        /* Estilos adicionais para links no rodapé, se houver */
+        .app-footer {
+            padding: 10px;
+            text-align: center;
+            font-size: 0.8em;
+            flex-shrink: 0;
+            background-color: #e9ecef;
+        }
+        .app-footer a {
+            color: #0056b3;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-header">
+        Login OAB-SC
+    </div>
+
+    <div class="iframe-container">
+        <iframe
+            class="login-iframe"
+            src="https://servicos.oab-sc.org.br/hbconselhos/AreaInscrito/Login/Login.aspx"
+            title="Login OAB-SC"
+            frameborder="0"
+            scrolling="auto">
+            <!-- Mensagem exibida se o navegador não suportar iframes -->
+            Seu navegador não suporta iframes. Acesse o link diretamente:
+            <a href="https://servicos.oab-sc.org.br/hbconselhos/AreaInscrito/Login/Login.aspx">
+                Login OAB-SC
+            </a>
+        </iframe>
+    </div>
+
+    <!-- Rodapé opcional -->
+    <!--
+    <div class="app-footer">
+        <a href="#">Ajuda</a>
+        <a href="#">Suporte</a>
+    </div>
+    -->
+
+</body>
+</html>
