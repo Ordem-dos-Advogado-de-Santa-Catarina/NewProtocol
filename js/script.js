@@ -160,7 +160,7 @@ function setupSearch() {
 
 // Lista de arquivos HTML para pesquisar (caminhos RELATIVOS À RAIZ DO SITE)
 const filesToSearch = [
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Main.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Index.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Secretaria.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tesouraria.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Conselho.html',
