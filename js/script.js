@@ -1,6 +1,4 @@
 // Arquivo: js/script.js
-// Nenhuma alteração necessária no JavaScript para as mudanças visuais solicitadas.
-// O código existente já lida com a adição/remoção da classe 'active' que o CSS usa.
 
 document.addEventListener('DOMContentLoaded', function() {
     // Configura os botões colapsáveis (deve rodar em todas as páginas que os usam)

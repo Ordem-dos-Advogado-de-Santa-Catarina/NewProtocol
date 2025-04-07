@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secretaria</title>
     <link rel="icon" href="./Images/CabecalhoOAB.png" type="image/png">
+    <!-- Certifique-se de que o caminho para o CSS está correto -->
     <link rel="stylesheet" href="../css/Style.css">
 </head>
 <body>
@@ -33,17 +34,13 @@
             </div>
         </div>
 
-        <iframe id="mobileFrame" src="https://servicos.oab-sc.org.br/hbconselhos/login/main2.aspx" frameborder="0"></iframe>
+        <!-- Contêiner para recortar o iframe -->
+        <div class="iframe-clipper">
+            <!-- O iframe agora é maior e será movido dentro do clipper -->
+            <iframe id="mobileFrame" src="https://servicos.oab-sc.org.br/hbconselhos/login/main2.aspx" frameborder="0" scrolling="no"></iframe>
+        </div>
 
-            <style>
-            #mobileFrame {
-                width: 375px; /* Largura típica de um iPhone X */
-                height: 812px; /* Altura típica de um iPhone X */
-                border: 1px solid #ccc;
-                display: block;
-                margin: 0 auto;
-            }
-            </style>    
+    </div> <!-- Fim de content-wrap -->
 
     <footer id="Footer_footer" class="page-footer navbar-expand-lg font-small site-background-color" style="background-color:#3949AB !important; border-color: #3949AB !important;">
         <div class="footer-copyright text-center py-3">
@@ -51,6 +48,7 @@
         </div>
      </footer>
 
+    <!-- Certifique-se de que o caminho para o JS está correto -->
     <script src="../js/script.js"></script>
 </body>
 </html>
