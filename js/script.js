@@ -1,22 +1,26 @@
 // Arquivo: js/script.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Configura os botões colapsáveis (deve rodar em todas as páginas que os usam)
+    // Configura os botões colapsáveis
     setupCollapsible();
 
-    // Configura a funcionalidade de pesquisa (tentará configurar em todas as páginas)
+    // Configura a funcionalidade de pesquisa
     setupSearch();
 
-    // Ajusta o padding do content-wrap inicialmente e no resize
-    // A função adjustContentPadding já verifica internamente se o sticky container existe
-    adjustContentPadding();
-    window.addEventListener('resize', debounce(adjustContentPadding, 150));
+    // Posiciona a barra de pesquisa fixa e ajusta o padding/margem do conteúdo
+    // Essa função agora lida com ambos os ajustes
+    adjustLayoutForFixedElements();
 
-    // Adiciona listener para fechar resultados ao clicar fora (só fará algo se o container existir e estiver ativo)
+    // Adiciona listeners para reajustar em resize e scroll (scroll pode afetar header se ele mudar)
+    window.addEventListener('resize', debounce(adjustLayoutForFixedElements, 150));
+    // Removido listener de scroll, pois header é fixo e não muda com scroll
+    // window.addEventListener('scroll', debounce(adjustLayoutForFixedElements, 150));
+
+    // Adiciona listener para fechar resultados ao clicar fora
     document.addEventListener('click', handleClickOutside);
 });
 
-// Função de Debounce genérica
+// Função de Debounce genérica (sem alterações)
 function debounce(func, wait, immediate) {
 	let timeout;
 	return function() {
@@ -32,110 +36,96 @@ function debounce(func, wait, immediate) {
 	};
 };
 
-// Função para ajustar o padding-top do conteúdo principal
-function adjustContentPadding() {
-    const stickyContainer = document.querySelector('.sticky-search-container');
+// Função para posicionar a barra de pesquisa e ajustar o layout do conteúdo
+function adjustLayoutForFixedElements() {
+    const header = document.querySelector('.page-header');
+    const fixedSearchContainer = document.querySelector('.fixed-search-container');
     const contentWrap = document.querySelector('.content-wrap');
 
-    // Garante que contentWrap exista
-    if (!contentWrap) return;
-
-    if (stickyContainer) {
-        // Se o container sticky existir, calcula a altura e adiciona padding
-        const stickyHeight = stickyContainer.offsetHeight;
-        contentWrap.style.paddingTop = `${stickyHeight + 15}px`; // Adiciona margem extra
-    } else {
-        // Se não houver container sticky, aplica um padding padrão
-        // Pode ajustar este valor se necessário para páginas sem sticky search
-        contentWrap.style.paddingTop = '20px'; // Padding padrão
-    }
-}
-
-
-// Função para configurar o acordeão (collapsible)
-function setupCollapsible() {
-    const toggleButtons = document.querySelectorAll('.toggle-btn');
-
-    // Se não houver botões toggle na página, não faz nada
-    if (toggleButtons.length === 0) {
+    // Garante que todos os elementos existam
+    if (!header || !fixedSearchContainer || !contentWrap) {
+        console.warn("Elementos essenciais (header, fixed-search-container, content-wrap) não encontrados para ajuste de layout.");
         return;
     }
 
+    // 1. Calcula a altura do header
+    const headerHeight = header.offsetHeight;
+
+    // 2. Define a posição 'top' do container da barra de pesquisa fixa
+    //    Posiciona 15px abaixo do header
+    fixedSearchContainer.style.top = `${headerHeight + 15}px`;
+
+    // 3. Calcula a altura total ocupada pelos elementos fixos (header + search container + gap)
+    //    É importante obter a altura do search container *depois* de definir seu 'top'
+    //    Usamos requestAnimationFrame para garantir que o navegador recalcule o layout
+    requestAnimationFrame(() => {
+        const searchContainerHeight = fixedSearchContainer.offsetHeight;
+        // O espaço total necessário no topo da página é a altura do header + 15px de espaço + altura da search bar + um espaço extra abaixo dela
+        const totalFixedHeight = headerHeight + 15 + searchContainerHeight + 20; // Adiciona 20px de margem extra
+
+        // 4. Ajusta o margin-top do content-wrap para que ele comece abaixo dos elementos fixos
+        contentWrap.style.marginTop = `${totalFixedHeight}px`;
+
+        // 5. Remove o padding-top do body se existir (ou ajusta conforme necessário)
+        //    Neste caso, o content-wrap controla o espaço
+        document.body.style.paddingTop = '0'; // Remove padding do body, já que o content-wrap tem margem
+
+    });
+}
+
+
+// Função para configurar o acordeão (collapsible) - SEM ALTERAÇÕES NECESSÁRIAS
+function setupCollapsible() {
+    const toggleButtons = document.querySelectorAll('.toggle-btn');
+    if (toggleButtons.length === 0) return;
+
     toggleButtons.forEach(button => {
         const content = button.nextElementSibling;
-
-        // Verifica se o próximo elemento existe e é o conteúdo colapsável esperado
-        if (!content || !content.classList.contains('collapsible-content')) {
-            // console.warn('Botão toggle sem conteúdo colapsável correspondente:', button); // Comentado para não poluir
-            return; // Pula este botão se não encontrar o conteúdo
-        }
+        if (!content || !content.classList.contains('collapsible-content')) return;
 
         button.addEventListener('click', function() {
             const currentButton = this;
             const currentContent = currentButton.nextElementSibling;
-
-            // Verificação dupla (redundante mas segura)
-            if (!currentContent || !currentContent.classList.contains('collapsible-content')) {
-                return;
-            }
+            if (!currentContent || !currentContent.classList.contains('collapsible-content')) return;
 
             const isOpening = !currentButton.classList.contains('active');
-
-            // Fecha todos os OUTROS painéis abertos ANTES de abrir o atual NO MESMO container de botões
-             const parentContainer = currentButton.closest('.buttons-container'); // Encontra o container pai dos botões
-             if (parentContainer) {
-                 parentContainer.querySelectorAll('.collapsible-group').forEach(otherGroup => {
+            const parentContainer = currentButton.closest('.buttons-container');
+            if (parentContainer) {
+                parentContainer.querySelectorAll('.collapsible-group').forEach(otherGroup => {
                     const otherButton = otherGroup.querySelector('.toggle-btn');
-                    const otherContent = otherGroup.querySelector('.collapsible-content');
-
-                    // Garante que estamos olhando para um grupo diferente do atual e que ele está ativo
                     if (otherButton && otherButton !== currentButton && otherButton.classList.contains('active')) {
                         otherButton.classList.remove('active');
-                        // otherButton.classList.remove('active-style'); // Garante remoção de estilo ativo do botão - CSS lida com isso agora
-                         otherButton.nextElementSibling.style.maxHeight = null; // Fecha o outro painel
-                         otherButton.nextElementSibling.style.paddingTop = null;
-                         otherButton.nextElementSibling.style.paddingBottom = null;
-                         otherButton.nextElementSibling.classList.remove('active'); // Garante remoção de classe ativa do conteúdo
+                        otherButton.nextElementSibling.style.maxHeight = null;
+                        otherButton.nextElementSibling.style.paddingTop = null;
+                        otherButton.nextElementSibling.style.paddingBottom = null;
+                        otherButton.nextElementSibling.classList.remove('active');
                     }
                 });
             }
 
-
-            // Alterna o estado (classe 'active') do botão e do conteúdo atual
             currentButton.classList.toggle('active');
             currentContent.classList.toggle('active');
 
-            // Anima a abertura ou fechamento
             if (isOpening) {
-                // Abre
-                currentContent.style.maxHeight = 'none'; // Permite cálculo da altura total
+                currentContent.style.maxHeight = 'none';
                 const scrollHeight = currentContent.scrollHeight;
-                currentContent.style.maxHeight = '0px'; // Volta para 0 antes da transição
-
+                currentContent.style.maxHeight = '0px';
                 requestAnimationFrame(() => {
-                    // Padding é definido via CSS quando .active está presente
-                    // currentContent.style.paddingTop = '15px';
-                    // currentContent.style.paddingBottom = '15px';
-                    currentContent.style.maxHeight = scrollHeight + 30 + "px"; // Altura + padding (padding é 15 + 15 = 30)
+                    currentContent.style.maxHeight = scrollHeight + 30 + "px"; // Altura + padding (15+15)
                 });
             } else {
-                // Fecha
-                currentContent.style.maxHeight = null; // Transição para 0 (definido no CSS ou via JS anterior)
-                // Padding é removido via CSS quando .active é removido
-                // currentContent.style.paddingTop = null;
-                // currentContent.style.paddingBottom = null;
+                currentContent.style.maxHeight = null;
             }
         });
     });
 
-    // Recalcula max-height ao redimensionar a janela para acordeões abertos
     window.addEventListener('resize', debounce(() => {
         document.querySelectorAll('.collapsible-content.active').forEach(activeContent => {
-            activeContent.style.transition = 'none'; // Desabilita transição temporariamente
-            activeContent.style.maxHeight = 'none'; // Remove limite para recalcular
+            activeContent.style.transition = 'none';
+            activeContent.style.maxHeight = 'none';
             const scrollHeight = activeContent.scrollHeight;
-            activeContent.style.maxHeight = scrollHeight + 30 + 'px'; // Reaplica com padding (15+15)
-            requestAnimationFrame(() => { // Reabilita transição
+            activeContent.style.maxHeight = scrollHeight + 30 + 'px';
+            requestAnimationFrame(() => {
                 activeContent.style.transition = '';
             });
         });
@@ -143,42 +133,38 @@ function setupCollapsible() {
 }
 
 
-// Função para configurar a pesquisa
+// Função para configurar a pesquisa - ADAPTADA PARA NOVA ESTRUTURA
 function setupSearch() {
-    // Seleciona os elementos da barra de pesquisa, assumindo que estão dentro de .sticky-search-container
-    // Se não encontrar dentro do sticky, não configura a pesquisa avançada
-    const searchInput = document.querySelector('.sticky-search-container .search-bar input');
-    const searchButton = document.querySelector('.sticky-search-container .search-bar button');
+    // Seleciona elementos dentro da nova estrutura
+    const searchInput = document.querySelector('.fixed-search-container .search-bar input');
+    const searchButton = document.querySelector('.fixed-search-container .search-bar button');
     const resultsContainer = document.getElementById('search-results-container');
-    const stickyContainer = document.querySelector('.sticky-search-container');
+    // O container principal agora é o wrapper ou o container fixo, dependendo do contexto necessário
+    const searchWrapper = document.querySelector('.fixed-search-container .search-bar-wrapper');
 
-    // Verifica se TODOS os elementos essenciais para a pesquisa avançada existem
-    if (!searchInput || !searchButton || !resultsContainer || !stickyContainer) {
-        // console.log("Estrutura de pesquisa avançada (sticky + resultados) não encontrada. Pesquisa global desativada nesta página.");
-        return; // Interrompe a configuração da pesquisa avançada se algum elemento faltar
+    // Verifica se os elementos essenciais existem
+    if (!searchInput || !searchButton || !resultsContainer || !searchWrapper) {
+        console.log("Estrutura de pesquisa fixa não encontrada completamente. Pesquisa desativada.");
+        return;
     }
 
-// Lista de arquivos HTML para pesquisar (caminhos RELATIVOS À RAIZ DO SITE)
-const filesToSearch = [
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Index.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Secretaria.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tesouraria.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Conselho.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/examedeordem.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/inssdigital.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tecnologia.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/ESA.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/ted.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/fiscalizacao.html',
+    // Lista de arquivos para pesquisar (sem alterações)
+    const filesToSearch = [
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Index.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Secretaria.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tesouraria.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Conselho.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/examedeordem.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/inssdigital.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tecnologia.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/ESA.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/ted.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/fiscalizacao.html',
+    ];
 
-];
-
-
-    // Função assíncrona para buscar e processar um único arquivo HTML
-    // O parâmetro agora é 'rootRelativePath' para clareza
+    // Função fetchAndSearchFile (sem alterações na lógica interna de busca)
     async function fetchAndSearchFile(rootRelativePath, searchTerm) {
         try {
-            // Usa o caminho completo (URL) diretamente no fetch
             const response = await fetch(rootRelativePath);
             if (!response.ok) {
                 console.error(`Erro ao buscar ${rootRelativePath}: ${response.statusText}`);
@@ -187,98 +173,74 @@ const filesToSearch = [
             const htmlText = await response.text();
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
-
-            // Elementos pesquisáveis: links .btn, botões .toggle-btn, links .sub-link, títulos .page-title
             const elementsToSearch = doc.querySelectorAll('a.btn, button.toggle-btn, a.sub-link, h2.page-title');
             const matches = [];
             const lowerSearchTerm = searchTerm.toLowerCase();
 
             elementsToSearch.forEach(element => {
-                const elementText = element.textContent.trim().replace(/^>\s*/, ''); // Limpa texto
+                const elementText = element.textContent.trim().replace(/^>\s*/, '');
                 const lowerElementText = elementText.toLowerCase();
-
                 if (lowerElementText.includes(lowerSearchTerm)) {
-                    let targetHref = rootRelativePath; // Link padrão é a página onde foi encontrado
-
-                    // Tenta resolver o href do link encontrado
+                    let targetHref = rootRelativePath;
                     if (element.tagName === 'A' && element.getAttribute('href')) {
                         const originalHref = element.getAttribute('href');
-                        // Usa a URL da página *onde o link foi encontrado* como base para resolver links relativos
                         const baseUrl = new URL(rootRelativePath, window.location.origin);
                         try {
                             const resolvedUrl = new URL(originalHref, baseUrl);
-                            // Garante que o targetHref seja relativo à raiz também
                             targetHref = resolvedUrl.href;
                         } catch (e) {
                              console.warn(`Não foi possível resolver o href: ${originalHref} na base ${baseUrl}. Usando fallback: ${rootRelativePath}`);
-                             targetHref = rootRelativePath; // Fallback para a página onde foi encontrado
+                             targetHref = rootRelativePath;
                         }
-
                     }
-                    // Para H2 e BUTTON, o targetHref permanece a página onde foi encontrado (rootRelativePath)
-
                     const linkResult = document.createElement('a');
-                    // Define o href do resultado da pesquisa como o caminho resolvido (ou fallback)
                     linkResult.href = targetHref;
                     linkResult.textContent = elementText;
                     linkResult.classList.add('search-result-item');
-                    // Mostra em qual arquivo o termo foi encontrado
                     linkResult.title = `Encontrado em: ${rootRelativePath}`;
-
-                    matches.push({
-                        file: rootRelativePath, // Arquivo original onde foi encontrado
-                        element: linkResult      // Elemento <a> criado para o resultado
-                    });
+                    matches.push({ file: rootRelativePath, element: linkResult });
                 }
             });
-
-            // Filtra duplicatas (mesmo link e texto) vindas do MESMO arquivo
             const uniqueMatches = Array.from(new Map(matches.map(item => [`${item.element.href}-${item.element.textContent}`, item])).values());
             return uniqueMatches;
-
         } catch (error) {
             console.error(`Erro ao processar o arquivo ${rootRelativePath}:`, error);
             return [];
         }
     }
 
-    // Função para exibir os resultados na tela (sem alterações)
+    // Função displayResults (sem alterações na lógica interna de exibição)
     function displayResults(results) {
         resultsContainer.innerHTML = '';
         resultsContainer.classList.remove('active');
         resultsContainer.style.maxHeight = null;
         resultsContainer.style.paddingTop = null;
         resultsContainer.style.paddingBottom = null;
-        resultsContainer.style.overflowY = 'hidden'; // Garante que não haja scrollbar inicialmente
+        resultsContainer.style.overflowY = 'hidden';
 
         if (results.length > 0) {
             results.forEach(result => {
                 resultsContainer.appendChild(result.element);
             });
             resultsContainer.classList.add('active');
-
             requestAnimationFrame(() => {
-                resultsContainer.style.maxHeight = 'none'; // Calcula altura necessária
+                resultsContainer.style.maxHeight = 'none';
                 const scrollHeight = resultsContainer.scrollHeight;
-                resultsContainer.style.maxHeight = '0px'; // Volta a 0
-
+                resultsContainer.style.maxHeight = '0px';
                 requestAnimationFrame(() => {
                     resultsContainer.style.paddingTop = '10px';
                     resultsContainer.style.paddingBottom = '10px';
                     const maxHeight = Math.min(scrollHeight + 20, 300); // Limita altura máxima (ex: 300px)
                     resultsContainer.style.maxHeight = maxHeight + "px";
-                    // Adiciona scroll vertical APENAS se o conteúdo exceder a altura máxima
                     resultsContainer.style.overflowY = (scrollHeight + 20 > maxHeight) ? 'auto' : 'hidden';
                 });
             });
         } else if (searchInput.value.trim().length >= 2) {
-            // Mostra "Nenhum resultado"
             const noResultsMsg = document.createElement('p');
             noResultsMsg.classList.add('no-results-message');
             noResultsMsg.textContent = 'Nenhum resultado encontrado.';
             resultsContainer.appendChild(noResultsMsg);
             resultsContainer.classList.add('active');
-
             requestAnimationFrame(() => {
                 resultsContainer.style.maxHeight = 'none';
                 const scrollHeight = resultsContainer.scrollHeight;
@@ -293,30 +255,20 @@ const filesToSearch = [
         }
     }
 
-    // Função principal de pesquisa (sem alterações na lógica principal)
+    // Função performSearch (sem alterações na lógica interna)
     async function performSearch() {
         const searchTerm = searchInput.value.trim();
-
         if (searchTerm.length < 2) {
-            // Limpa resultados se termo for muito curto
-            displayResults([]); // Chama displayResults com array vazio
+            displayResults([]);
             return;
         }
-
         let allResults = [];
-        // Mapeia os arquivos usando a função fetchAndSearchFile atualizada
         const searchPromises = filesToSearch.map(file => fetchAndSearchFile(file, searchTerm));
-
         try {
             const resultsArrays = await Promise.all(searchPromises);
             const combinedResults = resultsArrays.flat();
-
-            // Filtra duplicatas GERAIS (mesmo link/texto de arquivos diferentes)
-            // Usa o href e textContent do elemento <a> gerado como chave
             allResults = Array.from(new Map(combinedResults.map(item => [`${item.element.href}-${item.element.textContent}`, item])).values());
-
             displayResults(allResults);
-
         } catch (error) {
             console.error("Erro geral durante a pesquisa:", error);
             resultsContainer.innerHTML = '<p class="no-results-message">Ocorreu um erro durante a pesquisa.</p>';
@@ -335,40 +287,38 @@ const filesToSearch = [
         }
     }
 
-    // Adiciona listeners para input, botão e Enter (sem alterações)
+    // Adiciona listeners (sem alterações)
     const debouncedSearch = debounce(performSearch, 350);
     searchInput.addEventListener('input', debouncedSearch);
     searchButton.addEventListener('click', performSearch);
     searchInput.addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
-            event.preventDefault(); // Impede envio de formulário, se houver
+            event.preventDefault();
             performSearch();
         }
     });
-
-    // Limpa resultados se o campo for limpo (sem alterações)
      searchInput.addEventListener('input', function() {
         if (searchInput.value.trim() === '') {
-           displayResults([]); // Chama displayResults com array vazio
+           displayResults([]);
         }
     });
 }
 
-// Função para fechar o container de resultados se clicar fora (sem alterações)
+// Função para fechar o container de resultados se clicar fora - ADAPTADA
 function handleClickOutside(event) {
     const resultsContainer = document.getElementById('search-results-container');
-    const stickyContainer = document.querySelector('.sticky-search-container');
+    // Verifica se o clique foi fora do WRAPPER da barra de pesquisa (que contém a barra e os resultados)
+    const searchWrapper = document.querySelector('.fixed-search-container .search-bar-wrapper');
 
-    // Só executa se a estrutura sticky existir e os resultados estiverem ativos
-    if (stickyContainer && resultsContainer && resultsContainer.classList.contains('active')) {
-        // Verifica se o clique foi FORA do container sticky (que inclui a barra e os resultados)
-        if (!stickyContainer.contains(event.target)) {
+    // Só executa se o wrapper existir e os resultados estiverem ativos
+    if (searchWrapper && resultsContainer && resultsContainer.classList.contains('active')) {
+        // Verifica se o clique foi FORA do searchWrapper
+        if (!searchWrapper.contains(event.target)) {
             resultsContainer.classList.remove('active');
             resultsContainer.style.maxHeight = null; // Anima fechamento
             resultsContainer.style.paddingTop = null;
             resultsContainer.style.paddingBottom = null;
-            // Garante que scrollbar suma ao fechar
-             resultsContainer.style.overflowY = 'hidden';
+            resultsContainer.style.overflowY = 'hidden'; // Garante que scrollbar suma ao fechar
         }
     }
 }

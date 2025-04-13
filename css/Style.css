@@ -7,6 +7,9 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh; /* Garante que o body ocupe toda a altura da viewport */
+    /* Padding top inicial para evitar que o conteúdo comece atrás do header fixo */
+    /* Será ajustado pelo JS */
+    padding-top: 80px; /* Um valor inicial seguro, JS ajustará */
 }
 
 /* ESTILOS DO CABEÇALHO */
@@ -15,8 +18,10 @@ body {
     background-color: rgb(57, 73, 171); /* Cor do cabeçalho */
     padding: 5px 0; /* Padding vertical reduzido */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra opcional */
-    position: relative; /* Garante que fique acima se necessário, mas não é fixo */
-    z-index: 101; /* Acima do conteúdo e da barra de pesquisa */
+    position: fixed; /* Cabeçalho agora é fixo no topo */
+    top: 0;
+    left: 0;
+    z-index: 1010; /* Z-index alto para ficar acima de outros elementos fixos/absolutos */
 }
 
 /*  TEXTOS DO HEADER BRANCOS E MESMO TAMANHO DE FONTE */
@@ -32,6 +37,8 @@ body {
     padding: 5px 15px; /* Padding horizontal */
     box-sizing: border-box;
     justify-content: flex-start; /* Alinha à esquerda */
+    max-width: 1200px; /* Limita largura do conteúdo do header (opcional) */
+    margin: 0 auto; /* Centraliza conteúdo do header */
 }
 
 .header-image {
@@ -75,54 +82,44 @@ body {
 }
 /* FIM DOS ESTILOS DO CABEÇALHO */
 
-
-/* CONTAINER DO CONTEÚDO PRINCIPAL */
-.content-wrap {
-    flex: 1; /* Ocupa o espaço restante verticalmente */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centraliza o conteúdo horizontalmente */
-    width: 100%;
-    padding-bottom: 70px; /* Garante espaço antes do rodapé (aumentado ligeiramente) */
-    /* padding-top será ajustado pelo JS para acomodar a barra de pesquisa sticky */
-    position: relative; /* Necessário para o contexto do sticky */
-    box-sizing: border-box;
+/* CONTAINER FIXO INVISÍVEL PARA A BARRA DE PESQUISA */
+.fixed-search-container {
+    position: fixed; /* Fixo na tela */
+    /* top será definido pelo JS para ficar 15px abaixo do header */
+    left: 0; /* Ocupa toda a largura */
+    right: 0; /* Ocupa toda a largura */
+    z-index: 1000; /* Acima do conteúdo, abaixo do header */
+    background-color: transparent; /* Container invisível */
+    padding: 0; /* Sem padding interno */
+    margin: 0; /* Sem margens */
+    box-shadow: none; /* Sem sombra no container */
+    /* Transição para suavizar a mudança de 'top' se houver */
+    transition: top 0.2s ease-out;
+    pointer-events: none; /* Permite cliques através deste container, exceto nos filhos */
 }
 
-/* CONTAINER STICKY PARA BARRA DE PESQUISA E RESULTADOS */
-.sticky-search-container {
-    position: sticky; /* Faz o container ficar fixo no topo do .content-wrap */
-    top: 0; /* Cola no topo do .content-wrap */
-    width: 100%; /* Ocupa a largura total do .content-wrap */
-    max-width: 800px; /* Limita a largura máxima */
-    margin-left: auto; /* Centraliza se a tela for maior que max-width */
-    margin-right: auto; /* Centraliza se a tela for maior que max-width */
-    background-color: #f0f0f0; /* Fundo para esconder conteúdo rolando atrás */
-    z-index: 100; /* Abaixo do cabeçalho, acima do conteúdo normal */
-    padding: 10px 0 10px 0; /* Espaçamento interno (vertical) - TOPO AJUSTADO PARA 10px */
-    box-sizing: border-box; /* Inclui padding na largura/altura */
-    /* Sombra para destacar um pouco (opcional) */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    /* Garante que esteja centralizado dentro do content-wrap */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* WRAPPER PARA CENTRALIZAR A BARRA DE PESQUISA DENTRO DO CONTAINER FIXO */
+.search-bar-wrapper {
+    width: 95%; /* Largura desejada da área de pesquisa */
+    max-width: 800px; /* Largura máxima */
+    margin: 0 auto; /* Centraliza o wrapper */
+    position: relative; /* Necessário para posicionar os resultados absolutamente */
+    pointer-events: auto; /* Reativa ponteiro para a barra e resultados */
 }
 
-
-/* BARRA DE PESQUISA */
+/* BARRA DE PESQUISA (VISÍVEL) */
 .search-bar {
-    width: 95%; /* Largura relativa ao sticky-container */
-    /* max-width já está no container pai */
+    width: 100%; /* Ocupa toda a largura do wrapper */
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra aplicada aqui */
     padding: 8px;
-    /* margin-top removido, o padding do pai controla o espaço */
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    border: 2px solid #0267a6; /* Adiciona borda azul */
+    border: 2px solid #0267a6; /* Borda azul */
+    margin-top: 10px; /* Espaço entre o topo do container fixo (alinhado com header+15px) e a barra */
+    margin-bottom: 10px; /* Espaço antes dos resultados */
 }
 
 .search-bar input {
@@ -145,16 +142,16 @@ body {
 
 /* CONTAINER DE RESULTADOS DA PESQUISA */
 #search-results-container {
-    position: absolute; /* Posição absoluta relativa ao sticky-container */
-    top: 100%; /* Começa logo abaixo do sticky-container */
-    left: 2.5%; /* Alinha com a barra de pesquisa (considerando width 95%) */
-    right: 2.5%; /* Alinha com a barra de pesquisa */
-    /* width: 95%; Não precisa, left/right cuidam disso */
-    max-width: inherit; /* Herda max-width do pai */
+    position: absolute; /* Posição absoluta relativa ao search-bar-wrapper */
+    top: 100%; /* Começa logo abaixo do search-bar-wrapper (considerando a search-bar dentro dele) */
+    left: 0; /* Alinha com a esquerda do wrapper */
+    right: 0; /* Alinha com a direita do wrapper */
+    width: 100%; /* Ocupa a largura do wrapper */
+    max-width: inherit; /* Não ultrapassa a largura do wrapper */
     background-color: white;
     border-radius: 0 0 8px 8px; /* Cantos arredondados apenas embaixo */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Sombra mais pronunciada */
-    z-index: 99; /* Logo abaixo da barra de pesquisa, mas acima do conteúdo */
+    z-index: 999; /* Abaixo da barra de pesquisa, mas acima do conteúdo da página */
     max-height: 0; /* Começa fechado */
     overflow: hidden; /* Esconde conteúdo que excede max-height */
     transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out;
@@ -166,13 +163,13 @@ body {
     padding-left: 15px; /* Padding horizontal fixo */
     padding-right: 15px; /* Padding horizontal fixo */
     border: 1px solid #ccc; /* Borda leve em todo o container */
-    border-top: none; /* Remove a borda superior, pois a search-bar já tem */
+    border-top: none; /* Remove a borda superior */
+    margin-top: -10px; /* Puxa para cima para conectar visualmente com a search-bar (compensa o margin-bottom da search-bar)*/
 }
 
 /* Estilo para quando o container de resultados está ativo/visível */
 #search-results-container.active {
     /* max-height e padding-top/bottom são definidos via JS para animação */
-    /* border-top: 1px solid #eee; -- Removido, a borda agora é contínua */
 }
 
 /* Estilo para cada item de resultado da pesquisa */
@@ -201,16 +198,33 @@ body {
     font-style: italic;
 }
 
+
+/* CONTAINER DO CONTEÚDO PRINCIPAL */
+.content-wrap {
+    flex: 1; /* Ocupa o espaço restante verticalmente */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza o conteúdo horizontalmente */
+    width: 100%;
+    padding-bottom: 70px; /* Garante espaço antes do rodapé (aumentado ligeiramente) */
+    /* padding-top será ajustado pelo JS para acomodar o header E a barra de pesquisa fixa */
+    box-sizing: border-box;
+    position: relative; /* Contexto para elementos internos se necessário */
+    /* Margem superior para garantir que o conteúdo comece ABAIXO do header e search bar */
+    /* Será ajustado pelo JS */
+    margin-top: 150px; /* Valor inicial seguro, JS ajustará */
+}
+
 /* CONTAINER DE BOTÕES PRINCIPAL (se existir em outras páginas) */
 .buttons-container {
     display: flex;
     flex-wrap: wrap; /* Permite que os itens quebrem linha */
     align-items: flex-start; /* Alinha itens ao topo */
     gap: 20px; /* Espaço entre os botões/grupos */
-    margin-top: 20px; /* Espaço abaixo da área de pesquisa */
+    /* margin-top removido, o espaço é controlado pelo margin-top do content-wrap */
     width: 80%; /* Largura do container de botões */
     max-width: 800px; /* Mantém a mesma largura máxima da pesquisa */
-    /* Este container será posicionado abaixo do sticky-search-container devido ao padding-top do .content-wrap */
+    padding-top: 20px; /* Adiciona um espaço no topo do container de botões */
 }
 
 /* Estilos padrão para botões e grupos colapsáveis */
@@ -385,9 +399,11 @@ body {
     text-align: center;
     padding: 15px 0;
     font-size: 14px;
-    position: sticky; /* Torna-o sticky */
-    bottom: 0; /* Cola na parte inferior */
-    z-index: 102; /* Garante que fique acima de outros elementos */
+    /* Rodapé não é mais sticky, pois o conteúdo principal rola */
+    /* position: sticky; */
+    /* bottom: 0; */
+    z-index: 102; /* Garante que fique acima de outros elementos caso haja sobreposição */
+    margin-top: auto; /* Empurra o rodapé para o final se o conteúdo for curto */
 }
 /* FIM DOS ESTILOS DO RODAPÉ */
 
@@ -395,8 +411,13 @@ body {
 
 /* Telas Médias e Tablets (ex: até 768px) */
 @media (max-width: 768px) {
-     .sticky-search-container, /* Container sticky agora tem max-width menor */
-     .buttons-container { /* Container de botões acompanha */
+    /* Ajusta o wrapper da barra de pesquisa */
+    .search-bar-wrapper {
+        width: 90%;
+    }
+
+    /* Ajusta container de botões */
+     .buttons-container {
          width: 90%; /* Mais largura em telas médias */
          max-width: none; /* Remove max-width para usar a porcentagem */
      }
@@ -410,11 +431,6 @@ body {
     }
     .header-content {
          padding: 5px 10px; /* Menos padding no cabeçalho */
-    }
-    /* Ajusta o posicionamento do container de resultados */
-     #search-results-container {
-        left: 5%; /* 100% - 90% = 10% / 2 = 5% */
-        right: 5%;
     }
 
      /* Ajusta o clipper do iframe para telas menores se necessário */
@@ -437,7 +453,12 @@ body {
          font-size: 14px; /* Reduz o tamanho da fonte base */
      }
 
-     .sticky-search-container,
+     /* Ajusta o wrapper da barra de pesquisa */
+     .search-bar-wrapper {
+         width: 95%; /* Quase largura total */
+     }
+
+     /* Ajusta container de botões */
      .buttons-container {
          width: 95%; /* Quase largura total */
          gap: 15px; /* Reduz espaço entre botões */
@@ -456,11 +477,11 @@ body {
 
      /* Ajusta logo e texto do cabeçalho */
      .logo-inner-average {
-        max-height: 65px;
-        max-width: 80px;
+        max-height: 60px; /* Pouco menor */
+        max-width: 70px; /* Pouco menor */
      }
      .home-button {
-        font-size: 14px;
+        font-size: 13px; /* Pouco menor */
         padding: 3px 6px;
      }
      .header-content {
@@ -476,11 +497,7 @@ body {
          font-size: 16px;
          padding: 6px 10px;
      }
-     /* Ajusta o posicionamento do container de resultados */
-      #search-results-container {
-        left: 2.5%; /* 100% - 95% = 5% / 2 = 2.5% */
-        right: 2.5%;
-     }
+
      /* Ajusta padding dos itens de resultado */
      .search-result-item {
          padding: 8px 12px;

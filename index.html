@@ -11,6 +11,7 @@
        </head>
 <body>
 
+    <!-- O Cabeçalho permanece como está -->
     <div class="page-header">
         <div class="header-content">
             <img src="./Images/CabecalhoOAB.png" alt="Cabeçalho OAB" class="header-image logo-inner-average">
@@ -20,10 +21,10 @@
         </div>
     </div>
 
-    <!-- Divisão pro conteúdo principal pra rodapé ficar lá embaixo -->
-    <div class="content-wrap">
-        <!-- Container para a barra de pesquisa (fixa/sticky) e resultados -->
-        <div class="sticky-search-container">
+    <!-- Container para a barra de pesquisa (agora fixa/fixed) e resultados -->
+    <!-- Este container externo agora é transparente e serve apenas para posicionamento fixo -->
+    <div class="fixed-search-container">
+        <div class="search-bar-wrapper">  <!-- {/* Adicionado um wrapper para centralizar a barra */} -->
             <div class="search-bar">
                 <input type="text" placeholder="Pesquisar ...">
                 <button>🔎</button>
@@ -33,7 +34,11 @@
                 <!-- Os resultados da pesquisa serão inseridos aqui pelo JavaScript -->
             </div>
         </div>
+    </div>
 
+    <!-- Divisão pro conteúdo principal pra rodapé ficar lá embaixo -->
+    <!-- O padding-top será ajustado dinamicamente pelo JS -->
+    <div class="content-wrap">
         <!-- Container de botões principal (este será empurrado para baixo pelo padding) -->
         <div class="buttons-container">
             <a href="./Setores/Secretaria.html" class="btn">Secretaria</a>
