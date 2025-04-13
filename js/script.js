@@ -91,7 +91,7 @@ function setupCollapsible() {
                     // Garante que estamos olhando para um grupo diferente do atual e que ele está ativo
                     if (otherButton && otherButton !== currentButton && otherButton.classList.contains('active')) {
                         otherButton.classList.remove('active');
-                        otherButton.classList.remove('active-style'); // Garante remoção de estilo ativo do botão
+                        // otherButton.classList.remove('active-style'); // Garante remoção de estilo ativo do botão - CSS lida com isso agora
                          otherButton.nextElementSibling.style.maxHeight = null; // Fecha o outro painel
                          otherButton.nextElementSibling.style.paddingTop = null;
                          otherButton.nextElementSibling.style.paddingBottom = null;
@@ -113,15 +113,17 @@ function setupCollapsible() {
                 currentContent.style.maxHeight = '0px'; // Volta para 0 antes da transição
 
                 requestAnimationFrame(() => {
-                    currentContent.style.paddingTop = '15px';
-                    currentContent.style.paddingBottom = '15px';
-                    currentContent.style.maxHeight = scrollHeight + 30 + "px"; // Altura + padding
+                    // Padding é definido via CSS quando .active está presente
+                    // currentContent.style.paddingTop = '15px';
+                    // currentContent.style.paddingBottom = '15px';
+                    currentContent.style.maxHeight = scrollHeight + 30 + "px"; // Altura + padding (padding é 15 + 15 = 30)
                 });
             } else {
                 // Fecha
                 currentContent.style.maxHeight = null; // Transição para 0 (definido no CSS ou via JS anterior)
-                currentContent.style.paddingTop = null;
-                currentContent.style.paddingBottom = null;
+                // Padding é removido via CSS quando .active é removido
+                // currentContent.style.paddingTop = null;
+                // currentContent.style.paddingBottom = null;
             }
         });
     });
@@ -132,7 +134,7 @@ function setupCollapsible() {
             activeContent.style.transition = 'none'; // Desabilita transição temporariamente
             activeContent.style.maxHeight = 'none'; // Remove limite para recalcular
             const scrollHeight = activeContent.scrollHeight;
-            activeContent.style.maxHeight = scrollHeight + 30 + 'px'; // Reaplica com padding
+            activeContent.style.maxHeight = scrollHeight + 30 + 'px'; // Reaplica com padding (15+15)
             requestAnimationFrame(() => { // Reabilita transição
                 activeContent.style.transition = '';
             });
@@ -158,16 +160,17 @@ function setupSearch() {
 
 // Lista de arquivos HTML para pesquisar (caminhos RELATIVOS À RAIZ DO SITE)
 const filesToSearch = [
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Main.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Index.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Secretaria.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tesouraria.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Protocolos.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/comissoes.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Conselho.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/examedeordem.html',
     'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/inssdigital.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/outros.html',
-    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Processos.html'
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tecnologia.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/ESA.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/ted.html',
+    'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/fiscalizacao.html',
+
 ];
 
 
@@ -205,7 +208,7 @@ const filesToSearch = [
                         try {
                             const resolvedUrl = new URL(originalHref, baseUrl);
                             // Garante que o targetHref seja relativo à raiz também
-                            targetHref = resolvedUrl.pathname + resolvedUrl.search + resolvedUrl.hash;
+                            targetHref = resolvedUrl.href;
                         } catch (e) {
                              console.warn(`Não foi possível resolver o href: ${originalHref} na base ${baseUrl}. Usando fallback: ${rootRelativePath}`);
                              targetHref = rootRelativePath; // Fallback para a página onde foi encontrado

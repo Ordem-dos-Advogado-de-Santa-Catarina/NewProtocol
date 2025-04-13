@@ -83,7 +83,7 @@ body {
     flex-direction: column;
     align-items: center; /* Centraliza o conteúdo horizontalmente */
     width: 100%;
-    padding-bottom: 50px; /* Garante espaço antes do rodapé */
+    padding-bottom: 70px; /* Garante espaço antes do rodapé (aumentado ligeiramente) */
     /* padding-top será ajustado pelo JS para acomodar a barra de pesquisa sticky */
     position: relative; /* Necessário para o contexto do sticky */
     box-sizing: border-box;
@@ -122,7 +122,7 @@ body {
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    border: 1px solid #3949AB; /* Adiciona borda azul */
+    border: 2px solid #0267a6; /* Adiciona borda azul */
 }
 
 .search-bar input {
@@ -201,7 +201,7 @@ body {
     font-style: italic;
 }
 
-/* CONTAINER DE BOTÕES PRINCIPAL */
+/* CONTAINER DE BOTÕES PRINCIPAL (se existir em outras páginas) */
 .buttons-container {
     display: flex;
     flex-wrap: wrap; /* Permite que os itens quebrem linha */
@@ -232,7 +232,9 @@ body {
     border-radius: 8px;
     font-weight: bold;
     transition: background-color 0.3s ease;
-    border: none;
+    border: none; /* Remove a borda padrão */
+    outline: 2px solid #0267a6; /* Adiciona outline azul, como nos colapsáveis */
+    outline-offset: -2px; /* Ajusta o outline para ficar "dentro", similar à borda */
     align-items: center; /* Centraliza texto verticalmente */
     justify-content: center; /* Centraliza texto horizontalmente */
     min-height: 50px; /* Garante área mínima clicável */
@@ -246,11 +248,12 @@ body {
 .collapsible-group {
     flex: 1 1 100%; /* Largura total, uma linha */
     flex-direction: column; /* Empilha botão e conteúdo */
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden; /* Essencial para conter conteúdo e cantos */
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
+    border: 2px solid #0267a6; /* Adiciona a linha azul interna */
 }
 
 .toggle-btn {
@@ -274,8 +277,14 @@ body {
     z-index: 1; /* Garante que o botão fique clicável */
 }
 
+/* Estilos específicos para o botão quando está ativo (colapsado aberto) */
+.toggle-btn.active {
+    border-bottom-left-radius: 0; /* Remove o raio do canto inferior esquerdo */
+    border-bottom-right-radius: 0; /* Remove o raio do canto inferior direito */
+}
+
 .toggle-btn:hover {
-    background-color: #004a7d;
+    background-color: #0267a6;
 }
 
 .toggle-btn::after {
@@ -326,6 +335,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    outline: 2px solid #0267a6; /* Adiciona outline azul aos sub-botões */
+    outline-offset: -2px; /* Ajusta para dentro */
 }
 
 .sub-link:hover {
@@ -334,15 +345,49 @@ body {
 }
 /* FIM DOS ESTILOS COLAPSÁVEIS */
 
+
+/* NOVOS ESTILOS PARA O IFRAME RECORTADO */
+.iframe-clipper {
+    width: 375px; /* Largura final desejada (iPhone X) */
+    height: 150px; /* Altura estimada para cobrir apenas a área de login (AJUSTE CONFORME NECESSÁRIO) */
+    border: 1px solid #ccc;
+    overflow: hidden; /* Esconde o conteúdo do iframe que transborda */
+    margin: 20px auto; /* Centraliza e adiciona espaço acima/abaixo */
+    position: relative; /* Necessário para que o iframe absoluto se posicione corretamente */
+    box-sizing: border-box;
+}
+
+#mobileFrame {
+    /* Define um tamanho grande o suficiente para o conteúdo interno não quebrar estranhamente */
+    /* E para garantir que a área de login esteja presente para ser 'movida' para a visão */
+    width: 1024px; /* Largura estimada da página original ou maior */
+    height: 812px; /* Altura original ou maior */
+    border: none; /* Remove a borda do iframe */
+    /* Move o iframe para a esquerda e para cima */
+    /* Estes valores são ESTIMATIVAS e precisarão de AJUSTE FINO */
+    /* Inspecione o elemento no navegador e ajuste translateX e translateY até a área de login ficar visível */
+    transform: translate(-560px, -35px); /* Valor X negativo move para esquerda, Valor Y negativo move para cima */
+    /* Alternativa (menos recomendada que transform): */
+    /* position: absolute; */
+    /* top: -35px; */
+    /* left: -560px; */
+    transform-origin: top left; /* Garante que a transformação comece do canto superior esquerdo */
+}
+
+/* FIM DOS NOVOS ESTILOS PARA O IFRAME */
+
+
 /* ESTILOS DO RODAPÉ */
 .page-footer {
     width: 100%;
-    margin-top: auto; /* Empurra o rodapé para o final da página */
     background-color: rgb(57, 73, 171); /* Mesma cor do cabeçalho */
     color: #ffffff; /* Texto branco */
     text-align: center;
     padding: 15px 0;
     font-size: 14px;
+    position: sticky; /* Torna-o sticky */
+    bottom: 0; /* Cola na parte inferior */
+    z-index: 102; /* Garante que fique acima de outros elementos */
 }
 /* FIM DOS ESTILOS DO RODAPÉ */
 
@@ -371,11 +416,27 @@ body {
         left: 5%; /* 100% - 90% = 10% / 2 = 5% */
         right: 5%;
     }
+
+     /* Ajusta o clipper do iframe para telas menores se necessário */
+     /* Neste caso, talvez manter 375px fixo seja o desejado para simular o mobile */
+     /* Mas se precisar ajustar: */
+     /*
+     .iframe-clipper {
+         width: 90%;
+         max-width: 375px; // Limita ao tamanho do iPhone X
+     }
+     */
 }
 
 
 /* Telas Pequenas (Mobile, ex: até 600px) */
 @media (max-width: 600px) {
+     /* Ajusta a escala para mobile */
+     html {
+         /* Reduz o tamanho base da fonte para evitar zoom excessivo */
+         font-size: 14px; /* Reduz o tamanho da fonte base */
+     }
+
      .sticky-search-container,
      .buttons-container {
          width: 95%; /* Quase largura total */
@@ -429,4 +490,13 @@ body {
          padding: 12px;
          font-size: 14px;
      }
+
+     /* Ajusta o clipper do iframe para telas menores se necessário */
+     /* Novamente, manter 375px pode ser intencional */
+     /*
+     .iframe-clipper {
+         width: 95%;
+         max-width: 375px;
+     }
+    */
 }
