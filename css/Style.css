@@ -7,8 +7,6 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh; /* Garante que o body ocupe toda a altura da viewport */
-    /* Adiciona padding-top para evitar que o header cubra o topo do body inicialmente */
-    /* O JS ajustará o padding-top do content-wrap para o conteúdo */
 }
 
 /* ESTILOS DO CABEÇALHO */
@@ -17,8 +15,8 @@ body {
     background-color: rgb(57, 73, 171); /* Cor do cabeçalho */
     padding: 5px 0; /* Padding vertical reduzido */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra opcional */
-    position: relative; /* Necessário para calcular altura e para z-index */
-    z-index: 101; /* Acima do conteúdo e da barra de pesquisa fixa */
+    position: relative; /* Mantém no fluxo normal inicialmente */
+    z-index: 101; /* Acima da barra de pesquisa quando ela for sticky */
 }
 
 /*  TEXTOS DO HEADER BRANCOS E MESMO TAMANHO DE FONTE */
@@ -77,31 +75,34 @@ body {
 }
 /* FIM DOS ESTILOS DO CABEÇALHO */
 
-/* CONTAINER DE PESQUISA FIXO */
-.fixed-search-container {
-    position: fixed; /* Posição fixa relativa à viewport */
-    top: 0; /* Será ajustado pelo JS para ficar abaixo do header */
-    left: 0; /* Alinha à esquerda da viewport */
-    right: 0; /* Alinha à direita da viewport (garante largura total) */
-    width: 100%; /* Garante largura total */
-    z-index: 100; /* Abaixo do header, acima do conteúdo normal */
-    background: none; /* Torna o container invisível */
-    box-shadow: none; /* Remove qualquer sombra do container */
-    padding: 0; /* Remove qualquer padding do container */
-    pointer-events: none; /* Permite cliques "através" do container invisível */
-    /* Transição suave para a posição top (opcional) */
-    transition: top 0.3s ease-out;
-    box-sizing: border-box;
-}
 
-/* BARRA DE PESQUISA (DENTRO DO CONTAINER FIXO) */
-.search-bar {
-    /* Centraliza a barra dentro do container fixo e aplica largura máxima */
-    width: 95%; /* Largura da barra */
-    max-width: 800px; /* Largura máxima igual aos botões */
+/* CONTAINER STICKY PARA BARRA DE PESQUISA E RESULTADOS */
+/* Agora é um filho direto do body */
+.sticky-search-container {
+    /* --- NOVAS REGRAS PARA STICKY --- */
+    position: sticky; /* Faz o container ficar fixo no topo da viewport após rolar o header */
+    top: 20px; /* Distância do topo da viewport QUANDO estiver sticky (mesmo gap dos botões) */
+    margin-top: 20px; /* Distância ABAIXO do header (gap inicial) */
+    margin-bottom: 20px; /* Distância ACIMA do content-wrap (gap) */
+    /* --- FIM DAS NOVAS REGRAS --- */
+
+    width: 80%; /* Largura igual ao buttons-container */
+    max-width: 800px; /* Limita a largura máxima */
     margin-left: auto; /* Centraliza */
     margin-right: auto; /* Centraliza */
-    /* Mantém o estilo visual da barra */
+    background-color: #f0f0f0; /* Fundo para esconder conteúdo rolando atrás */
+    z-index: 100; /* Abaixo do cabeçalho, acima do conteúdo normal */
+    padding: 10px 0 10px 0; /* Espaçamento interno vertical */
+    box-sizing: border-box; /* Inclui padding na largura/altura */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Sombra leve */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* BARRA DE PESQUISA (dentro do sticky-container) */
+.search-bar {
+    width: 95%; /* Largura relativa ao sticky-container */
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -110,9 +111,6 @@ body {
     align-items: center;
     box-sizing: border-box;
     border: 2px solid #0267a6; /* Borda azul */
-    pointer-events: auto; /* Habilita cliques/interação na barra de pesquisa */
-    position: relative; /* Necessário para posicionar os resultados absolutamente */
-    /* O espaçamento vertical será controlado pelo 'top' do container pai (.fixed-search-container) e pelo padding-top do .content-wrap */
 }
 
 .search-bar input {
@@ -133,18 +131,17 @@ body {
     padding: 8px 12px;
 }
 
-/* CONTAINER DE RESULTADOS DA PESQUISA (AGORA RELATIVO À search-bar) */
+/* CONTAINER DE RESULTADOS DA PESQUISA (dentro do sticky-container) */
 #search-results-container {
-    position: absolute; /* Posição absoluta relativa à .search-bar */
-    top: 100%; /* Começa logo abaixo da .search-bar */
-    left: 0; /* Alinha com a esquerda da .search-bar */
-    right: 0; /* Alinha com a direita da .search-bar */
-    width: 100%; /* Ocupa a largura da .search-bar */
-    /* max-width herdado implicitamente pelo pai .search-bar */
+    position: absolute; /* Posição absoluta relativa ao sticky-container */
+    top: 100%; /* Começa logo abaixo da search-bar (ajustado pelo padding do pai) */
+    left: 2.5%; /* Alinha com a barra de pesquisa (100% - 95% = 5% / 2) */
+    right: 2.5%; /* Alinha com a barra de pesquisa */
+    max-width: inherit; /* Herda max-width do pai */
     background-color: white;
     border-radius: 0 0 8px 8px; /* Cantos arredondados apenas embaixo */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Sombra mais pronunciada */
-    z-index: 99; /* Logo abaixo da barra de pesquisa */
+    z-index: 99; /* Abaixo da barra de pesquisa, mas acima do conteúdo */
     max-height: 0; /* Começa fechado */
     overflow: hidden; /* Esconde conteúdo que excede max-height */
     transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out;
@@ -156,15 +153,12 @@ body {
     padding-right: 15px;
     border: 1px solid #ccc;
     border-top: none;
-    pointer-events: auto; /* Permite interação com os resultados */
 }
 
-/* Estilo para quando o container de resultados está ativo/visível */
 #search-results-container.active {
-    /* max-height e padding-top/bottom são definidos via JS para animação */
+    /* JS controla max-height e padding vertical */
 }
 
-/* Estilo para cada item de resultado da pesquisa */
 .search-result-item {
     display: block;
     padding: 10px 15px;
@@ -182,7 +176,6 @@ body {
     color: #004a7d;
 }
 
-/* Mensagem de "Nenhum resultado" */
 .no-results-message {
     padding: 15px;
     text-align: center;
@@ -191,44 +184,40 @@ body {
 }
 
 
-/* CONTAINER DO CONTEÚDO PRINCIPAL */
+/* CONTAINER DO CONTEÚDO PRINCIPAL (Botões, etc.) */
 .content-wrap {
     flex: 1; /* Ocupa o espaço restante verticalmente */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centraliza o conteúdo horizontalmente */
+    display: flex; /* Alterado para flex para centralizar o container de botões */
+    flex-direction: column; /* Mantém a direção */
+    align-items: center; /* Centraliza o .buttons-container horizontalmente */
     width: 100%;
-    /* padding-top será ajustado pelo JS para acomodar header e search bar fixos */
-    padding-bottom: 70px; /* Garante espaço antes do rodapé (ajustado se necessário) */
-    position: relative; /* Necessário para contexto */
+    /* margin-top removido daqui, o margin-bottom do sticky-search-container controla o espaço */
+    padding-bottom: 70px; /* Garante espaço antes do rodapé */
+    /* padding-top não é mais necessário para ajustar a barra de pesquisa */
     box-sizing: border-box;
-    /* Garante que o conteúdo role por baixo da barra de pesquisa fixa */
-    z-index: 1;
 }
 
-
-/* CONTAINER DE BOTÕES PRINCIPAL */
+/* CONTAINER DE BOTÕES PRINCIPAL (dentro do content-wrap) */
 .buttons-container {
     display: flex;
-    flex-wrap: wrap; /* Permite que os itens quebrem linha */
-    align-items: flex-start; /* Alinha itens ao topo */
-    gap: 20px; /* Espaço entre os botões/grupos */
-    /* margin-top removido, o padding-top do .content-wrap controla o espaço inicial */
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 20px; /* Espaço entre os botões/grupos (este é o gap que definimos para o sticky top/margin) */
+    /* margin-top removido, o espaçamento agora vem do margin-bottom do sticky-search */
     width: 80%; /* Largura do container de botões */
-    max-width: 800px; /* Mantém a mesma largura máxima da pesquisa */
-    /* Este container será posicionado abaixo da barra fixa devido ao padding-top do .content-wrap */
+    max-width: 800px; /* Mesma largura máxima da pesquisa */
+    /* Não precisa mais ser empurrado para baixo, pois está no fluxo normal após o sticky-search */
 }
 
-/* Estilos padrão para botões e grupos colapsáveis */
+/* Estilos padrão para botões e grupos colapsáveis (sem alterações) */
 .btn,
 .collapsible-group {
     box-sizing: border-box;
     display: flex;
 }
 
-/* Estilos específicos para botões normais (links 'a.btn') */
 .btn {
-    flex: 1 1 calc(50% - 10px); /* Duas colunas por padrão (menos metade do gap) */
+    flex: 1 1 calc(50% - 10px);
     padding: 15px;
     text-align: center;
     background-color: #0267a6;
@@ -238,28 +227,27 @@ body {
     border-radius: 8px;
     font-weight: bold;
     transition: background-color 0.3s ease;
-    border: none; /* Remove a borda padrão */
-    outline: 2px solid #0267a6; /* Adiciona outline azul, como nos colapsáveis */
-    outline-offset: -2px; /* Ajusta o outline para ficar "dentro", similar à borda */
-    align-items: center; /* Centraliza texto verticalmente */
-    justify-content: center; /* Centraliza texto horizontalmente */
-    min-height: 50px; /* Garante área mínima clicável */
+    border: none;
+    outline: 2px solid #0267a6;
+    outline-offset: -2px;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
 }
 
 .btn:hover {
     background-color: #004a7d;
 }
 
-/* ESTILOS COLAPSÁVEIS (se usados em outras páginas) */
 .collapsible-group {
-    flex: 1 1 100%; /* Largura total, uma linha */
-    flex-direction: column; /* Empilha botão e conteúdo */
+    flex: 1 1 100%;
+    flex-direction: column;
     border-radius: 10px;
-    overflow: hidden; /* Essencial para conter conteúdo e cantos */
+    overflow: hidden;
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
-    border: 2px solid #0267a6; /* Adiciona a linha azul interna */
+    border: 2px solid #0267a6;
 }
 
 .toggle-btn {
@@ -277,24 +265,23 @@ body {
     border: none;
     cursor: pointer;
     box-sizing: border-box;
-    border-radius: 8px; /* Raio inicial */
-    min-height: 50px; /* Altura mínima igual ao .btn */
+    border-radius: 8px;
+    min-height: 50px;
     position: relative;
-    z-index: 1; /* Garante que o botão fique clicável */
+    z-index: 1;
 }
 
-/* Estilos específicos para o botão quando está ativo (colapsado aberto) */
 .toggle-btn.active {
-    border-bottom-left-radius: 0; /* Remove o raio do canto inferior esquerdo */
-    border-bottom-right-radius: 0; /* Remove o raio do canto inferior direito */
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .toggle-btn:hover {
-    background-color: #0267a6;
+    background-color: #0267a6; /* Mantido igual ao estado normal para consistência */
 }
 
 .toggle-btn::after {
-    content: '▼'; /* Seta para baixo */
+    content: '▼';
     font-size: 14px;
     margin-left: 10px;
     transition: transform 0.3s ease;
@@ -302,7 +289,7 @@ body {
 }
 
 .toggle-btn.active::after {
-    transform: rotate(180deg); /* Gira a seta quando ativo */
+    transform: rotate(180deg);
 }
 
 .collapsible-content {
@@ -312,21 +299,19 @@ body {
     gap: 10px;
     justify-content: space-between;
     max-height: 0;
-    overflow: hidden; /* Mantém escondido */
-    padding: 0 15px; /* Apenas padding horizontal quando fechado */
+    overflow: hidden;
+    padding: 0 15px;
     transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out;
     box-sizing: border-box;
 }
 
-/* Adiciona padding vertical apenas quando ativo/aberto */
 .collapsible-content.active {
     padding-top: 15px;
     padding-bottom: 15px;
 }
 
-/* Estilos para sub-links dentro de um colapsável */
 .sub-link {
-    flex: 1 1 calc(50% - 10px); /* Duas colunas dentro do conteúdo */
+    flex: 1 1 calc(50% - 10px);
     padding: 12px;
     text-align: center;
     background-color: #e9ecef;
@@ -341,8 +326,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    outline: 2px solid #0267a6; /* Adiciona outline azul aos sub-botões */
-    outline-offset: -2px; /* Ajusta para dentro */
+    outline: 2px solid #0267a6;
+    outline-offset: -2px;
 }
 
 .sub-link:hover {
@@ -352,35 +337,25 @@ body {
 /* FIM DOS ESTILOS COLAPSÁVEIS */
 
 
-/* NOVOS ESTILOS PARA O IFRAME RECORTADO */
+/* ESTILOS PARA O IFRAME RECORTADO (sem alterações) */
 .iframe-clipper {
-    width: 375px; /* Largura final desejada (iPhone X) */
-    height: 150px; /* Altura estimada para cobrir apenas a área de login (AJUSTE CONFORME NECESSÁRIO) */
+    width: 375px;
+    height: 150px;
     border: 1px solid #ccc;
-    overflow: hidden; /* Esconde o conteúdo do iframe que transborda */
-    margin: 20px auto; /* Centraliza e adiciona espaço acima/abaixo */
-    position: relative; /* Necessário para que o iframe absoluto se posicione corretamente */
+    overflow: hidden;
+    margin: 20px auto;
+    position: relative;
     box-sizing: border-box;
 }
 
 #mobileFrame {
-    /* Define um tamanho grande o suficiente para o conteúdo interno não quebrar estranhamente */
-    /* E para garantir que a área de login esteja presente para ser 'movida' para a visão */
-    width: 1024px; /* Largura estimada da página original ou maior */
-    height: 812px; /* Altura original ou maior */
-    border: none; /* Remove a borda do iframe */
-    /* Move o iframe para a esquerda e para cima */
-    /* Estes valores são ESTIMATIVAS e precisarão de AJUSTE FINO */
-    /* Inspecione o elemento no navegador e ajuste translateX e translateY até a área de login ficar visível */
-    transform: translate(-560px, -35px); /* Valor X negativo move para esquerda, Valor Y negativo move para cima */
-    /* Alternativa (menos recomendada que transform): */
-    /* position: absolute; */
-    /* top: -35px; */
-    /* left: -560px; */
-    transform-origin: top left; /* Garante que a transformação comece do canto superior esquerdo */
+    width: 1024px;
+    height: 812px;
+    border: none;
+    transform: translate(-560px, -35px);
+    transform-origin: top left;
 }
-
-/* FIM DOS NOVOS ESTILOS PARA O IFRAME */
+/* FIM DOS ESTILOS PARA O IFRAME */
 
 
 /* ESTILOS DO RODAPÉ */
@@ -391,10 +366,12 @@ body {
     text-align: center;
     padding: 15px 0;
     font-size: 14px;
-    /* Mantém o rodapé no final do fluxo, não fixo */
-    /* position: sticky; foi removido */
-    /* bottom: 0; foi removido */
-    z-index: 102; /* Garante que fique acima de outros elementos se houver sobreposição (improvável agora) */
+    /* position: sticky; bottom: 0; Mantido sticky no fundo */
+    /* z-index: 102; Mantido acima de outros elementos */
+    /* Nenhuma mudança necessária aqui, mas garantindo que continue sticky */
+     position: sticky;
+     bottom: 0;
+     z-index: 102;
 }
 /* FIM DOS ESTILOS DO RODAPÉ */
 
@@ -402,16 +379,21 @@ body {
 
 /* Telas Médias e Tablets (ex: até 768px) */
 @media (max-width: 768px) {
-     /* Ajusta a largura da barra de pesquisa e do container de botões */
-     .search-bar,
-     .buttons-container {
+     .sticky-search-container, /* Container sticky agora tem largura maior */
+     .buttons-container { /* Container de botões acompanha */
          width: 90%; /* Mais largura em telas médias */
          max-width: none; /* Remove max-width para usar a porcentagem */
      }
 
+     /* Ajusta o top do sticky e as margens para manter consistência visual se necessário */
+     .sticky-search-container {
+         /* Pode manter top: 20px e margins, ou ajustar se preferir menos espaço */
+         /* Exemplo: top: 15px; margin-top: 15px; margin-bottom: 15px; */
+     }
+
     /* Mantém 2 colunas para botões/grupos em telas médias */
     .btn {
-        flex-basis: calc(50% - 10px);
+        flex-basis: calc(50% - 10px); /* Ajusta gap se a margem do sticky mudou */
     }
     .collapsible-group {
         flex-basis: 100%;
@@ -419,38 +401,38 @@ body {
     .header-content {
          padding: 5px 10px; /* Menos padding no cabeçalho */
     }
-
-     /* Ajusta o clipper do iframe para telas menores se necessário */
-     /* Neste caso, talvez manter 375px fixo seja o desejado para simular o mobile */
-     /* Mas se precisar ajustar: */
-     /*
-     .iframe-clipper {
-         width: 90%;
-         max-width: 375px; // Limita ao tamanho do iPhone X
-     }
-     */
+    /* Ajusta o posicionamento do container de resultados */
+     #search-results-container {
+        left: 5%; /* 100% - 90% = 10% / 2 = 5% */
+        right: 5%;
+    }
 }
 
 
 /* Telas Pequenas (Mobile, ex: até 600px) */
 @media (max-width: 600px) {
-     /* Ajusta a escala para mobile */
      html {
-         /* Reduz o tamanho base da fonte para evitar zoom excessivo */
-         font-size: 14px; /* Reduz o tamanho da fonte base */
+         font-size: 14px;
      }
 
-     /* Ajusta a largura da barra de pesquisa e do container de botões */
-     .search-bar,
+     .sticky-search-container,
      .buttons-container {
          width: 95%; /* Quase largura total */
          gap: 15px; /* Reduz espaço entre botões */
      }
 
+     /* Ajusta o top do sticky e as margens para mobile */
+     .sticky-search-container {
+         top: 15px; /* Menos espaço no topo quando sticky */
+         margin-top: 15px; /* Menos espaço inicial abaixo do header */
+         margin-bottom: 15px; /* Menos espaço acima do conteúdo */
+         padding: 8px 0 8px 0; /* Menos padding interno */
+     }
+
      /* Uma coluna para botões/grupos em telas pequenas */
      .btn,
      .collapsible-group {
-        flex-basis: 100%; /* Força largura total */
+        flex-basis: 100%;
      }
 
      /* Sub-links também viram uma coluna */
@@ -458,7 +440,6 @@ body {
         flex-basis: 100%;
      }
 
-     /* Ajusta logo e texto do cabeçalho */
      .logo-inner-average {
         max-height: 65px;
         max-width: 80px;
@@ -468,10 +449,10 @@ body {
         padding: 3px 6px;
      }
      .header-content {
-        padding: 5px 8px; /* Menos padding ainda */
+        padding: 5px 8px;
      }
      .search-bar {
-         padding: 6px; /* Menos padding na barra */
+         padding: 6px;
      }
      .search-bar input {
          font-size: 14px;
@@ -480,8 +461,10 @@ body {
          font-size: 16px;
          padding: 6px 10px;
      }
-
-     /* Ajusta padding dos itens de resultado */
+     #search-results-container {
+        left: 2.5%; /* 100% - 95% = 5% / 2 = 2.5% */
+        right: 2.5%;
+     }
      .search-result-item {
          padding: 8px 12px;
          font-size: 14px;
@@ -490,13 +473,4 @@ body {
          padding: 12px;
          font-size: 14px;
      }
-
-     /* Ajusta o clipper do iframe para telas menores se necessário */
-     /* Novamente, manter 375px pode ser intencional */
-     /*
-     .iframe-clipper {
-         width: 95%;
-         max-width: 375px;
-     }
-    */
 }
