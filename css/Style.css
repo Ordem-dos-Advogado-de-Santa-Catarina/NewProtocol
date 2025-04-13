@@ -419,19 +419,13 @@ body {
     .header-content {
          padding: 5px 10px; /* Menos padding horizontal no header */
     }
-     #search-results-container {
-        /* A posição absolute com left/right 0 já cobre a largura do pai (.sticky-search-container) */
-        /* Não precisa de ajuste aqui */
-    }
+    /* Removido o ruleset vazio para #search-results-container */
 }
 
 
 /* Telas Pequenas (Mobile, ex: até 600px) */
 @media (max-width: 600px) {
-     html {
-         /* Opcional: reduzir tamanho base da fonte */
-         /* font-size: 14px; */
-     }
+    /* Removido o ruleset vazio/comentado para html */
 
      .sticky-search-container,
      .buttons-container {
