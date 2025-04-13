@@ -90,11 +90,12 @@ body {
     max-width: 800px; /* Limita a largura máxima */
     margin-left: auto; /* Centraliza */
     margin-right: auto; /* Centraliza */
-    background-color: #f0f0f0; /* Fundo para esconder conteúdo rolando atrás */
+    /* background-color: #f0f0f0; /* REMOVIDO - Fundo para esconder conteúdo rolando atrás (torna invisível) */
     z-index: 100; /* Abaixo do cabeçalho, acima do conteúdo normal */
-    padding: 10px 0 10px 0; /* Espaçamento interno vertical */
+    /* padding: 10px 0 10px 0; /* REMOVIDO - Espaçamento interno vertical (torna invisível) */
+    padding: 0; /* Garante que não haja padding */
     box-sizing: border-box; /* Inclui padding na largura/altura */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Sombra leve */
+    /* box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* REMOVIDO - Sombra leve (torna invisível) */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -102,10 +103,11 @@ body {
 
 /* BARRA DE PESQUISA (dentro do sticky-container) */
 .search-bar {
-    width: 95%; /* Largura relativa ao sticky-container */
+    /* width: 95%; /* Largura relativa ao sticky-container */
+    width: 100%; /* ALTERADO - Ocupa toda a largura do container invisível */
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Mantém a sombra na barra */
     padding: 8px;
     display: flex;
     align-items: center;
@@ -134,9 +136,11 @@ body {
 /* CONTAINER DE RESULTADOS DA PESQUISA (dentro do sticky-container) */
 #search-results-container {
     position: absolute; /* Posição absoluta relativa ao sticky-container */
-    top: 100%; /* Começa logo abaixo da search-bar (ajustado pelo padding do pai) */
-    left: 2.5%; /* Alinha com a barra de pesquisa (100% - 95% = 5% / 2) */
-    right: 2.5%; /* Alinha com a barra de pesquisa */
+    top: 100%; /* Começa logo abaixo da search-bar */
+    /* left: 2.5%; /* Alinha com a barra de pesquisa (100% - 95% = 5% / 2) */
+    /* right: 2.5%; /* Alinha com a barra de pesquisa */
+    left: 0; /* ALTERADO - Alinha com a borda esquerda do container */
+    right: 0; /* ALTERADO - Alinha com a borda direita do container */
     max-width: inherit; /* Herda max-width do pai */
     background-color: white;
     border-radius: 0 0 8px 8px; /* Cantos arredondados apenas embaixo */
@@ -403,8 +407,10 @@ body {
     }
     /* Ajusta o posicionamento do container de resultados */
      #search-results-container {
-        left: 5%; /* 100% - 90% = 10% / 2 = 5% */
-        right: 5%;
+        /* left: 5%; /* 100% - 90% = 10% / 2 = 5% */
+        /* right: 5%; */
+        left: 0; /* ALTERADO - Alinha com container */
+        right: 0; /* ALTERADO - Alinha com container */
     }
 }
 
@@ -426,7 +432,8 @@ body {
          top: 15px; /* Menos espaço no topo quando sticky */
          margin-top: 15px; /* Menos espaço inicial abaixo do header */
          margin-bottom: 15px; /* Menos espaço acima do conteúdo */
-         padding: 8px 0 8px 0; /* Menos padding interno */
+         /* padding: 8px 0 8px 0; /* REMOVIDO - Não precisa mais de padding interno */
+         padding: 0;
      }
 
      /* Uma coluna para botões/grupos em telas pequenas */
@@ -462,8 +469,10 @@ body {
          padding: 6px 10px;
      }
      #search-results-container {
-        left: 2.5%; /* 100% - 95% = 5% / 2 = 2.5% */
-        right: 2.5%;
+        /* left: 2.5%; /* 100% - 95% = 5% / 2 = 2.5% */
+        /* right: 2.5%; */
+        left: 0; /* ALTERADO - Alinha com container */
+        right: 0; /* ALTERADO - Alinha com container */
      }
      .search-result-item {
          padding: 8px 12px;
