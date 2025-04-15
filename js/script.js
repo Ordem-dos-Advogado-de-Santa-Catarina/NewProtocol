@@ -131,11 +131,16 @@ function setupSearch() {
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Comissoes.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Consultas.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Prerrogativas.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/protocolos.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/processos.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/examedeordem.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/inssdigital.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tecnologia.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/ESA.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/ted.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/outros.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/cursoseventos.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/controladoria.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/fiscalizacao.html',
     ];
 
