@@ -10,9 +10,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // Adiciona listener para fechar resultados ao clicar fora
     document.addEventListener('click', handleClickOutside);
 
+    // Atualiza o ano no rodapé
+    updateFooterYear(); // <<< NOVA CHAMADA DE FUNÇÃO
+
     // Opcional: Chamar adjustActiveCollapsible no resize se houver problemas
     // window.addEventListener('resize', debounce(adjustActiveCollapsible, 150));
 });
+
+// --- FUNÇÃO PARA ATUALIZAR O ANO DO RODAPÉ ---
+function updateFooterYear() {
+    const yearSpan = document.getElementById('current-year');
+    if (yearSpan) { // Verifica se o elemento existe
+        const currentYear = new Date().getFullYear(); // Obtém o ano atual
+        yearSpan.textContent = currentYear; // Insere o ano no span
+        console.log("Ano do rodapé atualizado para:", currentYear);
+    } else {
+        console.warn("Elemento com ID 'current-year' não encontrado no rodapé.");
+    }
+}
+// --- FIM DA FUNÇÃO DO RODAPÉ ---
+
 
 // Função de Debounce genérica
 function debounce(func, wait, immediate) {
@@ -187,9 +204,6 @@ function setupSearch() {
                 }
             });
 
-            // *Removida a desduplicação DENTRO desta função*
-            // A desduplicação será feita globalmente na função performSearch
-
             return matches; // Retorna todas as correspondências encontradas no arquivo
         } catch (error) {
             console.error(`Erro ao processar o arquivo ${rootRelativePath}:`, error);
@@ -237,24 +251,17 @@ function setupSearch() {
             return;
         }
 
-        // searchInput.style.cursor = 'wait';
-        // searchButton.style.cursor = 'wait';
-
         const searchPromises = filesToSearch.map(file => fetchAndSearchFile(file, searchTerm));
 
         try {
             const resultsArrays = await Promise.all(searchPromises);
             const combinedResults = resultsArrays.flat(); // Junta todos os resultados de todos os arquivos
 
-            // --- MODIFICAÇÃO PRINCIPAL AQUI ---
             // Desduplica baseado APENAS no texto normalizado (textKey)
-            // O Map garante que cada 'textKey' apareça apenas uma vez.
-            // Se houver chaves duplicadas, a última encontrada prevalecerá.
             const uniqueResultsMap = new Map(
                 combinedResults.map(item => [item.textKey, item]) // Usa textKey como chave
             );
             const allUniqueResults = Array.from(uniqueResultsMap.values());
-            // --- FIM DA MODIFICAÇÃO ---
 
             console.log(`Busca concluída. Resultados totais encontrados: ${combinedResults.length}. Resultados únicos (por texto): ${allUniqueResults.length}`); // Log
             displayResults(allUniqueResults); // Exibe os resultados únicos
@@ -264,9 +271,6 @@ function setupSearch() {
             resultsContainer.innerHTML = '<p class="no-results-message">Ocorreu um erro durante a pesquisa.</p>';
             resultsContainer.classList.add('active');
             searchBar.classList.add('results-visible');
-        } finally {
-            // searchInput.style.cursor = '';
-            // searchButton.style.cursor = '';
         }
     }
 
