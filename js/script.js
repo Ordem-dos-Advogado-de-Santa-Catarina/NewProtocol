@@ -132,13 +132,11 @@ function setupSearch() {
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Consultas.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Prerrogativas.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/protocolos.html',
-        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/processos.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/examedeordem.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/inssdigital.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Tecnologia.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/ESA.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/ted.html',
-        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/outros.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/cursoseventos.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/controladoria.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/fiscalizacao.html',
@@ -162,85 +160,71 @@ function setupSearch() {
             const lowerSearchTerm = searchTerm.toLowerCase();
 
             elementsToSearch.forEach(element => {
+                // Normaliza o texto (remove espaços extras, '>' inicial e converte para minúsculas)
                 const elementText = element.textContent.trim().replace(/^>\s*/, '');
                 const lowerElementText = elementText.toLowerCase();
 
                 if (lowerElementText.includes(lowerSearchTerm)) {
-                    let targetHref = rootRelativePath;
+                    let targetHref = rootRelativePath; // Link padrão é a própria página onde foi encontrado
                     if (element.tagName === 'A' && element.getAttribute('href')) {
                         const originalHref = element.getAttribute('href');
-                        const baseUrl = new URL(rootRelativePath, window.location.origin);
+                        // Tenta resolver o href relativo à página onde foi encontrado
                         try {
-                            const resolvedUrl = new URL(originalHref, baseUrl);
+                            // Usamos a URL completa do arquivo buscado como base
+                            const resolvedUrl = new URL(originalHref, rootRelativePath);
                             targetHref = resolvedUrl.href;
                         } catch (e) {
-                             console.warn(`Não foi possível resolver o href: ${originalHref} na base ${baseUrl}. Usando fallback: ${rootRelativePath}`);
-                             targetHref = rootRelativePath;
+                             console.warn(`Não foi possível resolver o href: ${originalHref} na base ${rootRelativePath}. Usando fallback: ${rootRelativePath}`);
+                             targetHref = rootRelativePath; // Fallback se a resolução falhar
                         }
                     }
                     const linkResult = document.createElement('a');
                     linkResult.href = targetHref;
-                    linkResult.textContent = elementText;
+                    linkResult.textContent = elementText; // Usa o texto original (sem ser minúsculo) para exibição
                     linkResult.classList.add('search-result-item');
-                    linkResult.title = `Encontrado em: ${rootRelativePath}`;
-                    matches.push({ file: rootRelativePath, element: linkResult });
+                    linkResult.title = `Encontrado em: ${rootRelativePath.substring(rootRelativePath.lastIndexOf('/') + 1)}`; // Mostra apenas nome do arquivo no title
+                    matches.push({ file: rootRelativePath, element: linkResult, textKey: lowerElementText }); // Adiciona a chave de texto normalizado
                 }
             });
-            const uniqueMatches = Array.from(new Map(matches.map(item => [`${item.element.href}-${item.element.textContent}`, item])).values());
-            // Log se encontrar algo no arquivo
-            // if (uniqueMatches.length > 0) {
-            //     console.log(`Encontrado(s) ${uniqueMatches.length} em ${rootRelativePath}`);
-            // }
-            return uniqueMatches;
+
+            // *Removida a desduplicação DENTRO desta função*
+            // A desduplicação será feita globalmente na função performSearch
+
+            return matches; // Retorna todas as correspondências encontradas no arquivo
         } catch (error) {
             console.error(`Erro ao processar o arquivo ${rootRelativePath}:`, error);
             return [];
         }
     }
 
-    // --- FUNÇÃO displayResults MODIFICADA ---
+    // --- FUNÇÃO displayResults (SEM ALTERAÇÕES) ---
     function displayResults(results) {
-        // Limpa o container de resultados
         resultsContainer.innerHTML = '';
-        // Remove as classes de estado para garantir que comece fechado
         resultsContainer.classList.remove('active');
         searchBar.classList.remove('results-visible');
-
-        // Reseta estilos inline que poderiam interferir (opcional, mas seguro)
         resultsContainer.style.maxHeight = null;
         resultsContainer.style.paddingTop = null;
         resultsContainer.style.paddingBottom = null;
-        // A opacidade e pointer-events são controlados pelo CSS via classe 'active'
 
-        // Se há resultados para exibir
         if (results.length > 0) {
-            console.log(`Exibindo ${results.length} resultados.`); // Log
-            // Adiciona cada resultado ao container
+            console.log(`Exibindo ${results.length} resultados únicos.`); // Log
             results.forEach(result => {
                 resultsContainer.appendChild(result.element);
             });
-            // Adiciona a classe 'active' para tornar o container visível (CSS fará a animação)
             resultsContainer.classList.add('active');
-            // Adiciona a classe 'results-visible' à barra de pesquisa para o estilo conectado
             searchBar.classList.add('results-visible');
         }
-        // Se não há resultados, mas o usuário pesquisou (input >= 2 caracteres)
         else if (searchInput.value.trim().length >= 2) {
             console.log("Nenhum resultado encontrado para exibir."); // Log
-            // Cria e adiciona a mensagem "Nenhum resultado encontrado"
             const noResultsMsg = document.createElement('p');
             noResultsMsg.classList.add('no-results-message');
             noResultsMsg.textContent = 'Nenhum resultado encontrado.';
             resultsContainer.appendChild(noResultsMsg);
-            // Adiciona a classe 'active' para mostrar a mensagem
             resultsContainer.classList.add('active');
-            // Adiciona a classe 'results-visible' à barra para manter o estilo conectado
             searchBar.classList.add('results-visible');
         }
-        // Se o input está vazio ou < 2 caracteres, as classes 'active' e 'results-visible'
-        // permanecem removidas (como definido no início da função), escondendo o container.
     }
-    // --- FIM DA FUNÇÃO displayResults MODIFICADA ---
+    // --- FIM DA FUNÇÃO displayResults ---
 
     // Função principal que coordena a busca
     async function performSearch() {
@@ -253,7 +237,6 @@ function setupSearch() {
             return;
         }
 
-        // Mostra algum feedback visual que a busca iniciou (opcional)
         // searchInput.style.cursor = 'wait';
         // searchButton.style.cursor = 'wait';
 
@@ -261,19 +244,27 @@ function setupSearch() {
 
         try {
             const resultsArrays = await Promise.all(searchPromises);
-            const combinedResults = resultsArrays.flat();
-            const allResults = Array.from(new Map(combinedResults.map(item => [`${item.element.href}-${item.element.textContent}`, item])).values());
-            console.log(`Busca concluída. Resultados totais (únicos): ${allResults.length}`); // Log
-            displayResults(allResults); // Exibe os resultados
+            const combinedResults = resultsArrays.flat(); // Junta todos os resultados de todos os arquivos
+
+            // --- MODIFICAÇÃO PRINCIPAL AQUI ---
+            // Desduplica baseado APENAS no texto normalizado (textKey)
+            // O Map garante que cada 'textKey' apareça apenas uma vez.
+            // Se houver chaves duplicadas, a última encontrada prevalecerá.
+            const uniqueResultsMap = new Map(
+                combinedResults.map(item => [item.textKey, item]) // Usa textKey como chave
+            );
+            const allUniqueResults = Array.from(uniqueResultsMap.values());
+            // --- FIM DA MODIFICAÇÃO ---
+
+            console.log(`Busca concluída. Resultados totais encontrados: ${combinedResults.length}. Resultados únicos (por texto): ${allUniqueResults.length}`); // Log
+            displayResults(allUniqueResults); // Exibe os resultados únicos
 
         } catch (error) {
             console.error("Erro geral durante a execução da pesquisa:", error);
-            // Exibe uma mensagem de erro genérica
             resultsContainer.innerHTML = '<p class="no-results-message">Ocorreu um erro durante a pesquisa.</p>';
-            resultsContainer.classList.add('active'); // Mostra o container de erro
-            searchBar.classList.add('results-visible'); // Mantém a barra conectada
+            resultsContainer.classList.add('active');
+            searchBar.classList.add('results-visible');
         } finally {
-            // Restaura o cursor (opcional)
             // searchInput.style.cursor = '';
             // searchButton.style.cursor = '';
         }
@@ -307,17 +298,11 @@ function handleClickOutside(event) {
     const stickyContainer = document.querySelector('.sticky-search-container');
     const searchBar = stickyContainer?.querySelector('.search-bar');
 
-    // Verifica se o clique foi fora do stickyContainer E se os resultados estão ativos
     if (stickyContainer && resultsContainer && !stickyContainer.contains(event.target) && resultsContainer.classList.contains('active')) {
         console.log("Clique fora detectado, fechando resultados."); // Log
-        // Remove as classes para esconder/resetar estilos
         resultsContainer.classList.remove('active');
         if (searchBar) {
             searchBar.classList.remove('results-visible');
         }
-        // Opcional: resetar estilos inline se necessário, mas o CSS deve cuidar disso
-        // resultsContainer.style.maxHeight = null;
-        // resultsContainer.style.paddingTop = null;
-        // resultsContainer.style.paddingBottom = null;
     }
 }
