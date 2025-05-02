@@ -129,38 +129,38 @@
             <div class="step">
               <p><span class="step-number">1.</span> Acesse sua Conta Google: <a href="https://myaccount.google.com/" target="_blank">https://myaccount.google.com/</a></p>
               <!-- Image paths are relative to Tutorial.html -->
-              <img src="imagens/passo1.jpg" alt="Tela inicial da conta Google">
+              <img src="./Outlook2013-/passo1.jpg" alt="Tela inicial da conta Google">
             </div>
 
             <div class="step">
               <p><span class="step-number">2.</span> No menu à esquerda, clique em <strong style="color: #0267a6;">'Segurança'</strong>.</p>
-              <img src="imagens/passo3.jpg" alt="Aba Segurança"> <!-- Original used passo3.jpg for step 2 -->
+              <img src="./Outlook2013-/passo3.jpg" alt="Aba Segurança"> <!-- Original used passo3.jpg for step 2 -->
             </div>
 
             <div class="step">
               <p><span class="step-number">3.</span> Role a página até a seção 'Como fazer login no Google'. Clique em <strong style="color: #0267a6;">'Verificação em duas etapas'</strong>. Siga as instruções para ativá-la, caso ainda não esteja ativa. <strong style="color: #c00;">Este passo é obrigatório para criar senhas de app.</strong></p>
-              <img src="imagens/passo3.jpg" alt="Verificação em duas etapas">
+              <img src="./Outlook2013-/passo3.jpg" alt="Verificação em duas etapas">
             </div>
 
             <div class="step">
               <p><span class="step-number">4.</span> Após ativar a verificação em duas etapas, volte para a página <strong style="color: #0267a6;">'Segurança'</strong>. Na seção 'Como fazer login no Google', procure e clique em <strong style="color: #0267a6;">'Senhas de app'</strong>. (Se não encontrar, pode estar dentro de 'Verificação em duas etapas').</p>
-              <img src="imagens/passo4.jpg" alt="Opção Senhas de app">
+              <img src="./Outlook2013-/passo4.jpg" alt="Opção Senhas de app">
             </div>
 
             <div class="step">
                <p><span class="step-number">5.</span> Você pode precisar digitar a senha da sua conta Google novamente.</p>
                <!-- No image for step 5 in original, retaining consistency -->
-               <img src="imagens/passo5.jpg" alt="Tela Senhas de app">
+               <img src="./Outlook2013-/passo5.jpg" alt="Tela Senhas de app">
             </div>
 
             <div class="step">
                <p><span class="step-number">6.</span> Na tela 'Senhas de app', clique em 'Selecionar app' e escolha <strong style="color: #0267a6;">'E-mail'</strong>. Em 'Selecionar dispositivo', escolha <strong style="color: #0267a6;">'Computador Windows'</strong> (ou digite um nome personalizado como "Outlook Antigo"). Clique no botão <strong style="color: #0267a6;">'Gerar'</strong>.</p>
-               <img src="imagens/passo6.jpg" alt="Criar senha de app">
+               <img src="./Outlook2013-/passo6.jpg" alt="Criar senha de app">
             </div>
 
             <div class="step">
                <p><span class="step-number">7.</span> Uma janela aparecerá com a senha de app gerada (16 letras amarelas, sem espaços). <strong style="color: #c00;">Copie esta senha imediatamente.</strong> Ela não será exibida novamente.</p>
-               <img src="imagens/passo7.jpg" alt="Senha gerada">
+               <img src="./Outlook2013-/passo7.jpg" alt="Senha gerada">
             </div>
 
             <div class="step">

@@ -142,6 +142,7 @@ function setupSearch() {
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/cursoseventos.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/controladoria.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/fiscalizacao.html',
+        'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/manuais/Manuais.html',
     ];
 
     // Função assíncrona para buscar e analisar um arquivo HTML
