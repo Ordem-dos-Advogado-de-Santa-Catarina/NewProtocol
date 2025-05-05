@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial: Senha de App Google - OAB Santa Catarina</title>
+    <link rel="icon" href="../Images/CabecalhoOAB.png" type="image/png">
+    <link rel="stylesheet" href="../css/style.css"> <!-- Link pro CSS externo -->
+
+    <!-- Internal styles specifically for tutorial elements -->
+    <!-- These styles ensure the tutorial content looks reasonable within the main theme -->
+    <!-- Ideally, these rules could be added to style.css -->
+    <style>
+      .tutorial-container {
+        width: 90%; /* Adjust width as needed */
+        max-width: 800px; /* Max width similar to buttons container */
+        margin: 30px auto; /* Center the tutorial content and add space */
+        padding: 25px;
+        background-color: #ffffff; /* White background for readability */
+        border-radius: 8px; /* Consistent rounding */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
+        border: 1px solid #e0e0e0; /* Light border */
+      }
+
+      .tutorial-container h1 {
+        color: #333366; /* Original color */
+        margin-top: 0;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 1.8em; /* Adjust title size if needed */
+      }
+
+      .tutorial-container > p { /* Intro paragraph */
+         text-align: center;
+         margin-bottom: 30px;
+         color: #555;
+         line-height: 1.6;
+      }
+
+      .step {
+        background-color: #f9f9f9; /* Light background for steps */
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+        border: 1px solid #eee; /* Very light border for steps */
+      }
+
+      .step p { /* Text within steps */
+        margin-bottom: 10px;
+        line-height: 1.6;
+        color: #333;
+      }
+
+      .step img {
+        display: block; /* Center image */
+        max-width: 90%; /* Responsive images */
+        height: auto;
+        margin: 15px auto 10px auto; /* Spacing around image */
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      }
+
+      .step-number {
+        font-weight: bold;
+        color: #0267a6; /* Use theme color for emphasis */
+        font-size: 1.1em;
+        margin-right: 5px;
+      }
+
+       .step a { /* Link styling */
+          color: #0056b3;
+          text-decoration: none;
+      }
+       .step a:hover {
+          text-decoration: underline;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+          .tutorial-container {
+              width: 95%;
+              padding: 20px;
+              margin: 20px auto;
+          }
+          .tutorial-container h1 {
+              font-size: 1.6em;
+          }
+          .step img {
+              max-width: 100%;
+          }
+      }
+       @media (max-width: 600px) {
+          .tutorial-container {
+              padding: 15px;
+          }
+           .tutorial-container h1 {
+              font-size: 1.4em;
+          }
+           .step {
+               padding: 10px 15px;
+           }
+      }
+    </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="header-content">
+        <a href="../Index.html" title="Página Principal">
+            <img src="../Images/CabecalhoOAB.png" alt="Cabeçalho OAB" class="header-image logo-inner-average">
+        </a>
+        <div class="header-bottom-row">
+            <a href="../Index.html" class="home-button" title="Página Principal">🏠 Pagina Inicial</a>
+            <h2 class="page-title">> Tutorial de Senha App para Outlook</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Wrap from index.html structure -->
+    <div class="content-wrap">
+        <!-- Specific container for the tutorial content -->
+        <div class="tutorial-container">
+
+            <h1>Criar Senha de App no Google para usar no Outlook 2013 ou inferior</h1>
+            <p>Use este tutorial para gerar uma senha específica para o Outlook 2013 ou anterior, necessária após o Google desativar o login menos seguro.</p>
+
+            <!-- Tutorial Steps -->
+            <div class="step">
+              <p><span class="step-number">1.</span> Acesse sua Conta Google: <a href="https://myaccount.google.com/" target="_blank">https://myaccount.google.com/</a></p>
+              <!-- Image paths are relative to Tutorial.html -->
+              <img src="./Outlook2013-/passo1.jpg" alt="Tela inicial da conta Google">
+            </div>
+
+            <div class="step">
+              <p><span class="step-number">2.</span> No menu à esquerda, clique em <strong style="color: #0267a6;">'Segurança'</strong>.</p>
+              <img src="./Outlook2013-/passo3.jpg" alt="Aba Segurança"> <!-- Original used passo3.jpg for step 2 -->
+            </div>
+
+            <div class="step">
+              <p><span class="step-number">3.</span> Role a página até a seção 'Como fazer login no Google'. Clique em <strong style="color: #0267a6;">'Verificação em duas etapas'</strong>. Siga as instruções para ativá-la, caso ainda não esteja ativa. <strong style="color: #c00;">Este passo é obrigatório para criar senhas de app.</strong></p>
+              <img src="./Outlook2013-/passo3.jpg" alt="Verificação em duas etapas">
+            </div>
+
+            <div class="step">
+              <p><span class="step-number">4.</span> Após ativar a verificação em duas etapas, volte para a página <strong style="color: #0267a6;">'Segurança'</strong>. Na seção 'Como fazer login no Google', procure e clique em <strong style="color: #0267a6;">'Senhas de app'</strong>. (Se não encontrar, pode estar dentro de 'Verificação em duas etapas').</p>
+              <img src="./Outlook2013-/passo4.jpg" alt="Opção Senhas de app">
+            </div>
+
+            <div class="step">
+               <p><span class="step-number">5.</span> Você pode precisar digitar a senha da sua conta Google novamente.</p>
+               <!-- No image for step 5 in original, retaining consistency -->
+               <img src="./Outlook2013-/passo5.jpg" alt="Tela Senhas de app">
+            </div>
+
+            <div class="step">
+               <p><span class="step-number">6.</span> Na tela 'Senhas de app', clique em 'Selecionar app' e escolha <strong style="color: #0267a6;">'E-mail'</strong>. Em 'Selecionar dispositivo', escolha <strong style="color: #0267a6;">'Computador Windows'</strong> (ou digite um nome personalizado como "Outlook Antigo"). Clique no botão <strong style="color: #0267a6;">'Gerar'</strong>.</p>
+               <img src="./Outlook2013-/passo6.jpg" alt="Criar senha de app">
+            </div>
+
+            <div class="step">
+               <p><span class="step-number">7.</span> Uma janela aparecerá com a senha de app gerada (16 letras amarelas, sem espaços). <strong style="color: #c00;">Copie esta senha imediatamente.</strong> Ela não será exibida novamente.</p>
+               <img src="./Outlook2013-/passo7.jpg" alt="Senha gerada">
+            </div>
+
+            <div class="step">
+               <p><span class="step-number">8.</span> Abra o Outlook (2013 ou inferior). Quando ele solicitar a senha da sua conta Google (Gmail), <strong style="color: #c00;">cole a senha de app de 16 letras que você acabou de gerar</strong> no campo de senha, em vez da sua senha normal do Google. Marque a opção para salvar a senha, se disponível.</p>
+               <!-- No image for step 8 -->
+            </div>
+
+            <div class="step">
+                <p><span class="step-number">9.</span> O Outlook deve agora conectar-se à sua conta Gmail com sucesso.</p>
+                <!-- No image for step 9 -->
+             </div>
+
+        </div> <!-- End .tutorial-container -->
+    </div> <!-- End .content-wrap -->
+
+    <!-- Footer copied from index.html -->
+    <footer id="Footer_footer" class="page-footer navbar-expand-lg font-small site-background-color" style="background-color:#3949AB !important; border-color: #3949AB !important;">
+        <div class="footer-copyright text-center py-3">
+           <small class="text-light">Desenvolvido por Ordem dos Advogados - Santa Catarina</small>
+        </div>
+    </footer>
+
+    <!-- Script link copied from index.html (might not be needed for tutorial, but maintains consistency) -->
+    <script src="js/script.js"></script>
+</body>
+</html>
