@@ -67,6 +67,9 @@ body {
     border-radius: 4px;
     background-color: rgba(255, 255, 255, 0.1);
     transition: background-color 0.3s ease;
+    /* Adicionado para garantir consistência, embora não tenha borda visível */
+    border: 2px solid transparent;
+    box-sizing: border-box; /* Garante que padding e borda sejam incluídos na dimensão */
 }
 
 .home-button:hover {
@@ -104,7 +107,7 @@ body {
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    border: 2px solid #0267a6; /* Borda azul */
+    border: 2px solid #0267a6; /* Borda azul - Mantida aqui conforme exceção */
     position: relative; /* Necessário para z-index e posicionamento do container de resultados */
     z-index: 100; /* Garante que fique acima dos resultados */
     /* Transição suave do arredondamento da borda inferior */
@@ -129,7 +132,7 @@ body {
 
 .search-bar button {
     background: none;
-    border: none;
+    border: none; /* Botão de busca sem borda própria */
     cursor: pointer;
     font-size: 18px;
     color: #555;
@@ -142,21 +145,20 @@ body {
     top: calc(100% - 2px); /* Começa exatamente onde a barra termina, sobrepondo a borda removida */
     left: 0;
     right: 0;
-    /* Removido max-width: inherit; pois ele herda do pai que é flexível, vamos deixar o left/right definir */
     background-color: white;
     border-radius: 0 0 8px 8px; /* Cantos arredondados apenas embaixo */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     z-index: 99; /* Abaixo da barra de pesquisa */
-    max-height: 0;
+    max-height: 0; /* Começa fechado */
     overflow: hidden; /* Esconder o conteúdo por padrão */
-    transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out, border-width 0s linear 0.3s; /* Adicionada transição para borda aparecer depois */
+    /* Transições sincronizadas - Ajustado */
+    transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out, opacity 0.3s ease-out, border-color 0.3s ease;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 5px;
-    padding-left: 15px;
-    padding-right: 15px;
-    /* Borda definida apenas quando ativo para evitar renderização desnecessária */
+    padding: 0 15px; /* Padding vertical será aplicado pela classe .active */
+    /* Borda padrão (azul), será alterada pela classe .no-results-found se necessário */
     border-left: 2px solid #0267a6;
     border-right: 2px solid #0267a6;
     border-bottom: 2px solid #0267a6;
@@ -166,15 +168,24 @@ body {
 }
 
 #search-results-container.active {
-    max-height: 300px; /* Define uma altura máxima para permitir scroll */
+    /* max-height é definido pelo JS para conteúdo dinâmico OU um valor fixo aqui */
+    /* Exemplo com valor fixo máximo para scroll: max-height: 300px; */
+    /* O JS ainda pode definir um max-height menor se o conteúdo for pequeno */
     overflow-y: auto; /* Adiciona scroll vertical se necessário */
-    padding-top: 10px;
+    padding-top: 10px; /* Adiciona padding vertical quando ativo */
     padding-bottom: 10px;
     opacity: 1; /* Torna visível */
     pointer-events: auto; /* Permite interação */
-    transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out, opacity 0.2s ease-in; /* Ajusta transição */
-    /* A borda já está definida no estilo base, mas só será visível por causa da altura/padding/opacity */
+    /* A transição já está definida no seletor base */
 }
+
+/* Estilo para quando não houver resultados (borda vermelha no container) */
+#search-results-container.no-results-found {
+    border-left-color: red;
+    border-right-color: red;
+    border-bottom-color: red;
+}
+
 
 .search-result-item {
     display: block;
@@ -184,20 +195,27 @@ body {
     font-size: 15px;
     border-radius: 4px;
     background-color: #f8f9fa;
-    transition: background-color 0.2s ease;
-    border: 1px solid #e9ecef;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    border: 2px solid #e9ecef; /* Borda consistente de 2px */
+    box-sizing: border-box;
 }
 
 .search-result-item:hover {
     background-color: #e9ecef;
     color: #004a7d;
+    border-color: #dee2e6; /* Borda consistente no hover */
 }
 
 .no-results-message {
     padding: 15px;
     text-align: center;
-    color: #6c757d;
+    color: #6c757d; /* Cor padrão */
     font-style: italic;
+}
+
+/* Ajuste opcional para a mensagem de erro ficar vermelha também */
+#search-results-container.no-results-found .no-results-message {
+    color: red; /* Mensagem vermelha para combinar com a borda */
 }
 
 
@@ -220,10 +238,15 @@ body {
     gap: 20px;
     width: 80%;
     max-width: 800px;
-    /* Removido margin-top pois o sticky container agora cuida do espaçamento */
+    margin-bottom: 20px; /* Adiciona margem inferior para separar blocos de botões */
 }
 
-/* Estilos padrão para botões e grupos colapsáveis (sem alterações) */
+/* Garante que o último container de botões não tenha margem inferior extra antes do rodapé (opcional) */
+.buttons-container:last-child {
+    margin-bottom: 0;
+}
+
+/* Estilos padrão para botões e grupos colapsáveis */
 .btn,
 .collapsible-group {
     box-sizing: border-box;
@@ -234,34 +257,36 @@ body {
     flex: 1 1 calc(50% - 10px);
     padding: 15px;
     text-align: center;
-    background-color: #0267a6;
+    background-color: #0267a6; /* Cor de fundo principal */
     color: white;
     text-decoration: none;
     font-size: 18px;
     border-radius: 8px;
     font-weight: bold;
-    transition: background-color 0.3s ease;
-    border: none;
-    outline: 2px solid #0267a6;
-    outline-offset: -2px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    border: 2px solid #0267a6; /* Borda sólida consistente de 2px */
+    box-shadow: none; /* Remove a sombra interna anterior */
     align-items: center;
     justify-content: center;
     min-height: 50px;
+    outline: none; /* Garante que não haja outline padrão */
 }
 
 .btn:hover {
-    background-color: #004a7d;
+    background-color: #004a7d; /* Cor de fundo mais escura no hover */
+    border-color: #004a7d; /* Cor da borda acompanha o fundo no hover */
 }
 
 .collapsible-group {
     flex: 1 1 100%;
     flex-direction: column;
-    border-radius: 10px;
-    overflow: hidden;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px; /* Raio maior para o container */
+    overflow: hidden; /* Mantido para caso haja conteúdo inesperado */
+    background-color: transparent; /* Grupo em si não precisa de fundo */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra no grupo */
     width: 100%;
-    border: 2px solid #0267a6;
+    /* Borda do grupo removida - será formada pelo botão e conteúdo */
+    border: none; /* Grupo não terá borda própria */
 }
 
 .toggle-btn {
@@ -271,30 +296,44 @@ body {
     width: 100%;
     padding: 15px;
     text-align: left;
-    background-color: #0267a6;
+    background-color: #0267a6; /* Cor de fundo principal */
     color: white;
     font-size: 18px;
     font-weight: bold;
-    transition: background-color 0.3s ease, border-radius 0.3s ease; /* Adicionada transição de border-radius */
-    border: none;
+    /* Transições Sincronizadas: adicionado border-radius */
+    transition: background-color 0.3s ease, border-color 0.3s ease, border-radius 0.3s ease;
+    /* Borda inicial transparente para manter o layout, cor aparece no .active */
+    border: 2px solid transparent;
     cursor: pointer;
     box-sizing: border-box;
     border-radius: 8px; /* Bordas arredondadas por padrão */
     min-height: 50px;
     position: relative;
-    z-index: 1;
+    z-index: 1; /* Botão acima do conteúdo */
+    box-shadow: none;
+    outline: none;
+    /* Remove margem negativa, ajuste será feito pelo posicionamento */
 }
 
+/* Estilo da borda SOMENTE quando o botão estiver ativo */
 .toggle-btn.active {
-    /* Botão ativo (conteúdo visível) perde bordas inferiores arredondadas */
-    border-bottom-left-radius: 0;
+    border-color: #0267a6; /* Borda azul aparece quando ativo */
+    border-bottom-left-radius: 0; /* Remove arredondamento inferior */
     border-bottom-right-radius: 0;
+    border-bottom-color: transparent; /* Conecta visualmente com conteúdo */
 }
 
 .toggle-btn:hover {
-    /* Mantido como :hover no botão principal, não apenas no ativo */
-    background-color: #004a7d;
+    background-color: #004a7d; /* Fundo mais escuro no hover */
+    /* Borda só muda no hover se já estiver ativa */
 }
+
+.toggle-btn.active:hover {
+    background-color: #004a7d;
+    border-color: #004a7d; /* Borda acompanha cor de fundo no hover */
+    border-bottom-color: transparent; /* Mantém conexão */
+}
+
 
 .toggle-btn::after {
     content: '▼';
@@ -309,22 +348,36 @@ body {
 }
 
 .collapsible-content {
-    background-color: white;
+    background-color: white; /* Fundo branco para o conteúdo */
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: space-between;
-    max-height: 0;
+    max-height: 0; /* Começa fechado */
     overflow: hidden;
-    padding: 0 15px;
-    transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out;
+    padding: 0 15px; /* Padding vertical adicionado com .active */
+    /* Transições Sincronizadas: padding, max-height e border-color */
+    transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out, border-color 0.3s ease-out;
     box-sizing: border-box;
-    /* Borda superior será visualmente contínua com o botão */
+    /* Borda inicial transparente, cor aparece com .active */
+    border-left: 2px solid transparent;
+    border-right: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    border-bottom-left-radius: 8px; /* Arredonda cantos inferiores */
+    border-bottom-right-radius: 8px;
+    /* Ajuste para alinhar com botão sem margem negativa */
+    margin-top: -2px; /* Sobrepõe a borda inferior transparente do botão */
+    position: relative;
+    z-index: 0; /* Conteúdo abaixo do botão */
 }
 
+/* Aplica padding e cor da borda ao conteúdo quando ativo */
 .collapsible-content.active {
     padding-top: 15px;
     padding-bottom: 15px;
+    border-left-color: #0267a6;
+    border-right-color: #0267a6;
+    border-bottom-color: #0267a6;
     /* max-height é controlado pelo JS */
 }
 
@@ -332,50 +385,47 @@ body {
     flex: 1 1 calc(50% - 10px);
     padding: 12px;
     text-align: center;
-    background-color: #e9ecef;
+    background-color: #e9ecef; /* Fundo cinza claro */
     color: #333;
     text-decoration: none;
     font-size: 15px;
     border-radius: 6px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    border: 1px solid #ced4da;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    border: 2px solid #0267a6; /* Borda azul principal consistente de 2px */
     box-sizing: border-box;
     min-height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    outline: 2px solid #0267a6;
-    outline-offset: -2px;
+    box-shadow: none;
+    outline: none;
 }
 
 .sub-link:hover {
-    background-color: #dee2e6;
+    background-color: #dee2e6; /* Fundo cinza mais escuro no hover */
     color: #000;
+    border-color: #004a7d; /* Borda azul mais escura no hover, consistente */
 }
 /* FIM DOS ESTILOS COLAPSÁVEIS */
 
 
 /* ESTILOS PARA O IFRAME RECORTADO (SE NECESSÁRIO) */
 .iframe-clipper {
-    width: 375px; /* Exemplo: Largura do viewport móvel */
-    height: 150px; /* Altura desejada do recorte */
-    border: 1px solid #ccc;
-    overflow: hidden; /* Essencial para recortar */
-    margin: 20px auto; /* Centralizar e adicionar espaço */
-    position: relative; /* Necessário para o posicionamento do iframe */
+    width: 375px;
+    height: 150px;
+    border: 2px solid #ccc; /* Borda consistente 2px */
+    overflow: hidden;
+    margin: 20px auto;
+    position: relative;
     box-sizing: border-box;
 }
 
 #mobileFrame {
-    /* Tamanho original do conteúdo dentro do iframe */
-    width: 1024px; /* Largura real do site dentro do iframe */
-    height: 812px; /* Altura real do site dentro do iframe */
+    width: 1024px;
+    height: 812px;
     border: none;
-    /* Ajuste o translate para 'mover' a visualização para a área desejada */
-    /* translate(movimento horizontal, movimento vertical) */
-    /* Valores negativos movem para a esquerda e para cima */
     transform: translate(-560px, -35px);
-    transform-origin: top left; /* Ponto de referência para a transformação */
+    transform-origin: top left;
 }
 /* FIM DOS ESTILOS PARA O IFRAME */
 
@@ -383,110 +433,60 @@ body {
 /* ESTILOS DO RODAPÉ */
 .page-footer {
     width: 100%;
-    background-color: rgb(57, 73, 171); /* Mesma cor do cabeçalho */
-    color: #ffffff; /* Texto branco */
+    background-color: rgb(57, 73, 171);
+    color: #ffffff;
     text-align: center;
     padding: 15px 0;
     font-size: 14px;
-     position: sticky; /* Torna o rodapé fixo na parte inferior */
-     bottom: 0; /* Alinha na parte inferior */
-     z-index: 102; /* Garante que fique acima do conteúdo e da barra de pesquisa */
+     position: sticky;
+     bottom: 0;
+     z-index: 102;
+     margin-top: auto;
+     border: 2px solid transparent; /* Consistência */
+     box-sizing: border-box;
 }
 /* FIM DOS ESTILOS DO RODAPÉ */
 
-/* AJUSTES RESPONSIVOS */
-
-/* Telas Médias e Tablets (ex: até 768px) */
+/* AJUSTES RESPONSIVOS - SEM ALTERAÇÕES */
 @media (max-width: 768px) {
      .sticky-search-container,
      .buttons-container {
-         width: 90%; /* Aumenta um pouco a largura */
-         max-width: none; /* Remove limite máximo */
+         width: 90%;
+         max-width: none;
      }
-
      .sticky-search-container {
-         top: 15px; /* Sobe um pouco o sticky */
+         top: 15px;
          margin-top: 15px;
          margin-bottom: 15px;
      }
-
-    .btn {
-        flex-basis: calc(50% - 10px); /* Mantém 2 colunas */
-    }
-    .collapsible-group {
-        flex-basis: 100%; /* Grupos colapsáveis ocupam largura total */
-    }
-    .header-content {
-         padding: 5px 10px; /* Menos padding horizontal no header */
-    }
-    /* Removido o ruleset vazio para #search-results-container */
+    .btn { flex-basis: calc(50% - 10px); }
+    .collapsible-group { flex-basis: 100%; }
+     .sub-link { flex-basis: calc(50% - 10px); }
+    .header-content { padding: 5px 10px; }
 }
-
-
-/* Telas Pequenas (Mobile, ex: até 600px) */
 @media (max-width: 600px) {
-    /* Removido o ruleset vazio/comentado para html */
-
      .sticky-search-container,
      .buttons-container {
-         width: 95%; /* Quase largura total */
-         gap: 15px; /* Reduz espaçamento entre botões */
+         width: 95%;
+         gap: 15px;
      }
-
      .sticky-search-container {
-         top: 10px; /* Sobe ainda mais */
+         top: 10px;
          margin-top: 10px;
          margin-bottom: 10px;
-         padding: 0; /* Remove padding interno se houver */
+         padding: 0;
      }
-
      .btn,
-     .collapsible-group {
-        flex-basis: 100%; /* Uma coluna para botões e grupos */
-     }
-
-     .sub-link {
-        flex-basis: 100%; /* Links internos também em coluna única */
-     }
-
-     .logo-inner-average {
-        max-height: 60px; /* Reduz um pouco o logo */
-        max-width: 75px;
-     }
-     .home-button {
-        font-size: 14px; /* Reduz fonte do botão home */
-        padding: 3px 6px;
-     }
-     .header-content {
-        padding: 5px 8px; /* Menos padding ainda */
-     }
-     .search-bar {
-         padding: 6px; /* Menos padding na barra */
-     }
-     .search-bar input {
-         font-size: 15px; /* Ajusta fonte do input */
-         padding: 8px;
-     }
-     .search-bar button {
-         font-size: 16px; /* Ajusta ícone da lupa */
-         padding: 6px 10px;
-     }
-     #search-results-container {
-        /* Ajustes de padding internos */
-        padding-left: 10px;
-        padding-right: 10px;
-        gap: 4px;
-     }
-     .search-result-item {
-         padding: 8px 12px; /* Menos padding nos itens de resultado */
-         font-size: 14px;
-     }
-     .no-results-message {
-         padding: 12px;
-         font-size: 14px;
-     }
-     .page-footer {
-         padding: 10px 0; /* Menos padding no rodapé */
-         font-size: 13px;
-     }
+     .collapsible-group { flex-basis: 100%; }
+     .sub-link { flex-basis: 100%; }
+     .logo-inner-average { max-height: 60px; max-width: 75px; }
+     .home-button { font-size: 14px; padding: 3px 6px; }
+     .header-content { padding: 5px 8px; }
+     .search-bar { padding: 6px; }
+     .search-bar input { font-size: 15px; padding: 8px; }
+     .search-bar button { font-size: 16px; padding: 6px 10px; }
+     #search-results-container { padding-left: 10px; padding-right: 10px; gap: 4px; }
+     .search-result-item { padding: 8px 12px; font-size: 14px; }
+     .no-results-message { padding: 12px; font-size: 14px; }
+     .page-footer { padding: 10px 0; font-size: 13px; }
 }

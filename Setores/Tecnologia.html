@@ -16,7 +16,7 @@
             </a>
             <div class="header-bottom-row">
                 <a href="../Index.html" class="home-button" title="Página Principal">🏠 Pagina Inicial</a>
-                <h2 class="page-title">> Tecnologia</h2>
+                <h2 class="page-title">> Tecnologia</h2> <!-- Título adicionado para pesquisa -->
             </div>
         </div>
     </div>
@@ -25,8 +25,8 @@
         <!-- Container para a barra de pesquisa (fixa/sticky) e resultados -->
         <div class="sticky-search-container">
             <div class="search-bar">
-                <input type="text" placeholder="Pesquisar...">
-                <button>🔎</button>
+                <input type="text" placeholder="Pesquisar links, grupos ou páginas..."> <!-- Placeholder atualizado -->
+                <button aria-label="Pesquisar">🔎</button> <!-- aria-label para acessibilidade -->
             </div>
             <!-- Container para exibir os resultados da pesquisa -->
             <div id="search-results-container">
@@ -34,21 +34,31 @@
             </div>
         </div>
 
+        <!-- Segundo Bloco de Botões (Separado pela margem do container anterior) -->
         <div class="buttons-container">
-            <a href="https://servicos.oab-sc.org.br/hbconselhos/pgs/GerarAcessoViaSite.aspx" class="btn">Gerar Senha</a>
-            <a href="https://servicos.oab-sc.org.br/hbconselhos/login/main2.aspx" class="btn">Acesso ao Sistema</a>
-            <a href="https://admin.google.com/" class="btn">Criação de Email</a>
-            <a href="../Manuais/Manuais.html" class="btn">Ajuda com Outlook</a>
+            <a href="https://admin.google.com/" class="btn" target="_blank" rel="noopener noreferrer">Criação de Email</a> <!-- target e rel adicionados para link externo -->
+            <a href="../Manuais/Manuais.html" class="btn">Manuais</a>
         </div>
-        
+
+        <!-- Primeiro Bloco de Botões -->
+        <div class="buttons-container">
+            <!-- colapsavel -->
+            <div class="collapsible-group">
+                <button class="toggle-btn">Ajuda com BrConselhos</button>
+                <div class="collapsible-content">
+                    <a href="https://servicos.oab-sc.org.br/hbconselhos/pgs/GerarAcessoViaSite.aspx" class="sub-link">Gerar Senha</a> <!-- Classe ajustada para sub-link -->
+                    <a href="https://servicos.oab-sc.org.br/hbconselhos/login/main2.aspx" class="sub-link">Acesso ao Sistema</a> <!-- Classe ajustada para sub-link -->
+                </div>
+            </div>
+        </div>
     </div>
 
-    <footer id="Footer_footer" class="page-footer navbar-expand-lg font-small site-background-color" style="background-color:#3949AB !important; border-color: #3949AB !important;">
+    <footer id="Footer_footer" class="page-footer navbar-expand-lg font-small site-background-color"> <!-- Removido style inline -->
         <div class="footer-copyright text-center py-3">
            <small class="text-light">Desenvolvido com ❤︎ pelos meninos do TI - <span id="current-year"></span></small>
         </div>
      </footer>
 
-    <script src="../js/script.js"></script> <!-- Link pro Javascript, pra fazer alguma coisa ai -->
+    <script src="../js/script.js"></script> <!-- Link pro Javascript -->
 </body>
 </html>
