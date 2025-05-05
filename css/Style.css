@@ -85,7 +85,7 @@ body {
     align-items: center;
     flex-shrink: 0;
     padding: 4px 8px;
-    border-radius: 4px;
+    border-radius: 4px; /* Mantido 4px para este elemento específico */
     background-color: rgba(255, 255, 255, 0.1);
     transition: background-color 0.3s ease;
     /* Adicionado para garantir consistência, embora não tenha borda visível */
@@ -237,7 +237,7 @@ body {
     color: var(--primary-blue);
     text-decoration: none;
     font-size: 15px;
-    border-radius: 4px;
+    border-radius: 4px; /* Mantido 4px para itens de resultado */
     background-color: #f8f9fa;
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     border: 2px solid var(--link-hover-border); /* Borda cinza claro padrão */
@@ -306,7 +306,7 @@ body {
     color: var(--text-light);
     text-decoration: none;
     font-size: 18px;
-    border-radius: 8px;
+    border-radius: 8px; /* Borda arredondada consistente de 8px */
     font-weight: bold;
     transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     border: 2px solid var(--primary-blue); /* Borda sólida consistente de 2px */
@@ -325,7 +325,7 @@ body {
 .collapsible-group {
     flex: 1 1 100%;
     flex-direction: column;
-    border-radius: 10px; /* Raio maior para o container */
+    border-radius: 8px; /* Raio do container do grupo ajustado para 8px */
     overflow: hidden; /* Mantido para caso haja conteúdo inesperado */
     background-color: transparent; /* Grupo em si não precisa de fundo */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra no grupo */
@@ -351,7 +351,7 @@ body {
     border: 2px solid var(--primary-blue);
     cursor: pointer;
     box-sizing: border-box;
-    border-radius: 8px; /* Bordas arredondadas por padrão */
+    border-radius: 8px; /* Bordas arredondadas consistentes de 8px */
     min-height: 50px;
     position: relative;
     z-index: 1; /* Botão acima do conteúdo */
@@ -408,8 +408,8 @@ body {
     border-left: 2px solid transparent;
     border-right: 2px solid transparent;
     border-bottom: 2px solid transparent;
-    border-bottom-left-radius: 8px; /* Arredonda cantos inferiores */
-    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px; /* Arredonda cantos inferiores para 8px */
+    border-bottom-right-radius: 8px; /* Arredonda cantos inferiores para 8px */
     /* Ajuste para alinhar com botão sem margem negativa */
     margin-top: -2px; /* Sobrepõe a borda inferior transparente do botão */
     position: relative;
@@ -434,7 +434,7 @@ body {
     color: var(--text-dark);
     text-decoration: none;
     font-size: 15px;
-    border-radius: 6px;
+    border-radius: 8px; /* Ajustado para 8px para consistência */
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     border: 2px solid var(--primary-blue); /* Borda azul principal consistente de 2px */
     box-sizing: border-box;
