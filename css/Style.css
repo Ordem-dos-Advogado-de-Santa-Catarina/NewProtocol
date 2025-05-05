@@ -145,10 +145,11 @@ body {
 /* Ajuste para a borda vermelha quando não há resultados (classe no PARENT) */
 .sticky-search-container.search-no-results .search-bar {
     border-color: var(--error-red); /* Aplica borda vermelha */
+    border-bottom-color: var(--error-red); /* Garante borda inferior vermelha no estado sem resultados */
 }
 /* Garante que a conexão visual funcione mesmo com borda vermelha */
 .sticky-search-container.search-no-results .search-bar.results-visible {
-    border-bottom-color: transparent;
+    border-bottom-color: transparent; /* Esconde a borda inferior para conectar visualmente com resultados vazios */
 }
 
 
@@ -181,9 +182,10 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     z-index: 99; /* Abaixo da barra de pesquisa */
     max-height: 0; /* Começa fechado */
-    overflow: hidden; /* Esconder o conteúdo e a barra de rolagem por padrão */
+    overflow: hidden; /* Esconder o conteúdo por padrão */
     /* Transições Sincronizadas - Apenas max-height e opacity */
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    /* Ajustado: max-height agora com 0.5s para animação um pouco mais suave */
+    transition: max-height 0.5s ease-out, opacity 0.3s ease-out;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -196,16 +198,26 @@ body {
     border-top: none; /* Garante que não haja borda superior */
     opacity: 0; /* Começa invisível para transição suave */
     pointer-events: none; /* Não interagir quando escondido */
+
+    /* Estilos para ocultar a barra de scroll */
+    -ms-overflow-style: none;  /* Para Internet Explorer e Edge */
+    scrollbar-width: none;  /* Para Firefox */
 }
+
+/* Oculta a barra de scroll para Webkit browsers (Chrome, Safari) */
+#search-results-container::-webkit-scrollbar {
+    display: none; /* Oculta a barra de scroll */
+}
+
 
 #search-results-container.active {
     /* Define uma altura MÁXIMA para evitar sobrepor o rodapé */
     /* Calculo: 100vh (altura total) - altura header/espaço acima - altura barra - altura rodapé - margens */
     /* Ajuste este valor conforme necessário, 60vh é um bom começo */
     max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 40px); /* 40px = margens extras */
-    overflow-y: auto; /* MOSTRA scroll APENAS se o conteúdo exceder max-height */
-    padding-top: 10px; /* Adiciona padding vertical quando ativo (SEM TRANSICAO)*/
-    padding-bottom: 10px; /* Adiciona padding vertical quando ativo (SEM TRANSICAO)*/
+    overflow-y: auto; /* MOSTRA scroll APENAS se o conteúdo exceder max-height (mas a barra está oculta) */
+    padding-top: 10px; /* Adiciona padding superior (SEM TRANSICAO)*/
+    padding-bottom: 10px; /* Adiciona padding inferior (SEM TRANSICAO)*/
     opacity: 1; /* Torna visível */
     pointer-events: auto; /* Permite interação */
     min-height: 50px; /* Altura mínima para mensagens como "Buscando..." ou "Nenhum resultado" */
@@ -389,7 +401,8 @@ body {
     overflow: hidden;
     padding: 0 15px; /* Padding horizontal fixo, vertical adicionado com .active */
     /* Transições Sincronizadas: Apenas max-height */
-    transition: max-height 0.3s ease-out;
+    /* Ajustado: max-height agora com 0.4s para animação um pouco mais rápida */
+    transition: max-height 0.4s ease-out; /* Duração ajustada */
     box-sizing: border-box;
     /* Borda inicial transparente, cor aparece com .active */
     border-left: 2px solid transparent;
