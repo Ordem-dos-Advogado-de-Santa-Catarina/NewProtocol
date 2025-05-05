@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Atualiza o ano no rodapé
     updateFooterYear();
 
-    // Ajustar altura dos colapsáveis ativos no resize
-    window.addEventListener('resize', debounce(adjustActiveCollapsibleHeight, 150)); // REATIVADO
+    // Ajustar altura dos colapsáveis ativos e resultados de pesquisa no resize
+    window.addEventListener('resize', debounce(adjustActiveCollapsibleHeightsAndSearchResults, 150));
 });
 
 // --- FUNÇÃO PARA ATUALIZAR O ANO DO RODAPÉ ---
@@ -23,7 +23,6 @@ function updateFooterYear() {
     if (yearSpan) {
         const currentYear = new Date().getFullYear();
         yearSpan.textContent = currentYear;
-        // console.log("Ano do rodapé atualizado para:", currentYear); // Comentado para reduzir logs
     } else {
         console.warn("Elemento com ID 'current-year' não encontrado no rodapé.");
     }
@@ -47,48 +46,143 @@ function debounce(func, wait, immediate) {
 	};
 };
 
+// --- FUNÇÃO setElementMaxHeightToScrollHeight - REVISADA PARA MAIOR SUAVIDADE ---
 // Função para definir o max-height de um elemento colapsável para sua altura total
 function setElementMaxHeightToScrollHeight(element) {
-    // Garante que o elemento esteja pronto para medição
-    element.style.transition = 'none'; // Desabilita transição temporariamente
-    element.style.maxHeight = 'none'; // Remove limite para medir altura real
+    // Esta função é específica para colapsáveis que ABREM
+    // e precisam de um reset e reflow para animar corretamente do 0.
+    // Não é ideal para o container de resultados da pesquisa que precisa
+    // calcular a altura máxima baseada no espaço disponível.
+
+    // Garante que o elemento esteja pronto para medição (já deve ter a classe .active se estiver abrindo)
+    // e que as transições CSS estejam temporariamente desabilitadas para a medição.
+    element.style.transition = 'none';
+    // Remove limite para medir altura real (incluindo padding do .active se aplicável)
+    // temporariamente definindo para 'none' ou um valor grande
+    element.style.maxHeight = '10000px'; // Use um valor grande em vez de 'none' para garantir medição precisa mesmo com padding
     const scrollHeight = element.scrollHeight; // Mede a altura total do conteúdo
 
-    // Reseta para 0 antes de aplicar o valor final (necessário para animação de abertura)
+    // Reseta para 0px ANTES de reabilitar a transição e aplicar o valor final.
+    // Isso define o ponto inicial da animação de abertura de forma mais explícita.
     element.style.maxHeight = '0px';
 
     // Força um reflow/repaint para garantir que o navegador processe o '0px'
-    // antes de aplicar o valor final e iniciar a transição CSS
+    // antes de iniciar a transição CSS.
     element.offsetHeight; // Leitura de offsetHeight força o reflow
 
-    // Reabilita a transição e aplica a altura final
-    element.style.transition = ''; // Reabilita transição (usará a definida no CSS)
-    element.style.maxHeight = scrollHeight + "px"; // Aplica altura para animar
+    // Reabilita a transição (usará a definida no CSS) e aplica a altura final
+    // Envolvemos em requestAnimationFrame para dar ao navegador a chance de processar
+    // as mudanças anteriores antes de iniciar a animação.
+    requestAnimationFrame(() => {
+        element.style.transition = ''; // Reabilita transição CSS
+        element.style.maxHeight = scrollHeight + "px"; // Aplica altura para animar
+    });
 
-    // console.log(`Max-height definido para ${scrollHeight}px para o elemento:`, element); // Log de depuração
+    // Opcional: Limpar o style.maxHeight após a transição para permitir que o conteúdo flua
+    // se ele mudar dinamicamente enquanto estiver aberto.
+    element.addEventListener('transitionend', function handler(e) {
+        // Verifica se a transição que terminou foi a de max-height
+        if (e.propertyName === 'max-height') {
+            // Só remove o maxHeight inline se ele ainda for o valor calculado,
+            // evitando problemas se o usuário fechar antes de terminar.
+            // E verifica se o elemento ainda está ativo.
+             // Verifica se o max-height calculado é o valor atual no elemento antes de setar para none
+            if (element.classList.contains('active') && parseFloat(element.style.maxHeight) > 0) {
+                 // Verifica se o elemento é um colapsável normal (não o container de pesquisa)
+                 // O container de pesquisa tem seu maxHeight ajustado dinamicamente
+                 if (!element.id || element.id !== 'search-results-container') {
+                     element.style.maxHeight = 'none';
+                 }
+            }
+            // Remove o listener para não executar múltiplas vezes na mesma transição de abertura
+            element.removeEventListener('transitionend', handler);
+        }
+    }, { once: false }); // Usamos false e removemos manualmente para garantir robustez
 }
 
-// Função para ajustar a altura de TODOS os colapsáveis ativos (no resize)
-function adjustActiveCollapsibleHeight() {
-    // console.log("Ajustando altura dos colapsáveis ativos no resize..."); // Log
-    document.querySelectorAll('.collapsible-content.active, #search-results-container.active').forEach(activeElement => {
-        // Apenas re-calcula a altura sem a parte de resetar para 0px,
-        // pois o elemento já está aberto. Queremos apenas ajustar se o conteúdo mudou.
+// --- NOVA FUNÇÃO para ajustar a altura SOMENTE do container de resultados da pesquisa ---
+function adjustSearchResultsContainerHeight() {
+    const resultsContainer = document.getElementById('search-results-container');
+    const searchBar = document.querySelector('.sticky-search-container .search-bar');
+    const footer = document.getElementById('Footer_footer'); // Adicionado ID ao footer no HTML
+
+    // Só ajusta se o container de resultados estiver ativo e os elementos necessários existirem
+    if (!resultsContainer || !resultsContainer.classList.contains('active') || !searchBar || !footer) {
+        return;
+    }
+
+    // Calcula o espaço disponível entre o final da barra de pesquisa e o início do rodapé
+    const searchBarBottom = searchBar.getBoundingClientRect().bottom;
+    const footerTop = footer.getBoundingClientRect().top;
+    const marginAboveFooter = 10; // Espaço extra para não "colar" no rodapé
+
+    const availableHeight = footerTop - searchBarBottom - marginAboveFooter;
+
+    // Garante que haja pelo menos um espaço mínimo, mas não negativo
+    const maxPossibleHeight = Math.max(0, availableHeight);
+
+    // Temporariamente remove max-height e transição para medir a altura real do conteúdo
+    resultsContainer.style.transition = 'none';
+    resultsContainer.style.maxHeight = 'none'; // Permite que o conteúdo ocupe a altura real
+
+    // Força um reflow para garantir a medição correta
+    resultsContainer.offsetHeight;
+
+    const contentScrollHeight = resultsContainer.scrollHeight;
+
+    // Determina a altura final: o menor entre a altura total do conteúdo e o espaço disponível
+    const finalHeight = Math.min(contentScrollHeight, maxPossibleHeight);
+
+    // Reabilita a transição e aplica a altura final
+    requestAnimationFrame(() => {
+         resultsContainer.style.transition = ''; // Reabilita a transição CSS
+         resultsContainer.style.maxHeight = finalHeight + 'px'; // Aplica a altura calculada
+    });
+
+    // Não remove maxHeight='none' aqui, pois a altura é dinâmica.
+    // A transição de fechamento definirá max-height para 0.
+}
+
+
+// Função para ajustar a altura de TODOS os colapsáveis ativos E resultados de pesquisa (no resize)
+function adjustActiveCollapsibleHeightsAndSearchResults() {
+    // Ajusta colapsáveis normais (define max-height para scrollHeight)
+    document.querySelectorAll('.collapsible-content.active').forEach(activeElement => {
+        // Recalcula a altura e aplica diretamente, sem animação durante o resize.
         activeElement.style.transition = 'none'; // Desabilita para evitar saltos
         activeElement.style.maxHeight = 'none'; // Mede
         const scrollHeight = activeElement.scrollHeight;
         activeElement.style.maxHeight = scrollHeight + "px"; // Define novo valor
-        // console.log(`Altura ajustada para ${scrollHeight}px no elemento:`, activeElement); // Log
 
-        // Reabilita transição após um pequeno delay ou no próximo frame
+        // Reabilita transição após um pequeno delay ou no próximo frame para futuras interações
         requestAnimationFrame(() => {
             activeElement.style.transition = '';
+             // Em resize, remove a style inline 'maxHeight: none' dos collapsibles normais
+             // que foi adicionada no transitionend da abertura para permitir que o conteúdo flua.
+             // Se o resize ocorrer DURANTE a transição de abertura, o transitionend pode não ter rodado ainda.
+             // Esta linha garante que, após o ajuste de resize (sem transição), o maxHeight
+             // não fique fixo se for um collapsible content normal.
+            if (!activeElement.id || activeElement.id !== 'search-results-container') {
+                 // Adiciona um pequeno delay para garantir que a aplicação do novo maxHeight
+                 // no resize seja processada antes de potencialmente remover a propriedade inline
+                 // no transitionend, caso ele ainda vá rodar.
+                 setTimeout(() => {
+                     // Verifica se o elemento AINDA está ativo e se a propriedade maxHeight inline
+                     // não foi alterada por outra interação (ex: fechamento rápido antes do resize terminar)
+                     if (activeElement.classList.contains('active') && activeElement.style.maxHeight !== '0px') {
+                          activeElement.style.maxHeight = 'none';
+                     }
+                 }, 50); // Pequeno delay
+            }
         });
     });
+
+    // Ajusta o container de resultados da pesquisa separadamente
+    adjustSearchResultsContainerHeight();
 }
 
 
-// Função para configurar o acordeão (collapsible) - REVISADA
+// --- FUNÇÃO setupCollapsible - REVISADA COM LÓGICA DE ANIMAÇÃO AJUSTADA ---
 function setupCollapsible() {
     const toggleButtons = document.querySelectorAll('.toggle-btn');
 
@@ -107,18 +201,26 @@ function setupCollapsible() {
         button.addEventListener('click', function() {
             const currentButton = this;
             const currentContent = currentButton.nextElementSibling;
-            const isOpening = !currentButton.classList.contains('active');
+            const isAlreadyActive = currentButton.classList.contains('active'); // Verifica estado ANTES de mudar
             const parentContainer = currentButton.closest('.buttons-container');
 
-            // Fecha outros acordeões no mesmo container
+            // Fecha outros acordeões no mesmo container (se houver)
             if (parentContainer) {
                 parentContainer.querySelectorAll('.collapsible-group').forEach(otherGroup => {
                     const otherButton = otherGroup.querySelector('.toggle-btn');
                     const otherContent = otherGroup.querySelector('.collapsible-content');
+                    // Fecha apenas se for OUTRO botão e se ele ESTIVER ativo
                     if (otherButton && otherButton !== currentButton && otherButton.classList.contains('active')) {
                         otherButton.classList.remove('active');
                         otherContent.classList.remove('active');
-                        otherContent.style.maxHeight = null; // CSS fará a animação para 0
+                        // Anima o fechamento (CSS cuida disso ao remover .active)
+                        // Definir explicitamente para 0px para garantir a animação
+                        // Usamos requestAnimationFrame para suavizar o início do fechamento
+                        requestAnimationFrame(() => {
+                            otherContent.style.maxHeight = '0px';
+                        });
+                         // Remove o max-height: none inline que pode ter sido adicionado no transitionend
+                        otherContent.style.maxHeight = ''; // Reseta para o valor CSS (0px quando não ativo)
                     }
                 });
             }
@@ -128,33 +230,45 @@ function setupCollapsible() {
             currentContent.classList.toggle('active');
 
             // Ajusta max-height para animar abertura/fechamento
-            if (isOpening) {
-                // Define o max-height para a altura do conteúdo para animar a abertura
+            if (!isAlreadyActive) { // Se NÃO estava ativo antes, significa que está ABRINDO
+                // Chama a função revisada para definir o max-height e animar a abertura
                 setElementMaxHeightToScrollHeight(currentContent);
-            } else {
-                // Anima o fechamento (CSS cuida disso ao remover .active e resetar max-height)
-                currentContent.style.maxHeight = null;
+            } else { // Se estava ativo antes, significa que está FECHANDO
+                // Anima o fechamento definindo max-height para 0px.
+                // A transição CSS fará a animação suave.
+                // Precisamos definir um valor numérico para a transição de fechamento funcionar corretamente.
+                // Usar requestAnimationFrame pode ajudar a suavizar o início do fechamento também.
+                requestAnimationFrame(() => {
+                    currentContent.style.maxHeight = '0px';
+                });
+                 // Remove o max-height: none inline que pode ter sido adicionado no transitionend
+                currentContent.style.maxHeight = ''; // Reseta para o valor CSS (0px quando não ativo)
             }
         });
+
+        // Pré-calcula altura se já estiver ativo no carregamento (se aplicável no futuro)
+        // if (button.classList.contains('active') && content.classList.contains('active')) {
+        //    content.style.maxHeight = 'none'; // Permite fluxo natural inicial
+        //    adjustActiveCollapsibleHeight(); // Ajusta para a altura correta
+        // }
     });
 }
 
 
-// Função para configurar a pesquisa - REVISADA
+// Função para configurar a pesquisa - SEM ALTERAÇÕES NECESSÁRIAS AQUI
 function setupSearch() {
     const stickyContainer = document.querySelector('.sticky-search-container');
     const searchBar = stickyContainer?.querySelector('.search-bar');
     const searchInput = searchBar?.querySelector('input');
     const searchButton = searchBar?.querySelector('button');
     const resultsContainer = document.getElementById('search-results-container');
+    const footer = document.getElementById('Footer_footer'); // Adicionado ID ao footer
 
-    if (!stickyContainer || !searchBar || !searchInput || !searchButton || !resultsContainer) {
-        console.error("Elementos da pesquisa não encontrados.");
+    if (!stickyContainer || !searchBar || !searchInput || !searchButton || !resultsContainer || !footer) {
+        console.error("Elementos da pesquisa ou rodapé não encontrados.");
         return;
     }
-    // console.log("Elementos da pesquisa encontrados.");
 
-    // Lista de arquivos HTML para pesquisar (SEM ALTERAÇÕES)
     const filesToSearch = [
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Index.html',
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/Setores/Secretaria.html',
@@ -175,7 +289,6 @@ function setupSearch() {
         'https://intranet.oab-sc.org.br/arearestrita/NewProtocol/manuais/Manuais.html',
     ];
 
-    // Função assíncrona para buscar e analisar um arquivo HTML (SEM ALTERAÇÕES)
     async function fetchAndSearchFile(rootRelativePath, searchTerm) {
         try {
             const urlWithCacheBuster = `${rootRelativePath}?v=${Date.now()}`;
@@ -240,12 +353,12 @@ function setupSearch() {
         }
     }
 
-    // --- FUNÇÃO displayResults (REVISADA PARA ABERTURA CORRETA) ---
+    // --- FUNÇÃO displayResults (REVISADA PARA ABERTURA CORRETA E ESTADO DE ERRO) ---
     function displayResults(results) {
         resultsContainer.innerHTML = ''; // Limpa
-        resultsContainer.classList.remove('active', 'no-results-found'); // Reseta classes
-        searchBar.classList.remove('results-visible');
-        resultsContainer.style.maxHeight = null; // Reseta max-height para CSS controlar fechamento
+        resultsContainer.classList.remove('active', 'no-results-found'); // Reseta classes do container
+        searchBar.classList.remove('results-visible', 'no-results-found'); // Reseta classes da barra
+        resultsContainer.style.maxHeight = null; // Reseta max-height para CSS/JS controlar fechamento/abertura
 
         const hasInput = searchInput.value.trim().length >= 2;
 
@@ -257,94 +370,114 @@ function setupSearch() {
             const uniqueResults = Array.from(uniqueResultsMap.values());
 
             if (uniqueResults.length > 0) {
-                // console.log(`Exibindo ${uniqueResults.length} resultados únicos.`);
                 uniqueResults.forEach(result => {
                     resultsContainer.appendChild(result.element);
                 });
+                // Adiciona a classe active para iniciar a animação de abertura CSS (padding, opacity)
+                resultsContainer.classList.add('active');
+                searchBar.classList.add('results-visible');
+
+                // Ajusta o max-height dinamicamente para a altura do conteúdo, limitada pelo espaço disponível
+                adjustSearchResultsContainerHeight();
+
             } else {
-                // console.log("Nenhum resultado encontrado para exibir.");
+                // Nenhum resultado encontrado
                 const noResultsMsg = document.createElement('p');
                 noResultsMsg.classList.add('no-results-message');
                 noResultsMsg.textContent = 'Nenhum resultado encontrado.';
                 resultsContainer.appendChild(noResultsMsg);
-                resultsContainer.classList.add('no-results-found');
+
+                // Adiciona as classes para estado "sem resultados"
+                resultsContainer.classList.add('active', 'no-results-found');
+                searchBar.classList.add('results-visible', 'no-results-found'); // Adiciona classe também na barra
+
+                // Ajusta o max-height para a mensagem "Nenhum resultado", limitada pelo espaço
+                adjustSearchResultsContainerHeight();
             }
 
-            // Adiciona a classe active para iniciar a animação de abertura CSS (padding, opacity)
-            resultsContainer.classList.add('active');
-            searchBar.classList.add('results-visible');
-
-            // Define o max-height dinamicamente para a altura do conteúdo
-            setElementMaxHeightToScrollHeight(resultsContainer);
-
         } else {
-             // Se não há input suficiente, garante que esteja fechado (CSS cuida disso)
+             // Input vazio
              resultsContainer.classList.remove('active', 'no-results-found');
-             searchBar.classList.remove('results-visible');
-             // max-height já foi resetado para null no início da função
+             searchBar.classList.remove('results-visible', 'no-results-found');
+             // Anima o fechamento definindo para 0px
+             requestAnimationFrame(() => {
+                 resultsContainer.style.maxHeight = '0px';
+             });
         }
     }
     // --- FIM DA FUNÇÃO displayResults ---
 
-    // Função principal que coordena a busca (AJUSTE MENOR NO LOADING)
+    // Função principal que coordena a busca
     async function performSearch() {
         const searchTerm = searchInput.value.trim();
-        // console.log(`Iniciando busca por: "${searchTerm}"`);
 
         if (searchTerm.length < 2) {
-            // console.log("Termo de busca muito curto, limpando resultados.");
             displayResults([]); // Limpa e fecha
             return;
         }
 
         // Mostra indicador de loading
         resultsContainer.innerHTML = '<p class="no-results-message">Buscando...</p>';
-        resultsContainer.classList.remove('no-results-found');
-        resultsContainer.classList.add('active');
+        resultsContainer.classList.remove('no-results-found'); // Remove estado de erro anterior
+        searchBar.classList.remove('no-results-found'); // Remove estado de erro anterior da barra
+        resultsContainer.classList.add('active'); // Ativa para mostrar "Buscando"
         searchBar.classList.add('results-visible');
-        // Define uma altura MÍNIMA enquanto busca, mas permite expandir se necessário
-        // Usaremos setElementMaxHeightToScrollHeight APÓS a busca, então aqui pode ser 0 ou um valor pequeno
-        resultsContainer.style.maxHeight = '60px'; // Altura suficiente para a msg "Buscando..."
+
+        // Define uma altura MÍNIMA enquanto busca para a msg "Buscando..." ser visível
+        // Usaremos adjustSearchResultsContainerHeight APÓS a busca para ajustar à altura final
+        // Temporariamente setamos um max-height fixo para a mensagem de loading
+         requestAnimationFrame(() => {
+              resultsContainer.style.transition = 'none'; // Desabilita transição para o estado loading
+              resultsContainer.style.maxHeight = '60px'; // Altura suficiente para a msg "Buscando..."
+              resultsContainer.offsetHeight; // Força reflow
+              resultsContainer.style.transition = ''; // Reabilita transição
+         });
+
 
         const searchPromises = filesToSearch.map(file => fetchAndSearchFile(file, searchTerm));
 
         try {
             const resultsArrays = await Promise.all(searchPromises);
             const combinedResults = resultsArrays.flat();
-            // console.log(`Busca concluída. Resultados brutos: ${combinedResults.length}.`);
-            displayResults(combinedResults); // Exibe resultados e ajusta altura
+            displayResults(combinedResults); // Exibe resultados e ajusta altura final
 
         } catch (error) {
             console.error("Erro geral durante a pesquisa:", error);
             resultsContainer.innerHTML = '<p class="no-results-message">Ocorreu um erro durante a pesquisa.</p>';
+
+            // Adiciona as classes para estado "sem resultados" / erro
             resultsContainer.classList.add('active', 'no-results-found');
-            searchBar.classList.add('results-visible');
-            // Ajusta altura para a mensagem de erro
-            setElementMaxHeightToScrollHeight(resultsContainer);
+            searchBar.classList.add('results-visible', 'no-results-found'); // Adiciona classe também na barra
+
+             // Ajusta altura para a mensagem de erro usando a função auxiliar
+             adjustSearchResultsContainerHeight();
         }
     }
 
     // Debounced search function
     const debouncedSearch = debounce(performSearch, 350);
 
-    // Listeners (SEM ALTERAÇÕES)
+    // Listeners
     searchInput.addEventListener('input', debouncedSearch);
     searchButton.addEventListener('click', performSearch);
     searchInput.addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
             event.preventDefault();
-            if (typeof debouncedSearch !== 'undefined' && debouncedSearch.__timeout) {
-                 clearTimeout(debouncedSearch.__timeout);
-            }
+            // Cancela o debounce se existir e executa imediatamente
+             if (typeof debouncedSearch.cancel === 'function') { // Verifica se o debounce tem cancel
+                 debouncedSearch.cancel();
+             } else if (typeof debouncedSearch !== 'undefined' && debouncedSearch.hasOwnProperty('__timeout')) { // Verifica propriedade interna se não houver cancel
+                clearTimeout(debouncedSearch.__timeout); // Fallback se não houver .cancel
+             }
             performSearch();
         }
     });
 
-    // Limpa resultados se input esvaziado
      searchInput.addEventListener('input', function() {
         if (searchInput.value.trim() === '') {
-        //    console.log("Input vazio, limpando resultados.");
-            if (typeof debouncedSearch !== 'undefined' && debouncedSearch.__timeout) {
+            if (typeof debouncedSearch.cancel === 'function') {
+                 debouncedSearch.cancel();
+            } else if (typeof debouncedSearch !== 'undefined' && debouncedSearch.hasOwnProperty('__timeout')) {
                clearTimeout(debouncedSearch.__timeout);
             }
            displayResults([]); // Limpa e fecha
@@ -352,18 +485,60 @@ function setupSearch() {
     });
 }
 
-// Função para fechar o container de resultados ao clicar fora (SEM ALTERAÇÕES)
+// Função para fechar o container de resultados ao clicar fora - SEM ALTERAÇÕES
 function handleClickOutside(event) {
     const resultsContainer = document.getElementById('search-results-container');
     const stickyContainer = document.querySelector('.sticky-search-container');
     const searchBar = stickyContainer?.querySelector('.search-bar');
 
     if (stickyContainer && resultsContainer && resultsContainer.classList.contains('active') && !stickyContainer.contains(event.target)) {
-        // console.log("Clique fora detectado, fechando resultados.");
+        // Remove classes de estado e anima o fechamento
         resultsContainer.classList.remove('active', 'no-results-found');
-        resultsContainer.style.maxHeight = null; // Deixa o CSS fechar
-        if (searchBar) {
-            searchBar.classList.remove('results-visible');
-        }
+         searchBar.classList.remove('results-visible', 'no-results-found');
+
+        // Anima o fechamento definindo para 0px
+        requestAnimationFrame(() => {
+            // Garante que a transição esteja habilitada para animar o fechamento
+            resultsContainer.style.transition = ''; // Reseta para a transição CSS
+            resultsContainer.style.maxHeight = '0px';
+        });
+
     }
+}
+
+// Modifica a função de resize para incluir o ajuste dos resultados da pesquisa
+function adjustActiveCollapsibleHeightsAndSearchResults() {
+     // Ajusta colapsáveis normais (define max-height para scrollHeight)
+    document.querySelectorAll('.collapsible-content.active').forEach(activeElement => {
+        // Recalcula a altura e aplica diretamente, sem animação durante o resize.
+        activeElement.style.transition = 'none'; // Desabilita para evitar saltos
+        activeElement.style.maxHeight = 'none'; // Mede (permite fluxo natural temporariamente)
+        const scrollHeight = activeElement.scrollHeight;
+        activeElement.style.maxHeight = scrollHeight + "px"; // Define novo valor
+
+        // Reabilita transição após um pequeno delay ou no próximo frame para futuras interações
+        requestAnimationFrame(() => {
+            activeElement.style.transition = '';
+             // Em resize, remove a style inline 'maxHeight: none' dos collapsibles normais
+             // que foi adicionada no transitionend da abertura para permitir que o conteúdo flua.
+             // Se o resize ocorrer DURANTE a transição de abertura, o transitionend pode não ter rodado ainda.
+             // Esta linha garante que, após o ajuste de resize (sem transição), o maxHeight
+             // não fique fixo se for um collapsible content normal.
+            if (!activeElement.id || activeElement.id !== 'search-results-container') {
+                 // Adiciona um pequeno delay para garantir que a aplicação do novo maxHeight
+                 // no resize seja processada antes de potencialmente remover a propriedade inline
+                 // no transitionend, caso ele ainda vá rodar.
+                 setTimeout(() => {
+                     // Verifica se o elemento AINDA está ativo e se a propriedade maxHeight inline
+                     // não foi alterada por outra interação (ex: fechamento rápido antes do resize terminar)
+                     if (activeElement.classList.contains('active') && parseFloat(activeElement.style.maxHeight) > 0) {
+                          activeElement.style.maxHeight = 'none';
+                     }
+                 }, 50); // Pequeno delay
+            }
+        });
+    });
+
+    // Ajusta o container de resultados da pesquisa separadamente
+    adjustSearchResultsContainerHeight();
 }

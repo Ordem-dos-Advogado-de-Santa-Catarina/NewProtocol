@@ -1,30 +1,9 @@
 /* Arquivo: css/style.css */
 
-:root {
-    /* Definindo cores como variáveis para fácil manutenção */
-    --primary-blue: #0267a6;
-    --primary-blue-dark: #004a7d;
-    --header-bg: rgb(57, 73, 171);
-    --light-gray-bg: #f0f0f0;
-    --white: #ffffff;
-    --text-light: #ffffff;
-    --text-dark: #333;
-    --text-muted: #6c757d;
-    --link-hover-bg: #e9ecef;
-    --link-hover-border: #dee2e6;
-    --sublink-bg: #e9ecef;
-    --sublink-border: #e9ecef; /* Borda padrão sublink */
-    --error-red: red;
-    --footer-height: 54px; /* Altura estimada do rodapé + alguma margem */
-    --search-bar-height: 52px; /* Altura estimada da barra de pesquisa + bordas + padding */
-    --sticky-container-top: 20px; /* Espaço acima do container sticky */
-}
-
-
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background-color: var(--light-gray-bg); /* Fundo cinza claro */
+    background-color: #f0f0f0; /* Fundo cinza claro */
     display: flex;
     flex-direction: column;
     min-height: 100vh; /* Garante que o body ocupe toda a altura da viewport */
@@ -33,7 +12,7 @@ body {
 /* ESTILOS DO CABEÇALHO */
 .page-header {
     width: 100%;
-    background-color: var(--header-bg); /* Cor do cabeçalho */
+    background-color: rgb(57, 73, 171); /* Cor do cabeçalho */
     padding: 5px 0; /* Padding vertical reduzido */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra opcional */
     position: relative; /* Mantém no fluxo normal inicialmente */
@@ -42,7 +21,7 @@ body {
 
 /*  TEXTOS DO HEADER BRANCOS E MESMO TAMANHO DE FONTE */
 .page-header * {
-    color: var(--text-light);
+    color: white;
     font-size: 16px; /* Tamanho de fonte padrão para textos do header */
 }
 
@@ -95,7 +74,7 @@ body {
 
 .home-button:hover {
     background-color: rgba(255, 255, 255, 0.2);
-    color: var(--text-light);
+    color: #ffffff;
 }
 /* FIM DOS ESTILOS DO CABEÇALHO */
 
@@ -103,7 +82,7 @@ body {
 /* CONTAINER STICKY PARA BARRA DE PESQUISA E RESULTADOS */
 .sticky-search-container {
     position: sticky;
-    top: var(--sticky-container-top); /* Usa variável para o espaço superior */
+    top: 20px;
     margin-top: 20px;
     margin-bottom: 20px;
     width: 80%;
@@ -121,18 +100,18 @@ body {
 /* BARRA DE PESQUISA (dentro do sticky-container) */
 .search-bar {
     width: 100%;
-    background-color: var(--white);
+    background-color: white;
     border-radius: 8px; /* Bordas arredondadas por padrão */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 8px;
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    border: 2px solid var(--primary-blue); /* Borda azul padrão */
+    border: 2px solid #0267a6; /* Borda azul padrão */
     position: relative; /* Necessário para z-index e posicionamento do container de resultados */
     z-index: 100; /* Garante que fique acima dos resultados */
-    /* Transição suave do arredondamento da borda inferior e cor da borda */
-    transition: border-bottom-left-radius 0.2s ease, border-bottom-right-radius 0.2s ease, border-color 0.2s ease, border-bottom-color 0.2s ease;
+    /* Transição suave do arredondamento da borda inferior */
+    transition: border-bottom-left-radius 0.2s ease, border-bottom-right-radius 0.2s ease, border-color 0.3s ease; /* Adicionado border-color à transição */
 }
 
 /* Quando os resultados estiverem visíveis (JS adicionará esta classe) */
@@ -142,13 +121,14 @@ body {
     border-bottom-color: transparent; /* Esconde a borda inferior para conectar visualmente */
 }
 
-/* Ajuste para a borda vermelha quando não há resultados (classe no PARENT) */
-.sticky-search-container.search-no-results .search-bar {
-    border-color: var(--error-red); /* Aplica borda vermelha */
+/* Adicionado: Borda vermelha na barra de pesquisa quando não há resultados */
+.search-bar.no-results-found {
+    border-color: red;
 }
-/* Garante que a conexão visual funcione mesmo com borda vermelha */
-.sticky-search-container.search-no-results .search-bar.results-visible {
-    border-bottom-color: transparent;
+
+/* Ajuste: Garante que a borda inferior vermelha também fique transparente */
+.search-bar.results-visible.no-results-found {
+     border-bottom-color: transparent;
 }
 
 
@@ -176,79 +156,82 @@ body {
     top: calc(100% - 2px); /* Começa exatamente onde a barra termina, sobrepondo a borda removida */
     left: 0;
     right: 0;
-    background-color: var(--white);
+    background-color: white;
     border-radius: 0 0 8px 8px; /* Cantos arredondados apenas embaixo */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     z-index: 99; /* Abaixo da barra de pesquisa */
     max-height: 0; /* Começa fechado */
-    overflow: hidden; /* Esconder o conteúdo e a barra de rolagem por padrão */
-    /* Transições Sincronizadas - Apenas max-height e opacity */
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    /* overflow: hidden; Removido, overflow-y será controlado por JS/Active state */
+    /* Transições sincronizadas - Ajustado */
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, border-color 0.3s ease;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 5px;
-    padding: 0 15px; /* Padding horizontal, vertical será aplicado pela classe .active */
-    /* Borda padrão (azul) */
-    border-left: 2px solid var(--primary-blue);
-    border-right: 2px solid var(--primary-blue);
-    border-bottom: 2px solid var(--primary-blue);
+    padding: 0 15px; /* Padding vertical será aplicado pela classe .active */
+    /* Borda padrão (azul), será alterada pela classe .no-results-found se necessário */
+    border-left: 2px solid #0267a6;
+    border-right: 2px solid #0267a6;
+    border-bottom: 2px solid #0267a6;
     border-top: none; /* Garante que não haja borda superior */
     opacity: 0; /* Começa invisível para transição suave */
     pointer-events: none; /* Não interagir quando escondido */
 }
 
 #search-results-container.active {
-    /* Define uma altura MÁXIMA para evitar sobrepor o rodapé */
-    /* Calculo: 100vh (altura total) - altura header/espaço acima - altura barra - altura rodapé - margens */
-    /* Ajuste este valor conforme necessário, 60vh é um bom começo */
-    max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 40px); /* 40px = margens extras */
-    overflow-y: auto; /* MOSTRA scroll APENAS se o conteúdo exceder max-height */
-    padding-top: 10px; /* Adiciona padding vertical quando ativo (SEM TRANSICAO)*/
-    padding-bottom: 10px; /* Adiciona padding vertical quando ativo (SEM TRANSICAO)*/
+    /* max-height é definido pelo JS para conteúdo dinâmico e limitado */
+    overflow-y: auto; /* Adiciona scroll vertical SE necessário (se max-height for menor que scrollHeight) */
+    padding-top: 10px; /* Adiciona padding superior (SEM TRANSICAO)*/
+    padding-bottom: 10px; /* Adiciona padding inferior (SEM TRANSICAO)*/
     opacity: 1; /* Torna visível */
     pointer-events: auto; /* Permite interação */
-    min-height: 50px; /* Altura mínima para mensagens como "Buscando..." ou "Nenhum resultado" */
+    /* A transição para max-height e opacity já está definida no seletor base */
+    /* A cor da borda padrão já está definida no seletor base */
 }
 
-/* Estilo para quando não houver resultados (classe no PARENT) */
-.sticky-search-container.search-no-results #search-results-container {
-    border-left-color: var(--error-red);
-    border-right-color: var(--error-red);
-    border-bottom-color: var(--error-red);
+/* Estilo para quando não houver resultados (borda vermelha no container) */
+#search-results-container.active.no-results-found { /* Aplicar .active também */
+    border-left-color: red;
+    border-right-color: red;
+    border-bottom-color: red;
 }
 
 
 .search-result-item {
     display: block;
     padding: 10px 15px;
-    color: var(--primary-blue);
+    color: #0267a6;
     text-decoration: none;
     font-size: 15px;
     border-radius: 4px;
     background-color: #f8f9fa;
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    border: 2px solid var(--link-hover-border); /* Borda cinza claro padrão */
+    border: 2px solid #e9ecef; /* Borda consistente de 2px */
     box-sizing: border-box;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    outline: none;
 }
 
 .search-result-item:hover {
-    background-color: var(--link-hover-bg);
-    color: var(--primary-blue-dark);
-    border-color: var(--link-hover-border); /* Mantém a borda no hover */
+    background-color: #e9ecef;
+    color: #004a7d;
+    border-color: #dee2e6; /* Borda consistente no hover */
 }
 
 .no-results-message {
     padding: 15px;
     text-align: center;
-    color: var(--text-muted); /* Cor padrão */
+    color: #6c757d; /* Cor padrão */
     font-style: italic;
-    margin: auto 0; /* Centraliza verticalmente se for o único item */
 }
 
-/* Ajuste para a mensagem de erro ficar vermelha também (quando a classe está no parent) */
-.sticky-search-container.search-no-results .no-results-message {
-    color: var(--error-red); /* Mensagem vermelha para combinar com a borda */
+/* Ajuste: a mensagem de erro fica vermelha quando o container tem a classe */
+#search-results-container.no-results-found .no-results-message {
+    color: red; /* Mensagem vermelha para combinar com a borda */
 }
 
 
@@ -259,7 +242,7 @@ body {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    padding-bottom: calc(var(--footer-height) + 20px); /* Espaço para o rodapé sticky + margem */
+    padding-bottom: 70px; /* Espaço para o rodapé sticky */
     box-sizing: border-box;
 }
 
@@ -290,14 +273,14 @@ body {
     flex: 1 1 calc(50% - 10px);
     padding: 15px;
     text-align: center;
-    background-color: var(--primary-blue); /* Cor de fundo principal */
-    color: var(--text-light);
+    background-color: #0267a6; /* Cor de fundo principal */
+    color: white;
     text-decoration: none;
     font-size: 18px;
     border-radius: 8px;
     font-weight: bold;
     transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    border: 2px solid var(--primary-blue); /* Borda sólida consistente de 2px */
+    border: 2px solid #0267a6; /* Borda sólida consistente de 2px */
     box-shadow: none; /* Remove a sombra interna anterior */
     align-items: center;
     justify-content: center;
@@ -306,8 +289,8 @@ body {
 }
 
 .btn:hover {
-    background-color: var(--primary-blue-dark); /* Cor de fundo mais escura no hover */
-    border-color: var(--primary-blue-dark); /* Cor da borda acompanha o fundo no hover */
+    background-color: #004a7d; /* Cor de fundo mais escura no hover */
+    border-color: #004a7d; /* Cor da borda acompanha o fundo no hover */
 }
 
 .collapsible-group {
@@ -329,14 +312,14 @@ body {
     width: 100%;
     padding: 15px;
     text-align: left;
-    background-color: var(--primary-blue); /* Cor de fundo principal */
-    color: var(--text-light);
+    background-color: #0267a6; /* Cor de fundo principal */
+    color: white;
     font-size: 18px;
     font-weight: bold;
     /* Transições Sincronizadas: adicionado border-radius */
     transition: background-color 0.3s ease, border-color 0.3s ease, border-radius 0.3s ease;
-    /* Borda inicial */
-    border: 2px solid var(--primary-blue);
+    /* Borda inicial transparente para manter o layout, cor aparece no .active */
+    border: 2px solid transparent;
     cursor: pointer;
     box-sizing: border-box;
     border-radius: 8px; /* Bordas arredondadas por padrão */
@@ -345,24 +328,25 @@ body {
     z-index: 1; /* Botão acima do conteúdo */
     box-shadow: none;
     outline: none;
+    /* Remove margem negativa, ajuste será feito pelo posicionamento */
 }
 
 /* Estilo da borda SOMENTE quando o botão estiver ativo */
 .toggle-btn.active {
-    border-color: var(--primary-blue); /* Garante a cor da borda quando ativo */
+    border-color: #0267a6; /* Borda azul aparece quando ativo */
     border-bottom-left-radius: 0; /* Remove arredondamento inferior */
     border-bottom-right-radius: 0;
     border-bottom-color: transparent; /* Conecta visualmente com conteúdo */
 }
 
 .toggle-btn:hover {
-    background-color: var(--primary-blue-dark); /* Fundo mais escuro no hover */
-    border-color: var(--primary-blue-dark); /* Borda acompanha no hover */
+    background-color: #004a7d; /* Fundo mais escuro no hover */
+    /* Borda só muda no hover se já estiver ativa */
 }
 
 .toggle-btn.active:hover {
-    background-color: var(--primary-blue-dark);
-    border-color: var(--primary-blue-dark); /* Borda acompanha cor de fundo no hover */
+    background-color: #004a7d;
+    border-color: #004a7d; /* Borda acompanha cor de fundo no hover */
     border-bottom-color: transparent; /* Mantém conexão */
 }
 
@@ -380,19 +364,19 @@ body {
 }
 
 .collapsible-content {
-    background-color: var(--white); /* Fundo branco para o conteúdo */
+    background-color: white; /* Fundo branco para o conteúdo */
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    justify-content: space-between; /* Ou flex-start se preferir alinhar à esquerda */
+    justify-content: space-between;
     max-height: 0; /* Começa fechado */
     overflow: hidden;
     padding: 0 15px; /* Padding horizontal fixo, vertical adicionado com .active */
-    /* Transições Sincronizadas: Apenas max-height */
-    transition: max-height 0.3s ease-out;
+    /* Transições Sincronizadas: REMOVIDO padding-top, padding-bottom da transição */
+    transition: max-height 0.3s ease-out, border-color 0.3s ease-out;
     box-sizing: border-box;
     /* Borda inicial transparente, cor aparece com .active */
-    border-left: 2px solid transparent;
+    border-left: 2:px solid transparent;
     border-right: 2px solid transparent;
     border-bottom: 2px solid transparent;
     border-bottom-left-radius: 8px; /* Arredonda cantos inferiores */
@@ -407,23 +391,23 @@ body {
 .collapsible-content.active {
     padding-top: 15px;    /* Adiciona padding superior (SEM TRANSICAO) */
     padding-bottom: 15px; /* Adiciona padding inferior (SEM TRANSICAO) */
-    border-left-color: var(--primary-blue);
-    border-right-color: var(--primary-blue);
-    border-bottom-color: var(--primary-blue);
-    /* max-height é controlado pelo JS para colapsáveis, mas NÃO para resultados da pesquisa */
+    border-left-color: #0267a6;
+    border-right-color: #0267a6;
+    border-bottom-color: #0267a6;
+    /* max-height é controlado pelo JS */
 }
 
 .sub-link {
     flex: 1 1 calc(50% - 10px);
     padding: 12px;
     text-align: center;
-    background-color: var(--sublink-bg); /* Fundo cinza claro */
-    color: var(--text-dark);
+    background-color: #e9ecef; /* Fundo cinza claro */
+    color: #333;
     text-decoration: none;
     font-size: 15px;
     border-radius: 6px;
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    border: 2px solid var(--primary-blue); /* Borda azul principal consistente de 2px */
+    border: 2px solid #0267a6; /* Borda azul principal consistente de 2px */
     box-sizing: border-box;
     min-height: 50px;
     display: flex;
@@ -434,14 +418,14 @@ body {
 }
 
 .sub-link:hover {
-    background-color: var(--link-hover-bg); /* Fundo cinza mais escuro no hover */
+    background-color: #dee2e6; /* Fundo cinza mais escuro no hover */
     color: #000;
-    border-color: var(--primary-blue-dark); /* Borda azul mais escura no hover, consistente */
+    border-color: #004a7d; /* Borda azul mais escura no hover, consistente */
 }
 /* FIM DOS ESTILOS COLAPSÁVEIS */
 
 
-/* ESTILOS PARA O IFRAME RECORTADO (SE NECESSÁRIO) - SEM ALTERAÇÕES */
+/* ESTILOS PARA O IFRAME RECORTADO (SE NECESSÁRIO) */
 .iframe-clipper {
     width: 375px;
     height: 150px;
@@ -463,40 +447,33 @@ body {
 
 
 /* ESTILOS DO RODAPÉ */
-.page-footer {
+#Footer_footer { /* Usando o ID para maior especificidade */
     width: 100%;
-    background-color: var(--header-bg); /* Usa a mesma cor do header */
-    color: var(--text-light);
+    background-color: rgb(57, 73, 171);
+    color: #ffffff;
     text-align: center;
     padding: 15px 0;
     font-size: 14px;
      position: sticky;
      bottom: 0;
-     z-index: 102; /* Acima do conteúdo e da pesquisa */
-     margin-top: auto; /* Garante que vá para o final se o conteúdo for pequeno */
+     z-index: 102;
+     margin-top: auto;
      border: 2px solid transparent; /* Consistência */
      box-sizing: border-box;
-     height: var(--footer-height); /* Define altura explícita para cálculo de max-height */
 }
 /* FIM DOS ESTILOS DO RODAPÉ */
 
-/* AJUSTES RESPONSIVOS - SEM ALTERAÇÕES RELEVANTES PARA O PEDIDO */
+/* AJUSTES RESPONSIVOS - SEM ALTERAÇÕES */
 @media (max-width: 768px) {
-     :root {
-         --sticky-container-top: 15px; /* Ajusta no mobile */
-     }
      .sticky-search-container,
      .buttons-container {
          width: 90%;
          max-width: none;
      }
      .sticky-search-container {
+         top: 15px;
          margin-top: 15px;
          margin-bottom: 15px;
-     }
-     #search-results-container.active {
-        /* Pode precisar ajustar o max-height em telas menores */
-        max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 30px);
      }
     .btn { flex-basis: calc(50% - 10px); }
     .collapsible-group { flex-basis: 100%; }
@@ -504,24 +481,16 @@ body {
     .header-content { padding: 5px 10px; }
 }
 @media (max-width: 600px) {
-     :root {
-         --sticky-container-top: 10px; /* Ajusta no mobile */
-         --footer-height: 48px; /* Ajusta altura do footer se necessário */
-         --search-bar-height: 48px; /* Ajusta altura da barra se necessário */
-     }
      .sticky-search-container,
      .buttons-container {
          width: 95%;
          gap: 15px;
      }
      .sticky-search-container {
+         top: 10px;
          margin-top: 10px;
          margin-bottom: 10px;
          padding: 0;
-     }
-      #search-results-container.active {
-        /* Recalcula max-height para telas pequenas */
-        max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 20px);
      }
      .btn,
      .collapsible-group { flex-basis: 100%; }
@@ -535,5 +504,5 @@ body {
      #search-results-container { padding-left: 10px; padding-right: 10px; gap: 4px; }
      .search-result-item { padding: 8px 12px; font-size: 14px; }
      .no-results-message { padding: 12px; font-size: 14px; }
-     .page-footer { padding: 10px 0; font-size: 13px; height: var(--footer-height); }
+     #Footer_footer { padding: 10px 0; font-size: 13px; } /* Usando ID */
 }
