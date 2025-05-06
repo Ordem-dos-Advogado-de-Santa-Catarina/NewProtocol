@@ -183,9 +183,9 @@ body {
     z-index: 99; /* Abaixo da barra de pesquisa */
     max-height: 0; /* Começa fechado */
     overflow: hidden; /* Esconder o conteúdo por padrão */
-    /* Transições Sincronizadas - Apenas max-height e opacity */
+    /* Transições Sincronizadas - Apenas max-height */
     /* Ajustado: max-height agora com 0.5s para animação um pouco mais suave */
-    transition: max-height 0.5s ease-out, opacity 0.3s ease-out;
+    transition: max-height 0.5s ease-out; /* Opacidade e Transform serão controlados pela classe 'button-initial-state' nos itens */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -196,7 +196,7 @@ body {
     border-right: 2px solid var(--primary-blue);
     border-bottom: 2px solid var(--primary-blue);
     border-top: none; /* Garante que não haja borda superior */
-    opacity: 0; /* Começa invisível para transição suave */
+    /* opacity: 0; <-- Removido daqui, o controle de visibilidade é feito por max-height e pointer-events */
     pointer-events: none; /* Não interagir quando escondido */
 
     /* Estilos para ocultar a barra de scroll */
@@ -218,7 +218,7 @@ body {
     overflow-y: auto; /* MOSTRA scroll APENAS se o conteúdo exceder max-height (mas a barra está oculta) */
     padding-top: 10px; /* Adiciona padding superior (SEM TRANSICAO)*/
     padding-bottom: 10px; /* Adiciona padding inferior (SEM TRANSICAO)*/
-    opacity: 1; /* Torna visível */
+    /* opacity: 1; <-- Removido daqui, a visibilidade é controlada por max-height e pointer-events */
     pointer-events: auto; /* Permite interação */
     min-height: 50px; /* Altura mínima para mensagens como "Buscando..." ou "Nenhum resultado" */
 }
@@ -239,15 +239,19 @@ body {
     font-size: 15px;
     border-radius: 4px; /* Mantido 4px para itens de resultado */
     background-color: #f8f9fa;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    border: 2px solid var(--link-hover-border); /* Borda cinza claro padrão */
+    /* Adiciona transições para opacidade e transform para a animação de entrada */
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.5s ease-out, transform 0.5s ease-out;
+    border: 2px solid var(--primary-blue); /* Borda azul principal consistente de 2px */
     box-sizing: border-box;
+    min-height: 40px; /* Altura mínima para cada item de resultado */
+    display: flex; /* Permite alinhamento vertical se necessário */
+    align-items: center;
 }
 
 .search-result-item:hover {
     background-color: var(--link-hover-bg);
     color: var(--primary-blue-dark);
-    border-color: var(--link-hover-border); /* Mantém a borda no hover */
+    border-color: var(--primary-blue-dark); /* Mantém a borda no hover */
 }
 
 .no-results-message {
@@ -256,6 +260,9 @@ body {
     color: var(--text-muted); /* Cor padrão */
     font-style: italic;
     margin: auto 0; /* Centraliza verticalmente se for o único item */
+    opacity: 1; /* Garante que a mensagem de status não seja afetada pela animação dos itens */
+    transform: none; /* Garante que a mensagem de status não seja afetada pela animação dos itens */
+    transition: none; /* Garante que a mensagem de status não seja afetada pela animação dos itens */
 }
 
 /* Ajuste para a mensagem de erro ficar vermelha também (quando a classe está no parent) */
@@ -292,10 +299,13 @@ body {
 }
 
 /* Estilos padrão para botões e grupos colapsáveis */
+/* Adicionadas transições para opacidade e transform para a animação de entrada */
 .btn,
 .collapsible-group {
     box-sizing: border-box;
     display: flex;
+    /* Adicionado para a animação */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
 .btn {
@@ -308,13 +318,13 @@ body {
     font-size: 18px;
     border-radius: 8px; /* Borda arredondada consistente de 8px */
     font-weight: bold;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     border: 2px solid var(--primary-blue); /* Borda sólida consistente de 2px */
     box-shadow: none; /* Remove a sombra interna anterior */
     align-items: center;
     justify-content: center;
     min-height: 50px;
     outline: none; /* Garante que não haja outline padrão */
+     /* Movido transition para o seletor conjunto acima */
 }
 
 .btn:hover {
@@ -332,7 +342,16 @@ body {
     width: 100%;
     /* Borda do grupo removida - será formada pelo botão e conteúdo */
     border: none; /* Grupo não terá borda própria */
+     /* Movido transition para o seletor conjunto acima */
 }
+
+/* Classe para o estado inicial da animação */
+/* Aplica aos botões/grupos principais E aos itens de resultado da pesquisa */
+.button-initial-state {
+    opacity: 0;
+    transform: translateY(50px); /* Começa 50px abaixo da posição final */
+}
+
 
 .toggle-btn {
     display: flex;
@@ -357,6 +376,7 @@ body {
     z-index: 1; /* Botão acima do conteúdo */
     box-shadow: none;
     outline: none;
+     /* Removido opacity/transform transition aqui, definidos no seletor conjunto para animação inicial */
 }
 
 /* Estilo da borda SOMENTE quando o botão estiver ativo */
@@ -401,8 +421,8 @@ body {
     overflow: hidden;
     padding: 0 15px; /* Padding horizontal fixo, vertical adicionado com .active */
     /* Transições Sincronizadas: Apenas max-height */
-    /* Ajustado: max-height agora com 0.4s para animação um pouco mais rápida */
-    transition: max-height 0.4s ease-out; /* Duração ajustada */
+    /* Ajustado: max-height agora com 0.4s ease-out para animação */
+    transition: max-height 0.4s ease-out;
     box-sizing: border-box;
     /* Borda inicial transparente, cor aparece com .active */
     border-left: 2px solid transparent;

@@ -15,6 +15,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Ajustar altura dos colapsáveis ativos e resultados de pesquisa no resize
     window.addEventListener('resize', debounce(adjustActiveCollapsibleHeightsAndSearchResults, 150));
+
+    // Executa a animação sequencial dos botões na carga da página
+    // A animação dos resultados da pesquisa será chamada dentro de displayResults
+    animateButtonsSequentially();
 });
 
 // --- FUNÇÃO PARA ATUALIZAR O ANO DO RODAPÉ ---
@@ -175,20 +179,12 @@ function adjustActiveCollapsibleHeightsAndSearchResults() {
             activeElement.style.transition = '';
              // Em resize, remove a style inline 'maxHeight: none' dos collapsibles normais
              // que foi adicionada no transitionend da abertura para permitir que o conteúdo flua.
-             // Se o resize ocorrer DURANTE a transição de abertura, o transitionend pode não ter rodado ainda.
-             // Esta linha garante que, após o ajuste de resize (sem transição), o maxHeight
-             // não fique fixo se for um collapsible content normal.
-            // Verifica se o elemento AINDA está ativo e se a propriedade maxHeight inline
-            // não foi alterada por outra interação (ex: fechamento rápido antes do resize terminar)
-            if (activeElement.classList.contains('active') && parseFloat(activeElement.style.maxHeight) > 0) {
-                 // Adiciona um pequeno delay para garantir que a aplicação do novo maxHeight
-                 // no resize seja processada antes de potencialmente remover a propriedade inline
-                 // no transitionend, caso ele ainda vá rodar.
-                 // OU se o transitionend da abertura já setou para 'none', o recalculate e set para pixel value
-                 // vai sobrescrever isso, e precisamos limpá-lo novamente.
-                 // Para simplificar, apenas garantimos que no final do resize, se ainda ativo, seja 'none'.
-                 // Isso substitui a lógica de timeout e verificação de valor.
-                activeElement.style.maxHeight = 'none';
+             // Verifica se o elemento AINDA está ativo.
+            if (activeElement.classList.contains('active')) {
+                 activeElement.style.maxHeight = 'none'; // Permite fluxo natural
+            } else {
+                 // Se não estiver mais ativo (fechou durante o resize), garante que maxHeight seja 0.
+                 activeElement.style.maxHeight = '0px';
             }
         });
     });
@@ -232,7 +228,7 @@ function setupCollapsible() {
                         const otherScrollHeight = otherContent.scrollHeight;
 
                          // Se a altura for 0 ou quase 0, apenas remove as classes sem animar.
-                        if (otherScrollHeight < 5) {
+                        if (otherScrollHeight < 5) { // Use um pequeno limiar
                              otherButton.classList.remove('active');
                              otherContent.classList.remove('active');
                              otherContent.style.maxHeight = ''; // Limpa o estilo inline
@@ -332,7 +328,7 @@ function setupCollapsible() {
 }
 
 
-// Função para configurar a pesquisa - MODIFICADA PARA TRATAR ESTADO SEM RESULTADOS
+// Função para configurar a pesquisa - MODIFICADA PARA TRATAR ESTADO SEM RESULTADOS E ADICIONAR ANIMAÇÃO
 function setupSearch() {
     const stickyContainer = document.querySelector('.sticky-search-container');
     const searchBar = stickyContainer?.querySelector('.search-bar');
@@ -430,13 +426,12 @@ function setupSearch() {
         }
     }
 
-    // --- FUNÇÃO displayResults (REVISADA PARA ABERTURA CORRETA E ESTADO DE ERRO) ---
+    // --- FUNÇÃO displayResults (REVISADA PARA ABERTURA CORRETA, ESTADO DE ERRO E ANIMAÇÃO) ---
     function displayResults(results) {
         // Remove todas as classes de estado antes de aplicar as novas
         resultsContainer.classList.remove('active', 'no-results-found');
         searchBar.classList.remove('results-visible', 'no-results-found');
         stickyContainer.classList.remove('search-no-results'); // Remove a classe do container pai
-        // resultsContainer.style.maxHeight = null; // Reseta max-height - JS controlará a transição de fechamento
 
         const hasInput = searchInput.value.trim().length >= 2;
 
@@ -453,7 +448,7 @@ function setupSearch() {
                 uniqueResults.forEach(result => {
                     resultsContainer.appendChild(result.element);
                 });
-                // Adiciona a classe active para iniciar a animação de abertura CSS (padding, opacity)
+                // Adiciona a classe active para iniciar a animação de abertura CSS (padding)
                 resultsContainer.classList.add('active');
                 searchBar.classList.add('results-visible');
                  // Garante que a classe de erro é removida se houver resultados
@@ -462,6 +457,31 @@ function setupSearch() {
                 // Ajusta o max-height dinamicamente para a altura do conteúdo, limitada pelo espaço disponível
                 // Isso também inicia a animação de abertura (max-height de 0 para o calculado)
                 adjustSearchResultsContainerHeight();
+
+                 // --- ADICIONA LÓGICA DE ANIMAÇÃO SEQUENCIAL PARA RESULTADOS ---
+                 // Seleciona os itens de resultado APÓS serem adicionados ao DOM
+                 const resultItemsToAnimate = resultsContainer.querySelectorAll('.search-result-item');
+
+                 if (resultItemsToAnimate.length > 0) {
+                     // Aplica imediatamente a classe de estado inicial (.button-initial-state) a todos os itens de resultado
+                     // Isso os torna invisíveis e posicionados para a animação de entrada (definido no CSS)
+                     resultItemsToAnimate.forEach(item => {
+                         item.classList.add('button-initial-state');
+                     });
+
+                     // Define o atraso base entre o início da animação de cada elemento (em ms)
+                     const baseDelayResults = 80; // <-- Valor alterado para 80ms, controla a velocidade sequencial dos ITENS
+
+                     // Itera sobre os elementos e remove a classe de estado inicial com um atraso crescente
+                     // A remoção da classe dispara a transição definida no CSS (.search-result-item)
+                     resultItemsToAnimate.forEach((item, index) => {
+                         const delay = index * baseDelayResults; // Usa o baseDelay específico para resultados
+                         setTimeout(() => {
+                             item.classList.remove('button-initial-state');
+                         }, delay);
+                     });
+                 }
+                 // --- FIM DA LÓGICA DE ANIMAÇÃO ---
 
             } else {
                 // Nenhum resultado encontrado
@@ -495,6 +515,7 @@ function setupSearch() {
              });
              // Limpa o conteúdo após a animação de fechamento (opcional, mas bom para performance)
              resultsContainer.addEventListener('transitionend', function handler(e) {
+                  // Verifica se a transição que terminou foi a de max-height
                   if (e.propertyName === 'max-height' && resultsContainer.style.maxHeight === '0px') {
                        resultsContainer.innerHTML = ''; // Limpa o conteúdo
                        resultsContainer.removeEventListener('transitionend', handler);
@@ -519,27 +540,35 @@ function setupSearch() {
         }
 
         // Mostra indicador de loading ANTES de buscar
-        resultsContainer.innerHTML = '<p class="no-results-message">Buscando...</p>';
+        // Remove qualquer conteúdo anterior (incluindo itens de busca anterior)
+        resultsContainer.innerHTML = '';
+        const loadingMsg = document.createElement('p');
+        loadingMsg.classList.add('no-results-message'); // Reutiliza a classe de estilo
+        loadingMsg.textContent = 'Buscando...';
+        resultsContainer.appendChild(loadingMsg);
+
+
         resultsContainer.classList.add('active'); // Ativa para mostrar "Buscando"
         searchBar.classList.add('results-visible');
 
         // Define uma altura MÍNIMA enquanto busca para a msg "Buscando..." ser visível
-        // Usaremos adjustSearchResultsContainerHeight APÓS a busca para ajustar à altura final
-        // Temporariamente setamos um max-height fixo para a mensagem de loading com animação.
-         // Mede a altura da mensagem de loading
+        // Isso ajuda a evitar que o container feche e reabra se uma busca for feita rapidamente após outra
+        // Mede a altura da mensagem de loading APÓS adicioná-la
         resultsContainer.style.transition = 'none'; // Desabilita transição para medir
         resultsContainer.style.maxHeight = '10000px'; // Temporariamente grande para medir
         resultsContainer.offsetHeight; // Força reflow
-        const loadingHeight = resultsContainer.scrollHeight;
-        resultsContainer.style.maxHeight = '0px'; // Reseta para 0 antes de animar
+        const loadingHeight = resultsContainer.scrollHeight; // Pega a altura real da mensagem de loading (com padding etc.)
+        resultsContainer.style.maxHeight = '0px'; // Reseta para 0 antes de animar (para a transição de abertura do container)
 
         requestAnimationFrame(() => {
              resultsContainer.style.transition = ''; // Reabilita transição (usará a do CSS)
              // Define max-height para a altura medida da mensagem de loading, limitada pelo espaço disponível
              // Usa adjustSearchResultsContainerHeight para calcular a altura máxima baseada no espaço,
              // mas garante que seja pelo menos a altura da mensagem de loading.
-              resultsContainer.style.maxHeight = Math.max(loadingHeight, 50) + 'px'; // Garante pelo menos 50px ou a altura real da mensagem
-
+             // Passa a altura mínima (da mensagem "Buscando...") para o ajustador se necessário
+             // NOTA: adjustSearchResultsContainerHeight já calcula a altura baseada no conteúdo ATUAL.
+             // Apenas chamá-la já fará o container abrir para a altura da mensagem "Buscando...".
+             adjustSearchResultsContainerHeight();
         });
 
 
@@ -548,7 +577,7 @@ function setupSearch() {
         try {
             const resultsArrays = await Promise.all(searchPromises);
             const combinedResults = resultsArrays.flat();
-            displayResults(combinedResults); // Exibe resultados e ajusta altura final
+            displayResults(combinedResults); // Exibe resultados e ajusta altura final, chamando a animação interna
 
         } catch (error) {
             console.error("Erro geral durante a pesquisa:", error);
@@ -586,13 +615,19 @@ function setupSearch() {
 
      searchInput.addEventListener('input', function() {
         // Se o campo estiver vazio após o input, cancela o debounce e fecha os resultados
-        if (searchInput.value.trim() === '') {
+        // A pesquisa só acontece com >= 2 caracteres. Se o input cair abaixo disso, fecha.
+        if (searchInput.value.trim().length < 2 && resultsContainer.classList.contains('active')) {
             if (debouncedSearch.__timeout !== null) {
                  clearTimeout(debouncedSearch.__timeout);
                  debouncedSearch.__timeout = null;
             }
            displayResults([]); // Limpa e fecha (isso já remove a classe de erro)
+        } else if (searchInput.value.trim().length >= 2 && !resultsContainer.classList.contains('active')) {
+             // O input agora tem >= 2 caracteres, mas o container está fechado (ex: fechado pelo clique fora)
+             // Dispara uma nova busca imediata para reabrir os resultados
+             performSearch();
         }
+        // Se o input >= 2 E o container já está aberto, o debounce cuidará das atualizações.
     });
 }
 
@@ -621,6 +656,7 @@ function handleClickOutside(event) {
 
          // Limpa o conteúdo após a animação de fechamento
         resultsContainer.addEventListener('transitionend', function handler(e) {
+             // Verifica se a transição que terminou foi a de max-height
              if (e.propertyName === 'max-height' && resultsContainer.style.maxHeight === '0px') {
                   resultsContainer.innerHTML = ''; // Limpa o conteúdo após fechar
                   resultsContainer.removeEventListener('transitionend', handler);
@@ -662,3 +698,36 @@ function adjustActiveCollapsibleHeightsAndSearchResults() {
     // Ajusta o container de resultados da pesquisa separadamente
     adjustSearchResultsContainerHeight();
 }
+
+// --- NOVA FUNÇÃO PARA ANIMAR OS BOTÕES SEQUENCIALMENTE ---
+function animateButtonsSequentially() {
+    // Seleciona todos os botões (.btn) e grupos colapsáveis (.collapsible-group)
+    // dentro do container principal de botões.
+    const buttonsToAnimate = document.querySelectorAll('.buttons-container > .btn, .buttons-container > .collapsible-group');
+
+    if (buttonsToAnimate.length === 0) {
+        return; // Não há elementos para animar
+    }
+
+    // Aplica imediatamente a classe de estado inicial a todos
+    buttonsToAnimate.forEach(element => {
+        element.classList.add('button-initial-state');
+    });
+
+    // Define o atraso base entre o início da animação de cada elemento (em ms)
+    const baseDelay = 55; // Ajuste este valor para controlar a velocidade da sequência dos botões principais
+
+    // Itera sobre os elementos e remove a classe de estado inicial com um atraso crescente
+    buttonsToAnimate.forEach((element, index) => {
+        const delay = index * baseDelay;
+
+        // Usa setTimeout para remover a classe após o atraso calculado
+        setTimeout(() => {
+            element.classList.remove('button-initial-state');
+            // A remoção da classe 'button-initial-state' fará com que o elemento
+            // transicione de volta para seu estado padrão (opacity: 1, transform: translateY(0)),
+            // usando a transição definida no CSS.
+        }, delay);
+    });
+}
+// --- FIM DA NOVA FUNÇÃO DE ANIMAÇÃO ---
