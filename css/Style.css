@@ -105,7 +105,7 @@ body {
     position: sticky;
     top: var(--sticky-container-top); /* Usa variável para o espaço superior */
     margin-top: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 20px; /* Adiciona margem inferior para separar do título */
     width: 80%;
     max-width: 800px;
     margin-left: auto;
@@ -214,7 +214,8 @@ body {
     /* Define uma altura MÁXIMA para evitar sobrepor o rodapé */
     /* Calculo: 100vh (altura total) - altura header/espaço acima - altura barra - altura rodapé - margens */
     /* Ajuste este valor conforme necessário, 60vh é um bom começo */
-    max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 40px); /* 40px = margens extras */
+    /* CONSIDERAR A ALTURA DO H1 AQUI TAMBÉM */
+    max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 100px); /* Ajuste este valor conforme necessário */
     overflow-y: auto; /* MOSTRA scroll APENAS se o conteúdo exceder max-height (mas a barra está oculta) */
     padding-top: 10px; /* Adiciona padding superior (SEM TRANSICAO)*/
     padding-bottom: 10px; /* Adiciona padding inferior (SEM TRANSICAO)*/
@@ -282,6 +283,27 @@ body {
     box-sizing: border-box;
 }
 
+/* ESTILOS PARA O NOVO TÍTULO H1 */
+.content-wrap h1 {
+    text-align: center; /* Centraliza o texto */
+    color: var(--primary-blue-dark); /* Cor do título */
+    margin-top: 20px; /* Espaço acima do título */
+    margin-bottom: 20px; /* Espaço abaixo do título */
+    font-size: 2em; /* Tamanho do título */
+    font-weight: bold;
+    width: 80%; /* Garante que o título tenha a mesma largura do container de botões/pesquisa */
+    max-width: 800px; /* Garante que o título tenha a mesma largura máxima */
+     /* Adiciona transição para a animação de entrada */
+     transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* Classe para o estado inicial da animação do H1 */
+.h1-initial-state {
+    opacity: 0;
+    transform: translateY(30px); /* Começa 30px abaixo da posição final */
+}
+
+
 /* CONTAINER DE BOTÕES PRINCIPAL (dentro do content-wrap) */
 .buttons-container {
     display: flex;
@@ -345,7 +367,7 @@ body {
      /* Movido transition para o seletor conjunto acima */
 }
 
-/* Classe para o estado inicial da animação */
+/* Classe para o estado inicial da animação dos botões/grupos */
 /* Aplica aos botões/grupos principais E aos itens de resultado da pesquisa */
 .button-initial-state {
     opacity: 0;
@@ -507,7 +529,7 @@ body {
      bottom: 0;
      z-index: 102; /* Acima do conteúdo e da pesquisa */
      margin-top: auto; /* Garante que vá para o final se o conteúdo for pequeno */
-     border: 2px solid transparent; /* Consistência */
+     border: 2 handleClickpx solid transparent; /* Consistência */
      box-sizing: border-box;
      height: var(--footer-height); /* Define altura explícita para cálculo de max-height */
 }
@@ -519,7 +541,8 @@ body {
          --sticky-container-top: 15px; /* Ajusta no mobile */
      }
      .sticky-search-container,
-     .buttons-container {
+     .buttons-container,
+     .content-wrap h1 { /* Inclui o H1 */
          width: 90%;
          max-width: none;
      }
@@ -527,9 +550,14 @@ body {
          margin-top: 15px;
          margin-bottom: 15px;
      }
+     .content-wrap h1 { /* Ajusta margens do H1 no mobile */
+         margin-top: 15px;
+         margin-bottom: 15px;
+         font-size: 1.8em; /* Reduz um pouco o tamanho */
+     }
      #search-results-container.active {
         /* Pode precisar ajustar o max-height em telas menores */
-        max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 30px);
+        max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 80px); /* Ajuste conforme H1 */
      }
     .btn { flex-basis: calc(50% - 10px); }
     .collapsible-group { flex-basis: 100%; }
@@ -543,7 +571,8 @@ body {
          --search-bar-height: 48px; /* Ajusta altura da barra se necessário */
      }
      .sticky-search-container,
-     .buttons-container {
+     .buttons-container,
+     .content-wrap h1 { /* Inclui o H1 */
          width: 95%;
          gap: 15px;
      }
@@ -552,9 +581,14 @@ body {
          margin-bottom: 10px;
          padding: 0;
      }
+     .content-wrap h1 { /* Ajusta margens do H1 no mobile */
+         margin-top: 10px;
+         margin-bottom: 10px;
+         font-size: 1.5em; /* Reduz mais o tamanho */
+     }
       #search-results-container.active {
         /* Recalcula max-height para telas pequenas */
-        max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 20px);
+        max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 60px); /* Ajuste conforme H1 */
      }
      .btn,
      .collapsible-group { flex-basis: 100%; }

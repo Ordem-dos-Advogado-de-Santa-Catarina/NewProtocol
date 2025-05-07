@@ -16,8 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Ajustar altura dos colapsáveis ativos e resultados de pesquisa no resize
     window.addEventListener('resize', debounce(adjustActiveCollapsibleHeightsAndSearchResults, 150));
 
-    // Executa a animação sequencial dos botões na carga da página
-    // A animação dos resultados da pesquisa será chamada dentro de displayResults
+    // Executa a animação sequencial dos botões E a animação do H1 na carga da página
     animateButtonsSequentially();
 });
 
@@ -84,7 +83,7 @@ function setElementMaxHeightToScrollHeight(element) {
 
     // Opcional: Limpar o style.maxHeight após a transição para permitir que o conteúdo flua
     // se ele mudar dinamicamente enquanto estiver aberto.
-    // Usamos once: true aqui porque este listener é APENAS para a transição de ABERTURA.
+    // Usamos once: true aqui porque este listener é APENHAS para a transição de ABERTURA.
     element.addEventListener('transitionend', function handler(e) {
         // Verifica se a transição que terminou foi a de max-height
         if (e.propertyName === 'max-height') {
@@ -699,35 +698,55 @@ function adjustActiveCollapsibleHeightsAndSearchResults() {
     adjustSearchResultsContainerHeight();
 }
 
-// --- NOVA FUNÇÃO PARA ANIMAR OS BOTÕES SEQUENCIALMENTE ---
+// --- NOVA FUNÇÃO PARA ANIMAR O H1 E OS BOTÕES SEQUENCIALMENTE ---
 function animateButtonsSequentially() {
+    // Seleciona o H1
+    const h1Element = document.querySelector('.content-wrap h1');
+
     // Seleciona todos os botões (.btn) e grupos colapsáveis (.collapsible-group)
     // dentro do container principal de botões.
     const buttonsToAnimate = document.querySelectorAll('.buttons-container > .btn, .buttons-container > .collapsible-group');
 
-    if (buttonsToAnimate.length === 0) {
-        return; // Não há elementos para animar
+    // Aplica imediatamente a classe de estado inicial ao H1, se ele existir
+    if (h1Element) {
+        h1Element.classList.add('h1-initial-state');
     }
 
-    // Aplica imediatamente a classe de estado inicial a todos
-    buttonsToAnimate.forEach(element => {
-        element.classList.add('button-initial-state');
-    });
+    // Aplica imediatamente a classe de estado inicial a todos os botões/grupos, se existirem
+    if (buttonsToAnimate.length > 0) {
+        buttonsToAnimate.forEach(element => {
+            element.classList.add('button-initial-state');
+        });
+    }
 
-    // Define o atraso base entre o início da animação de cada elemento (em ms)
-    const baseDelay = 55; // Ajuste este valor para controlar a velocidade da sequência dos botões principais
+    // Define o atraso inicial antes de começar a remover as classes (pode ser 0 ou pequeno)
+    const initialDelay = 100; // Atraso inicial em ms antes de QUALQUER animação começar
 
-    // Itera sobre os elementos e remove a classe de estado inicial com um atraso crescente
-    buttonsToAnimate.forEach((element, index) => {
-        const delay = index * baseDelay;
-
-        // Usa setTimeout para remover a classe após o atraso calculado
+    // Animação do H1 (se existir): Remove a classe de estado inicial após um pequeno atraso inicial
+    if (h1Element) {
         setTimeout(() => {
-            element.classList.remove('button-initial-state');
-            // A remoção da classe 'button-initial-state' fará com que o elemento
-            // transicione de volta para seu estado padrão (opacity: 1, transform: translateY(0)),
-            // usando a transição definida no CSS.
-        }, delay);
-    });
+            h1Element.classList.remove('h1-initial-state');
+        }, initialDelay);
+    }
+
+    // Animação sequencial dos botões/grupos (se existirem):
+    // Começa APÓS o H1 ter um tempo para começar a animar (ou simultaneamente com um atraso maior)
+    const buttonsStartDelay = initialDelay + 100; // Atraso adicional antes dos botões começarem
+    const baseDelay = 55; // Atraso base entre cada botão na sequência (em ms)
+
+    if (buttonsToAnimate.length > 0) {
+        buttonsToAnimate.forEach((element, index) => {
+            // Calcula o atraso total para cada botão: atraso inicial + atraso de início dos botões + atraso sequencial
+            const delay = buttonsStartDelay + (index * baseDelay);
+
+            // Usa setTimeout para remover a classe após o atraso calculado
+            setTimeout(() => {
+                element.classList.remove('button-initial-state');
+                // A remoção da classe 'button-initial-state' fará com que o elemento
+                // transicione de volta para seu estado padrão (opacity: 1, transform: translateY(0)),
+                // usando a transição definida no CSS.
+            }, delay);
+        });
+    }
 }
 // --- FIM DA NOVA FUNÇÃO DE ANIMAÇÃO ---
