@@ -342,25 +342,25 @@ function setupSearch() {
     }
 
     const filesToSearch = [
-        'http://gaspar.oab-sc.org.br/NewProtocol/Index.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/Secretaria.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/Tesouraria.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/Conselho.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/Comissoes.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/Consultas.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/Prerrogativas.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/protocolos.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/examedeordem.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/inssdigital.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/Tecnologia.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/ESA.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/ted.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/cursoseventos.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/controladoria.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/Setores/fiscalizacao.html',
-        'http://gaspar.oab-sc.org.br/NewProtocol/manuais/Manuais.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/index.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/secretaria.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/tesouraria.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/conselho.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/comissoes.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/consultas.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/prerrogativas.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/protocolos.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/examedeordem.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/inssdigital.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/tecnologia.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/esa.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/ted.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/cursoseventos.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/controladoria.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/setores/fiscalizacao.html',
+        'http://gaspar.oab-sc.org.br/newprotocol/manuais/manuais.html',
     ];
-
+    
     async function fetchAndSearchFile(rootRelativePath, searchTerm) {
         try {
             const urlWithCacheBuster = `${rootRelativePath}?v=${Date.now()}`;
