@@ -1,106 +1,168 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Portal Ordem Dos Advogados do Brasil - Santa Catarina</title>
-        <link rel="icon" href="images/cabecalhooab.png" type="image/png">
-        <!-- Favicon adicionado aqui -->
-        <link rel="stylesheet" href="css/style.css">
-        <!-- Link pro CSS externo -->
-
-        <!-- Meta tags para compartilhamento social (OGP e Twitter Cards) -->
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta tags para compartilhamento social (OGP e Twitter Cards) -->
         <!-- Atualize 'URL_COMPLETA_DO_SEU_SITE' com o endereço real do seu site -->
-        <meta property="og:title" content="Portal Protocolo de Atendimento - OAB/SC">
+        <meta property="og:title" content="Portal de Acesso - OAB/SC">
         <meta property="og:description" content="Centralize e organize seus protocolos de atendimento na OAB/SC de forma eficiente.">
         <meta property="og:type" content="website">
-        <meta property="og:url" content="URL_COMPLETA_DO_SEU_SITE">
+        <meta property="og:url" content="http://portal.oab-sc.org.br/">
         <!-- Substitua URL_COMPLETA_DA_SUA_LOGO pelo caminho completo da sua imagem de logo (incluindo o domínio) -->
-        <meta property="og:image" content="URL_COMPLETA_DA_SUA_LOGO/images/cabecalhooab.png">
+        <meta property="og:image" content="http://portal.oab-sc.org.br/site/images/portal.jpg">
         <meta property="og:image:alt" content="Logo OAB/SC">
 
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="Portal Protocolo de Atendimento - OAB/SC">
+        <meta name="twitter:title" content="Portal de Acesso - OAB/SC">
         <meta name="twitter:description" content="Centralize e organize seus protocolos de atendimento na OAB/SC de forma eficiente.">
         <!-- Substitua URL_COMPLETA_DA_SUA_LOGO pelo caminho completo da sua imagem de logo (incluindo o domínio) -->
-        <meta name="twitter:image" content="URL_COMPLETA_DA_SUA_LOGO/images/cabecalhooab.png">
+        <meta name="twitter:image" content="http://portal.oab-sc.org.br/site/images/portal.jpg">
         <meta name="twitter:image:alt" content="Logo OAB/SC">
+    <title>Portal de Acesso OAB-SC</title>
+    <!-- Define o favicon da página -->
+    <link rel="icon" href="http://portal.oab-sc.org.br/site/images/fav.png" type="image/png">
+    <style>
+        /* Remove margens e preenchimento padrão */
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Evita barras de scroll indesejadas na página principal */
+            height: 100%; /* Garante que body e html ocupem 100% da altura */
+            width: 100%; /* Garante que body e html ocupem 100% da largura */
+            font-family: sans-serif; /* Define uma fonte padrão */
+        }
 
-    </head>
+        /* Estiliza o iframe para ocupar 100% da área visível */
+        #main-iframe {
+            width: 100%; /* Largura total */
+            height: 100%; /* Altura total */
+            border: none; /* Remove a borda padrão do iframe */
+            display: block; /* Garante que o iframe ocupe o espaço sem gaps */
+        }
+
+        /* Estilo do botão de chat */
+        #chat-button {
+            position: fixed;
+            bottom: 20px; /* Mantém o botão a 20px da parte inferior */
+            right: 20px; /* Mantém o botão a 20px da direita */
+            background-color: #4CAF50; /* Verde */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            z-index: 1000; /* Garante que o botão fique acima de outros elementos */
+        }
+
+        /* Estilo do container do chat */
+        #chat-container {
+            position: fixed;
+            /* Ajustado para ter 20px de distância do rodapé e um pouco acima do botão */
+            bottom: 76px; /* Altura do botão (aprox 36px) + 20px (rodapé) + 20px (gap) = 76px */
+            right: 20px;
+            width: 380px; /* Largura ajustada para parecer mais com a imagem */
+            height: 550px; /* Altura ajustada para parecer mais com a imagem */
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            z-index: 1001; /* Acima do botão e da Mila */
+            display: none; /* Inicialmente escondido */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+            overflow: hidden; /* Para evitar barras de rolagem indesejadas no container */
+            transition: all 0.3s ease-in-out; /* Transição para abertura/fechamento mais suave */
+            opacity: 0; /* Começa invisível para transição */
+            transform: translateY(10px); /* Leve deslocamento para transição */
+        }
+
+        #chat-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Estilo para tornar o container visível */
+        #chat-container.active {
+            display: block;
+            opacity: 1; /* Fica visível */
+            transform: translateY(0); /* Volta para a posição original */
+        }
+
+        /* Estilo da Imagem da Mila */
+        #mila-assistant-image {
+            position: fixed;
+            right: 20px;
+            /* Calcula a posição abaixo do botão (20px do rodapé + aprox 36px de altura do botão + 10px de gap) */
+            bottom: calc(20px + 36px + 10px);
+            height: 250px; /* Altura da imagem, ajuste conforme necessário */
+            width: auto; /* Mantém a proporção da imagem */
+            z-index: 999; /* Abaixo do botão (1000) e do chat container (1001) */
+            transition: all 0.3s ease-in-out; /* Transição suave para movimento */
+            pointer-events: none; /* Não interfere com cliques em outros elementos */
+        }
+
+        /* Estilo da Imagem da Mila quando o chat está aberto */
+        #mila-assistant-image.chat-open {
+            /* Move a Mila para a esquerda do chat */
+            /* Chat está em right: 20px, width: 380px. */
+            /* A borda esquerda do chat está em viewport_width - (20px + 380px) = viewport_width - 400px. */
+            /* A imagem da Mila tem aproximadamente 114px de largura (com height: 250px). */
+            /* Para ter metade dela (57px) atrás do chat, sua borda direita deve estar em (viewport_width - 400px + 57px). */
+            /* Então, right = 400px - 57px = 343px */
+            right: 363px;
+            /* Ajuste a posição vertical se necessário quando o chat está aberto */
+            bottom: 76px; /* Alinha a base da Mila com a base do chat */
+        }
+    </style>
+</head>
 <body>
 
-    <div class="page-header">
-        <div class="header-content">
-            <!-- Verifique se o src da imagem está correto para o seu ambiente -->
-            <a href="index.html" title="Página Principal">
-                <img src="images/cabecalhooab.png" alt="Cabeçalho OAB" class="header-image logo-inner-average">
-            </a>
-            <div class="header-bottom-row">
-                <a href="index.html" class="home-button" title="Página Principal">🏠 Pagina Inicial</a>
-            </div>
-        </div>
+    <!-- Site principal abaixo, ela não tem a IA integrada, EasterEGG para quem sabe apertar F12-->
+    <iframe id="main-iframe" src="https://intranet.oab-sc.org.br/portal/site/"></iframe>
+
+    <!-- Imagem da Mila -->
+    <img id="mila-assistant-image" src="/site/images/mila.png" alt="Mila Virtual Assistant">
+
+    <!-- Botão de Chat -->
+    <button id="chat-button">CHAT ONLINE!</button>
+
+    <!-- Container do Chat -->
+    <div id="chat-container">
+        <iframe id="chat-iframe" src="https://udify.app/chatbot/nfkcvW4U6uqBclGK" allow="microphone"></iframe>
     </div>
 
-    <!-- Container para a barra de pesquisa (agora sticky em relação ao body) e resultados -->
-    <div class="sticky-search-container">
-        <div class="search-bar">
-            <input type="text" placeholder="Pesquisar ...">
-            <button>🔎</button>
-        </div>
-        <!-- Container para exibir os resultados da pesquisa -->
-        <div id="search-results-container">
-            <!-- Os resultados da pesquisa serão inseridos aqui pelo JavaScript -->
-        </div>
-    </div>
 
-    <!-- Divisão pro conteúdo principal pra rodapé ficar lá embaixo -->
-    <main class="content-wrap">
+    <script>
+        const chatButton = document.getElementById('chat-button');
+        const chatContainer = document.getElementById('chat-container');
+        const milaImage = document.getElementById('mila-assistant-image'); // Obtenha o elemento da imagem
 
-        <!-- Novo título adicionado aqui, com classe para animação inicial -->
-        <h1 class="h1-initial-state">Portal de Acesso</h1>
+        chatButton.addEventListener('click', () => {
+            // Verifica se o container do chat está ativo (visível)
+            const isActive = chatContainer.classList.contains('active');
 
-        <!-- container de botões principal -->
-        <div class="buttons-container">
-            <!-- adicionaremos a classe 'button-initial-state' com js para a animação -->
-            <a href="./setores/secretaria.html" class="btn">secretaria</a>
-            <a href="./setores/tesouraria.html" class="btn">tesouraria</a>
-            <a href="./setores/conselho.html" class="btn">conselho</a>
-            <a href="./setores/comissoes.html" class="btn">comissões</a>
-            <a href="./setores/consultas.html" class="btn">consultas</a>
-            <a href="./setores/prerrogativas.html" class="btn">prerrogativas</a>
-            <a href="./setores/sociedades.html" class="btn">sociedades</a>
-            <!-- mais botões ou conteúdo podem ser adicionados aqui -->
-
-            <!-- edit gabriel 1.01.10 -->
-            <a href="./setores/fiscalizacao.html" class="btn">fiscalização</a>
-            <a href="./setores/ted.html" class="btn">ted</a>
-            <a href="./setores/inssdigital.html" class="btn">inss digital</a>
-            <a href="./setores/examedeordem.html" class="btn">exame de ordem</a>
-            <a href="./setores/cursoseventos.html" class="btn">cursos e eventos</a>
-            <a href="./setores/controladoria.html" class="btn">controladoria</a>
-            <a href="./setores/tecnologia.html" class="btn">tecnologia</a>
-            <!-- edit gabriel 1.01.10 -->
-
-            <!-- Exemplo de grupo colapsável, se houver (também será animado) -->
-             <!--
-            <div class="collapsible-group">
-                <button class="toggle-btn">Nome do Grupo</button>
-                <div class="collapsible-content">
-                    <a href="#" class="sub-link">Sub-link 1</a>
-                    <a href="#" class="sub-link">Sub-link 2</a>
-                </div>
-            </div>
-             -->
-        </div>
-    </main>
-
-    <!-- Adicionado ID para que o JS possa calcular a altura -->
-    <footer id="Footer_footer" class="page-footer navbar-expand-lg font-small site-background-color" style="background-color:#3949AB !important; border-color: #3949AB !important;">
-        <div class="footer-copyright text-center py-3">
-           <small class="text-light">Desenvolvido por Ordem dos Advogados Santa Catarina - <span id="current-year"></span></small>
-        </div>
-     </footer>
-
-    <script src="js/script.js"></script>
+            if (isActive) {
+                // Se estiver ativo, significa que o chat está fechando
+                chatContainer.classList.remove('active');
+                milaImage.classList.remove('chat-open'); // Remove a classe para a Mila voltar à posição inicial
+                // Aguarda a transição para realmente esconder o elemento do chat
+                setTimeout(() => {
+                    chatContainer.style.display = 'none';
+                }, 300); // Deve ser igual ao tempo da transição no CSS
+            } else {
+                // Se não estiver ativo, significa que o chat está abrindo
+                chatContainer.style.display = 'block';
+                // Pequeno atraso para garantir que o display:block seja aplicado antes da transição de opacidade/transform
+                setTimeout(() => {
+                    chatContainer.classList.add('active');
+                    milaImage.classList.add('chat-open'); // Adiciona a classe para a Mila se mover
+                }, 10);
+            }
+        });
+    </script>
 </body>
 </html>
