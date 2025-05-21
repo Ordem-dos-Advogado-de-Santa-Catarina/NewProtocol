@@ -8,20 +8,20 @@
         <meta property="og:title" content="Portal de Acesso - OAB/SC">
         <meta property="og:description" content="Centralize e organize seus protocolos de atendimento na OAB/SC de forma eficiente.">
         <meta property="og:type" content="website">
-        <meta property="og:url" content="http://portal.oab-sc.org.br/">
+        <meta property="og:url" content="https://portal.oab-sc.org.br/">
         <!-- Substitua URL_COMPLETA_DA_SUA_LOGO pelo caminho completo da sua imagem de logo (incluindo o domínio) -->
-        <meta property="og:image" content="http://portal.oab-sc.org.br/site/images/portal.jpg">
+        <meta property="og:image" content="https://portal.oab-sc.org.br/site/images/portal.jpg">
         <meta property="og:image:alt" content="Logo OAB/SC">
 
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="Portal de Acesso - OAB/SC">
         <meta name="twitter:description" content="Centralize e organize seus protocolos de atendimento na OAB/SC de forma eficiente.">
         <!-- Substitua URL_COMPLETA_DA_SUA_LOGO pelo caminho completo da sua imagem de logo (incluindo o domínio) -->
-        <meta name="twitter:image" content="http://portal.oab-sc.org.br/site/images/portal.jpg">
+        <meta name="twitter:image" content="https://portal.oab-sc.org.br/site/images/portal.jpg">
         <meta name="twitter:image:alt" content="Logo OAB/SC">
     <title>Portal de Acesso OAB-SC</title>
     <!-- Define o favicon da página -->
-    <link rel="icon" href="http://portal.oab-sc.org.br/site/images/fav.png" type="image/png">
+    <link rel="icon" href="https://portal.oab-sc.org.br/site/images/fav.png" type="image/png">
     <style>
         /* Remove margens e preenchimento padrão */
         body, html {
@@ -44,7 +44,7 @@
         /* Estilo do botão de chat */
         #chat-button {
             position: fixed;
-            bottom: 20px; /* Mantém o botão a 20px da parte inferior */
+            bottom: 40px; /* Mantém o botão a 20px da parte inferior */
             right: 20px; /* Mantém o botão a 20px da direita */
             background-color: #4CAF50; /* Verde */
             color: white;
@@ -69,7 +69,7 @@
             height: 550px; /* Altura ajustada para parecer mais com a imagem */
             background-color: white;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 18px; /* Adiciona bordas arredondadas */
             z-index: 1001; /* Acima do botão e da Mila */
             display: none; /* Inicialmente escondido */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil */
@@ -83,6 +83,7 @@
             width: 100%;
             height: 100%;
             border: none;
+            border-radius: 5px; /* Adiciona bordas arredondadas ao iframe */
         }
 
         /* Estilo para tornar o container visível */
@@ -97,8 +98,8 @@
             position: fixed;
             right: 20px;
             /* Calcula a posição abaixo do botão (20px do rodapé + aprox 36px de altura do botão + 10px de gap) */
-            bottom: calc(20px + 36px + 10px);
-            height: 250px; /* Altura da imagem, ajuste conforme necessário */
+            bottom: calc(20px + 40px + 10px);
+            height: 290px; /* Altura da imagem, ajuste conforme necessário */
             width: auto; /* Mantém a proporção da imagem */
             z-index: 999; /* Abaixo do botão (1000) e do chat container (1001) */
             transition: all 0.3s ease-in-out; /* Transição suave para movimento */
@@ -122,10 +123,10 @@
 <body>
 
     <!-- Site principal abaixo, ela não tem a IA integrada, EasterEGG para quem sabe apertar F12-->
-    <iframe id="main-iframe" src="https://intranet.oab-sc.org.br/portal/site/"></iframe>
+    <iframe id="main-iframe" src="https://portal.oab-sc.org.br/site"></iframe>
 
     <!-- Imagem da Mila -->
-    <img id="mila-assistant-image" src="/site/images/mila.png" alt="Mila Virtual Assistant">
+    <img id="mila-assistant-image" src="https://portal.oab-sc.org.br/site/images/mila.png" alt="Mila Virtual Assistant">
 
     <!-- Botão de Chat -->
     <button id="chat-button">CHAT ONLINE!</button>
