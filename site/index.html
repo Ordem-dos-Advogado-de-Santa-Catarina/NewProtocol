@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Portal Ordem Dos Advogados do Brasil - Santa Catarina</title>
+        <link rel="icon" href="images/cabecalhooab.png" type="image/png">
+        <!-- Favicon adicionado aqui -->
+        <link rel="stylesheet" href="css/style.css">
+        <!-- Link pro CSS externo -->
+
+        <!-- Meta tags para compartilhamento social (OGP e Twitter Cards) -->
+        <!-- Atualize 'URL_COMPLETA_DO_SEU_SITE' com o endereço real do seu site -->
+        <meta property="og:title" content="Portal Protocolo de Atendimento - OAB/SC">
+        <meta property="og:description" content="Centralize e organize seus protocolos de atendimento na OAB/SC de forma eficiente.">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="URL_COMPLETA_DO_SEU_SITE">
+        <!-- Substitua URL_COMPLETA_DA_SUA_LOGO pelo caminho completo da sua imagem de logo (incluindo o domínio) -->
+        <meta property="og:image" content="URL_COMPLETA_DA_SUA_LOGO/images/cabecalhooab.png">
+        <meta property="og:image:alt" content="Logo OAB/SC">
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Portal Protocolo de Atendimento - OAB/SC">
+        <meta name="twitter:description" content="Centralize e organize seus protocolos de atendimento na OAB/SC de forma eficiente.">
+        <!-- Substitua URL_COMPLETA_DA_SUA_LOGO pelo caminho completo da sua imagem de logo (incluindo o domínio) -->
+        <meta name="twitter:image" content="URL_COMPLETA_DA_SUA_LOGO/images/cabecalhooab.png">
+        <meta name="twitter:image:alt" content="Logo OAB/SC">
+
+    </head>
+<body>
+
+    <div class="page-header">
+        <div class="header-content">
+            <!-- Verifique se o src da imagem está correto para o seu ambiente -->
+            <a href="index.html" title="Página Principal">
+                <img src="images/cabecalhooab.png" alt="Cabeçalho OAB" class="header-image logo-inner-average">
+            </a>
+            <div class="header-bottom-row">
+                <a href="index.html" class="home-button" title="Página Principal">🏠 Pagina Inicial</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container para a barra de pesquisa (agora sticky em relação ao body) e resultados -->
+    <div class="sticky-search-container">
+        <div class="search-bar">
+            <input type="text" placeholder="Pesquisar ...">
+            <button>🔎</button>
+        </div>
+        <!-- Container para exibir os resultados da pesquisa -->
+        <div id="search-results-container">
+            <!-- Os resultados da pesquisa serão inseridos aqui pelo JavaScript -->
+        </div>
+    </div>
+
+    <!-- Divisão pro conteúdo principal pra rodapé ficar lá embaixo -->
+    <main class="content-wrap">
+
+        <!-- Novo título adicionado aqui, com classe para animação inicial -->
+        <h1 class="h1-initial-state">Portal de Acesso - Interno</h1>
+
+        <!-- container de botões principal -->
+        <div class="buttons-container">
+            <!-- adicionaremos a classe 'button-initial-state' com js para a animação -->
+            <a href="./setores/secretaria.html" class="btn">Secretaria</a>
+            <a href="./setores/tesouraria.html" class="btn">Tesouraria</a>
+            <a href="./setores/conselho.html" class="btn">Conselho</a>
+            <a href="./setores/comissoes.html" class="btn">Comissões</a>
+            <a href="./setores/consultas.html" class="btn">Consultas</a>
+            <a href="./setores/prerrogativas.html" class="btn">Prerrogativas</a>
+            <a href="./setores/sociedades.html" class="btn">Sociedades</a>
+            <!-- mais botões ou conteúdo podem ser adicionados aqui -->
+
+            <!-- edit gabriel 1.01.10 -->
+            <a href="./setores/fiscalizacao.html" class="btn">Fiscalização</a>
+            <a href="./setores/ted.html" class="btn">TED</a>
+            <a href="./setores/inssdigital.html" class="btn">INSS Digital</a>
+            <a href="./setores/examedeordem.html" class="btn">Exame de Ordem</a>
+            <a href="./setores/cursoseventos.html" class="btn">Cursos e Eventos</a>
+            <a href="./setores/controladoria.html" class="btn">Controladoria</a>
+            <a href="./setores/tecnologia.html" class="btn">Tecnologia</a>
+            <!-- edit gabriel 1.01.10 -->
+
+            <!-- Exemplo de grupo colapsável, se houver (também será animado) -->
+             <!--
+            <div class="collapsible-group">
+                <button class="toggle-btn">Nome do Grupo</button>
+                <div class="collapsible-content">
+                    <a href="#" class="sub-link">Sub-link 1</a>
+                    <a href="#" class="sub-link">Sub-link 2</a>
+                </div>
+            </div>
+             -->
+        </div>
+    </main>
+
+    <!-- Adicionado ID para que o JS possa calcular a altura -->
+    <footer id="Footer_footer" class="page-footer navbar-expand-lg font-small site-background-color" style="background-color:#3949AB !important; border-color: #3949AB !important;">
+        <div class="footer-copyright text-center py-3">
+           <small class="text-light">Desenvolvido por Ordem dos Advogados Santa Catarina - <span id="current-year"></span></small>
+        </div>
+     </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

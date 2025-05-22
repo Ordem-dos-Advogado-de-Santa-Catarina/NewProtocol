@@ -1,0 +1,606 @@
+/* Arquivo: css/style.css */
+
+:root {
+    /* Definindo cores como variáveis para fácil manutenção */
+    --primary-blue: #0267a6;
+    --primary-blue-dark: #004a7d;
+    --header-bg: rgb(57, 73, 171);
+    --light-gray-bg: #f0f0f0;
+    --white: #ffffff;
+    --text-light: #ffffff;
+    --text-dark: #333;
+    --text-muted: #6c757d;
+    --link-hover-bg: #e9ecef;
+    --link-hover-border: #dee2e6;
+    --sublink-bg: #e9ecef;
+    --sublink-border: #e9ecef; /* Borda padrão sublink */
+    --error-red: red;
+    --footer-height: 54px; /* Altura estimada do rodapé + alguma margem */
+    --search-bar-height: 52px; /* Altura estimada da barra de pesquisa + bordas + padding */
+    --sticky-container-top: 20px; /* Espaço acima do container sticky */
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: var(--light-gray-bg); /* Fundo cinza claro */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Garante que o body ocupe toda a altura da viewport */
+}
+
+/* ESTILOS DO CABEÇALHO */
+.page-header {
+    width: 100%;
+    background-color: var(--header-bg); /* Cor do cabeçalho */
+    padding: 5px 0; /* Padding vertical reduzido */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra opcional */
+    position: relative; /* Mantém no fluxo normal inicialmente */
+    z-index: 101; /* Acima da barra de pesquisa quando ela for sticky */
+}
+
+/*  TEXTOS DO HEADER BRANCOS E MESMO TAMANHO DE FONTE */
+.page-header * {
+    color: var(--text-light);
+    font-size: 16px; /* Tamanho de fonte padrão para textos do header */
+}
+
+.header-content {
+    display: flex;
+    align-items: center; /* Alinha itens verticalmente */
+    width: 100%; /* Ocupa toda a largura */
+    padding: 5px 15px; /* Padding horizontal */
+    box-sizing: border-box;
+    justify-content: flex-start; /* Alinha à esquerda */
+}
+
+.header-image {
+    display: block;
+    height: auto;
+    margin-right: 20px; /* Espaçamento à direita do logo */
+}
+
+.logo-inner-average {
+    min-width: 75px;
+    min-height: 50px;
+    max-height: 75px;
+    max-width: 90px;
+    object-fit: contain;
+}
+
+.header-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Alinha botão à esquerda */
+    width: auto;
+}
+
+.home-button {
+    text-decoration: none;
+    font-weight: bold; /* Texto em NEGRITO */
+    margin-right: 10px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 4px 8px;
+    border-radius: 4px; /* Mantido 4px para este elemento específico */
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease;
+    /* Adicionado para garantir consistência, embora não tenha borda visível */
+    border: 2px solid transparent;
+    box-sizing: border-box; /* Garante que padding e borda sejam incluídos na dimensão */
+}
+
+.home-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-light);
+}
+/* FIM DOS ESTILOS DO CABEÇALHO */
+
+
+/* CONTAINER STICKY PARA BARRA DE PESQUISA E RESULTADOS */
+.sticky-search-container {
+    position: sticky;
+    top: var(--sticky-container-top); /* Usa variável para o espaço superior */
+    margin-top: 20px;
+    margin-bottom: 20px; /* Adiciona margem inferior para separar do título */
+    width: 80%;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 100;
+    padding: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* BARRA DE PESQUISA (dentro do sticky-container) */
+.search-bar {
+    width: 100%;
+    background-color: var(--white);
+    border-radius: 8px; /* Bordas arredondadas por padrão */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    border: 2px solid var(--primary-blue); /* Borda azul padrão */
+    position: relative; /* Necessário para z-index e posicionamento do container de resultados */
+    z-index: 100; /* Garante que fique acima dos resultados */
+    /* Transição suave do arredondamento da borda inferior e cor da borda */
+    transition: border-bottom-left-radius 0.2s ease, border-bottom-right-radius 0.2s ease, border-color 0.2s ease, border-bottom-color 0.2s ease;
+}
+
+/* Quando os resultados estiverem visíveis (JS adicionará esta classe) */
+.search-bar.results-visible {
+    border-bottom-left-radius: 0;  /* Remove arredondamento inferior esquerdo */
+    border-bottom-right-radius: 0; /* Remove arredondamento inferior direito */
+    border-bottom-color: transparent; /* Esconde a borda inferior para conectar visualmente */
+}
+
+/* Ajuste para a borda vermelha quando não há resultados (classe no PARENT) */
+.sticky-search-container.search-no-results .search-bar {
+    border-color: var(--error-red); /* Aplica borda vermelha */
+    border-bottom-color: var(--error-red); /* Garante borda inferior vermelha no estado sem resultados */
+}
+/* Garante que a conexão visual funcione mesmo com borda vermelha */
+.sticky-search-container.search-no-results .search-bar.results-visible {
+    border-bottom-color: transparent; /* Esconde a borda inferior para conectar visualmente com resultados vazios */
+}
+
+
+.search-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 16px;
+    background-color: transparent;
+}
+
+.search-bar button {
+    background: none;
+    border: none; /* Botão de busca sem borda própria */
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+    padding: 8px 12px;
+}
+
+/* CONTAINER DE RESULTADOS DA PESQUISA (dentro do sticky-container) */
+#search-results-container {
+    position: absolute;
+    top: calc(100% - 2px); /* Começa exatamente onde a barra termina, sobrepondo a borda removida */
+    left: 0;
+    right: 0;
+    background-color: var(--white);
+    border-radius: 0 0 8px 8px; /* Cantos arredondados apenas embaixo */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    z-index: 99; /* Abaixo da barra de pesquisa */
+    max-height: 0; /* Começa fechado */
+    overflow: hidden; /* Esconder o conteúdo por padrão */
+    /* Transições Sincronizadas - Apenas max-height */
+    /* Ajustado: max-height agora com 0.5s para animação um pouco mais suave */
+    transition: max-height 0.5s ease-out; /* Opacidade e Transform serão controlados pela classe 'button-initial-state' nos itens */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 0 15px; /* Padding horizontal, vertical será aplicado pela classe .active */
+    /* Borda padrão (azul) */
+    border-left: 2px solid var(--primary-blue);
+    border-right: 2px solid var(--primary-blue);
+    border-bottom: 2px solid var(--primary-blue);
+    border-top: none; /* Garante que não haja borda superior */
+    /* opacity: 0; <-- Removido daqui, o controle de visibilidade é feito por max-height e pointer-events */
+    pointer-events: none; /* Não interagir quando escondido */
+
+    /* Estilos para ocultar a barra de scroll */
+    -ms-overflow-style: none;  /* Para Internet Explorer e Edge */
+    scrollbar-width: none;  /* Para Firefox */
+}
+
+/* Oculta a barra de scroll para Webkit browsers (Chrome, Safari) */
+#search-results-container::-webkit-scrollbar {
+    display: none; /* Oculta a barra de scroll */
+}
+
+
+#search-results-container.active {
+    /* Define uma altura MÁXIMA para evitar sobrepor o rodapé */
+    /* Calculo: 100vh (altura total) - altura header/espaço acima - altura barra - altura rodapé - margens */
+    /* Ajuste este valor conforme necessário, 60vh é um bom começo */
+    /* CONSIDERAR A ALTURA DO H1 AQUI TAMBÉM */
+    max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 100px); /* Ajuste este valor conforme necessário */
+    overflow-y: auto; /* MOSTRA scroll APENAS se o conteúdo exceder max-height (mas a barra está oculta) */
+    padding-top: 10px; /* Adiciona padding superior (SEM TRANSICAO)*/
+    padding-bottom: 10px; /* Adiciona padding inferior (SEM TRANSICAO)*/
+    /* opacity: 1; <-- Removido daqui, a visibilidade é controlada por max-height e pointer-events */
+    pointer-events: auto; /* Permite interação */
+    min-height: 50px; /* Altura mínima para mensagens como "Buscando..." ou "Nenhum resultado" */
+}
+
+/* Estilo para quando não houver resultados (classe no PARENT) */
+.sticky-search-container.search-no-results #search-results-container {
+    border-left-color: var(--error-red);
+    border-right-color: var(--error-red);
+    border-bottom-color: var(--error-red);
+}
+
+
+.search-result-item {
+    display: block;
+    padding: 10px 15px;
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-size: 15px;
+    border-radius: 4px; /* Mantido 4px para itens de resultado */
+    background-color: #f8f9fa;
+    /* Adiciona transições para opacidade e transform para a animação de entrada */
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.5s ease-out, transform 0.5s ease-out;
+    border: 2px solid var(--primary-blue); /* Borda azul principal consistente de 2px */
+    box-sizing: border-box;
+    min-height: 40px; /* Altura mínima para cada item de resultado */
+    display: flex; /* Permite alinhamento vertical se necessário */
+    align-items: center;
+}
+
+.search-result-item:hover {
+    background-color: var(--link-hover-bg);
+    color: var(--primary-blue-dark);
+    border-color: var(--primary-blue-dark); /* Mantém a borda no hover */
+}
+
+.no-results-message {
+    padding: 15px;
+    text-align: center;
+    color: var(--text-muted); /* Cor padrão */
+    font-style: italic;
+    margin: auto 0; /* Centraliza verticalmente se for o único item */
+    opacity: 1; /* Garante que a mensagem de status não seja afetada pela animação dos itens */
+    transform: none; /* Garante que a mensagem de status não seja afetada pela animação dos itens */
+    transition: none; /* Garante que a mensagem de status não seja afetada pela animação dos itens */
+}
+
+/* Ajuste para a mensagem de erro ficar vermelha também (quando a classe está no parent) */
+.sticky-search-container.search-no-results .no-results-message {
+    color: var(--error-red); /* Mensagem vermelha para combinar com a borda */
+}
+
+
+/* CONTAINER DO CONTEÚDO PRINCIPAL (Botões, etc.) */
+.content-wrap {
+    flex: 1; /* Ocupa o espaço restante verticalmente */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-bottom: calc(var(--footer-height) + 20px); /* Espaço para o rodapé sticky + margem */
+    box-sizing: border-box;
+}
+
+/* ESTILOS PARA O NOVO TÍTULO H1 */
+.content-wrap h1 {
+    text-align: center; /* Centraliza o texto */
+    color: var(--primary-blue-dark); /* Cor do título */
+    margin-top: 20px; /* Espaço acima do título */
+    margin-bottom: 20px; /* Espaço abaixo do título */
+    font-size: 2em; /* Tamanho do título */
+    font-weight: bold;
+    width: 80%; /* Garante que o título tenha a mesma largura do container de botões/pesquisa */
+    max-width: 800px; /* Garante que o título tenha a mesma largura máxima */
+     /* Adiciona transição para a animação de entrada */
+     transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* Classe para o estado inicial da animação do H1 */
+.h1-initial-state {
+    opacity: 0;
+    transform: translateY(30px); /* Começa 30px abaixo da posição final */
+}
+
+
+/* CONTAINER DE BOTÕES PRINCIPAL (dentro do content-wrap) */
+.buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 20px;
+    width: 80%;
+    max-width: 800px;
+    margin-bottom: 20px; /* Adiciona margem inferior para separar blocos de botões */
+}
+
+/* Garante que o último container de botões não tenha margem inferior extra antes do rodapé (opcional) */
+.buttons-container:last-child {
+    margin-bottom: 0;
+}
+
+/* Estilos padrão para botões e grupos colapsáveis */
+/* Adicionadas transições para opacidade e transform para a animação de entrada */
+.btn,
+.collapsible-group {
+    box-sizing: border-box;
+    display: flex;
+    /* Adicionado para a animação */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.btn {
+    flex: 1 1 calc(50% - 10px);
+    padding: 15px;
+    text-align: center;
+    background-color: var(--primary-blue); /* Cor de fundo principal */
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 18px;
+    border-radius: 8px; /* Borda arredondada consistente de 8px */
+    font-weight: bold;
+    border: 2px solid var(--primary-blue); /* Borda sólida consistente de 2px */
+    box-shadow: none; /* Remove a sombra interna anterior */
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+    outline: none; /* Garante que não haja outline padrão */
+     /* Movido transition para o seletor conjunto acima */
+}
+
+.btn:hover {
+    background-color: var(--primary-blue-dark); /* Cor de fundo mais escura no hover */
+    border-color: var(--primary-blue-dark); /* Cor da borda acompanha o fundo no hover */
+}
+
+.collapsible-group {
+    flex: 1 1 100%;
+    flex-direction: column;
+    border-radius: 8px; /* Raio do container do grupo ajustado para 8px */
+    overflow: hidden; /* Mantido para caso haja conteúdo inesperado */
+    background-color: transparent; /* Grupo em si não precisa de fundo */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra no grupo */
+    width: 100%;
+    /* Borda do grupo removida - será formada pelo botão e conteúdo */
+    border: none; /* Grupo não terá borda própria */
+     /* Movido transition para o seletor conjunto acima */
+}
+
+/* Classe para o estado inicial da animação dos botões/grupos */
+/* Aplica aos botões/grupos principais E aos itens de resultado da pesquisa */
+.button-initial-state {
+    opacity: 0;
+    transform: translateY(50px); /* Começa 50px abaixo da posição final */
+}
+
+
+.toggle-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 15px;
+    text-align: left;
+    background-color: var(--primary-blue); /* Cor de fundo principal */
+    color: var(--text-light);
+    font-size: 18px;
+    font-weight: bold;
+    /* Transições Sincronizadas: adicionado border-radius */
+    transition: background-color 0.3s ease, border-color 0.3s ease, border-radius 0.3s ease;
+    /* Borda inicial */
+    border: 2px solid var(--primary-blue);
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: 8px; /* Bordas arredondadas consistentes de 8px */
+    min-height: 50px;
+    position: relative;
+    z-index: 1; /* Botão acima do conteúdo */
+    box-shadow: none;
+    outline: none;
+     /* Removido opacity/transform transition aqui, definidos no seletor conjunto para animação inicial */
+}
+
+/* Estilo da borda SOMENTE quando o botão estiver ativo */
+.toggle-btn.active {
+    border-color: var(--primary-blue); /* Garante a cor da borda quando ativo */
+    border-bottom-left-radius: 0; /* Remove arredondamento inferior */
+    border-bottom-right-radius: 0;
+    border-bottom-color: transparent; /* Conecta visualmente com conteúdo */
+}
+
+.toggle-btn:hover {
+    background-color: var(--primary-blue-dark); /* Fundo mais escuro no hover */
+    border-color: var(--primary-blue-dark); /* Borda acompanha no hover */
+}
+
+.toggle-btn.active:hover {
+    background-color: var(--primary-blue-dark);
+    border-color: var(--primary-blue-dark); /* Borda acompanha cor de fundo no hover */
+    border-bottom-color: transparent; /* Mantém conexão */
+}
+
+
+.toggle-btn::after {
+    content: '▼';
+    font-size: 14px;
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.toggle-btn.active::after {
+    transform: rotate(180deg);
+}
+
+.collapsible-content {
+    background-color: var(--white); /* Fundo branco para o conteúdo */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between; /* Ou flex-start se preferir alinhar à esquerda */
+    max-height: 0; /* Começa fechado */
+    overflow: hidden;
+    padding: 0 15px; /* Padding horizontal fixo, vertical adicionado com .active */
+    /* Transições Sincronizadas: Apenas max-height */
+    /* Ajustado: max-height agora com 0.4s ease-out para animação */
+    transition: max-height 0.4s ease-out;
+    box-sizing: border-box;
+    /* Borda inicial transparente, cor aparece com .active */
+    border-left: 2px solid transparent;
+    border-right: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    border-bottom-left-radius: 8px; /* Arredonda cantos inferiores para 8px */
+    border-bottom-right-radius: 8px; /* Arredonda cantos inferiores para 8px */
+    /* Ajuste para alinhar com botão sem margem negativa */
+    margin-top: -2px; /* Sobrepõe a borda inferior transparente do botão */
+    position: relative;
+    z-index: 0; /* Conteúdo abaixo do botão */
+}
+
+/* Aplica padding vertical e cor da borda ao conteúdo quando ativo */
+.collapsible-content.active {
+    padding-top: 15px;    /* Adiciona padding superior (SEM TRANSICAO) */
+    padding-bottom: 15px; /* Adiciona padding inferior (SEM TRANSICAO) */
+    border-left-color: var(--primary-blue);
+    border-right-color: var(--primary-blue);
+    border-bottom-color: var(--primary-blue);
+    /* max-height é controlado pelo JS para colapsáveis, mas NÃO para resultados da pesquisa */
+}
+
+.sub-link {
+    flex: 1 1 calc(50% - 10px);
+    padding: 12px;
+    text-align: center;
+    background-color: var(--sublink-bg); /* Fundo cinza claro */
+    color: var(--text-dark);
+    text-decoration: none;
+    font-size: 15px;
+    border-radius: 8px; /* Ajustado para 8px para consistência */
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    border: 2px solid var(--primary-blue); /* Borda azul principal consistente de 2px */
+    box-sizing: border-box;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    outline: none;
+}
+
+.sub-link:hover {
+    background-color: var(--link-hover-bg); /* Fundo cinza mais escuro no hover */
+    color: #000;
+    border-color: var(--primary-blue-dark); /* Borda azul mais escura no hover, consistente */
+}
+/* FIM DOS ESTILOS COLAPSÁVEIS */
+
+
+/* ESTILOS PARA O IFRAME RECORTADO (SE NECESSÁRIO) - SEM ALTERAÇÕES */
+.iframe-clipper {
+    width: 375px;
+    height: 150px;
+    border: 2px solid #ccc; /* Borda consistente 2px */
+    overflow: hidden;
+    margin: 20px auto;
+    position: relative;
+    box-sizing: border-box;
+}
+
+#mobileFrame {
+    width: 1024px;
+    height: 812px;
+    border: none;
+    transform: translate(-560px, -35px);
+    transform-origin: top left;
+}
+/* FIM DOS ESTILOS PARA O IFRAME */
+
+
+/* ESTILOS DO RODAPÉ */
+.page-footer {
+    width: 100%;
+    background-color: var(--header-bg); /* Usa a mesma cor do header */
+    color: var(--text-light);
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+     position: sticky;
+     bottom: 0;
+     z-index: 102; /* Acima do conteúdo e da pesquisa */
+     margin-top: auto; /* Garante que vá para o final se o conteúdo for pequeno */
+     border: 2 handleClickpx solid transparent; /* Consistência */
+     box-sizing: border-box;
+     height: var(--footer-height); /* Define altura explícita para cálculo de max-height */
+}
+/* FIM DOS ESTILOS DO RODAPÉ */
+
+/* AJUSTES RESPONSIVOS - SEM ALTERAÇÕES RELEVANTES PARA O PEDIDO */
+@media (max-width: 768px) {
+     :root {
+         --sticky-container-top: 15px; /* Ajusta no mobile */
+     }
+     .sticky-search-container,
+     .buttons-container,
+     .content-wrap h1 { /* Inclui o H1 */
+         width: 90%;
+         max-width: none;
+     }
+     .sticky-search-container {
+         margin-top: 15px;
+         margin-bottom: 15px;
+     }
+     .content-wrap h1 { /* Ajusta margens do H1 no mobile */
+         margin-top: 15px;
+         margin-bottom: 15px;
+         font-size: 1.8em; /* Reduz um pouco o tamanho */
+     }
+     #search-results-container.active {
+        /* Pode precisar ajustar o max-height em telas menores */
+        max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 80px); /* Ajuste conforme H1 */
+     }
+    .btn { flex-basis: calc(50% - 10px); }
+    .collapsible-group { flex-basis: 100%; }
+     .sub-link { flex-basis: calc(50% - 10px); }
+    .header-content { padding: 5px 10px; }
+}
+@media (max-width: 600px) {
+     :root {
+         --sticky-container-top: 10px; /* Ajusta no mobile */
+         --footer-height: 48px; /* Ajusta altura do footer se necessário */
+         --search-bar-height: 48px; /* Ajusta altura da barra se necessário */
+     }
+     .sticky-search-container,
+     .buttons-container,
+     .content-wrap h1 { /* Inclui o H1 */
+         width: 95%;
+         gap: 15px;
+     }
+     .sticky-search-container {
+         margin-top: 10px;
+         margin-bottom: 10px;
+         padding: 0;
+     }
+     .content-wrap h1 { /* Ajusta margens do H1 no mobile */
+         margin-top: 10px;
+         margin-bottom: 10px;
+         font-size: 1.5em; /* Reduz mais o tamanho */
+     }
+      #search-results-container.active {
+        /* Recalcula max-height para telas pequenas */
+        max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 60px); /* Ajuste conforme H1 */
+     }
+     .btn,
+     .collapsible-group { flex-basis: 100%; }
+     .sub-link { flex-basis: 100%; }
+     .logo-inner-average { max-height: 60px; max-width: 75px; }
+     .home-button { font-size: 14px; padding: 3px 6px; }
+     .header-content { padding: 5px 8px; }
+     .search-bar { padding: 6px; }
+     .search-bar input { font-size: 15px; padding: 8px; }
+     .search-bar button { font-size: 16px; padding: 6px 10px; }
+     #search-results-container { padding-left: 10px; padding-right: 10px; gap: 4px; }
+     .search-result-item { padding: 8px 12px; font-size: 14px; }
+     .no-results-message { padding: 12px; font-size: 14px; }
+     .page-footer { padding: 10px 0; font-size: 13px; height: var(--footer-height); }
+}

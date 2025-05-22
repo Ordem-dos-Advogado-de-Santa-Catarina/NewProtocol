@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tecnologia</title>
+    <link rel="icon" href="../images/cabecalhooab.png" type="image/png">
+    <link rel="stylesheet" href="../css/style.css"> <!-- Link pro CSS externo -->
+</head>
+<body>
+
+    <div class="page-header">
+        <div class="header-content">
+            <a href="../index.html" title="Página Principal">
+                <img src="../images/cabecalhooab.png" alt="Cabeçalho OAB" class="header-image logo-inner-average">
+            </a>
+            <div class="header-bottom-row">
+                <a href="../index.html" class="home-button" title="Página Principal">🏠 Pagina Inicial</a>
+                <h2 class="page-title">> Tecnologia</h2> <!-- Título adicionado para pesquisa -->
+            </div>
+        </div>
+    </div>
+
+    <div class="content-wrap">
+        <!-- Container para a barra de pesquisa (fixa/sticky) e resultados -->
+        <div class="sticky-search-container">
+            <div class="search-bar">
+                <input type="text" placeholder="Pesquisar links, grupos ou páginas..."> <!-- Placeholder atualizado -->
+                <button aria-label="Pesquisar">🔎</button> <!-- aria-label para acessibilidade -->
+            </div>
+            <!-- Container para exibir os resultados da pesquisa -->
+            <div id="search-results-container">
+                <!-- Os resultados da pesquisa serão inseridos aqui pelo JavaScript -->
+            </div>
+        </div>
+
+        <!-- título da pagina aqui -->
+        <h1 class="h1-initial-state">Tecnologia</h1>
+
+        <!-- Primro Bloco de Botões (Separado pela margem do container anterior) -->
+        <div class="buttons-container">
+            <a href="https://servicos.oab-sc.org.br/hbconselhos/pgsRequerimento/RedirecionamentoModeloRequerimento.aspx?ModeloRequerimento=ch%2f6I%2bOP3Z656CtoUOxs0A%3d%3d" class="btn" target="_blank" rel="noopener noreferrer">Pedido de Criação Email</a> <!-- target e rel adicionados para link externo -->
+            <a href="../manuais/manuais.html" class="btn">Manuais</a>
+        </div>
+
+        <!-- Segundo Bloco de Botões -->
+        <div class="buttons-container">
+            <!-- colapsavel -->
+            <div class="collapsible-group">
+                <button class="toggle-btn">Ajuda com BrConselhos</button>
+                <div class="collapsible-content">
+                    <a href="https://servicos.oab-sc.org.br/hbconselhos/pgs/GerarAcessoViaSite.aspx" class="sub-link">Gerar Senha</a> <!-- Classe ajustada para sub-link -->
+                    <a href="https://servicos.oab-sc.org.br/hbconselhos/login/main2.aspx" class="sub-link" target="_blank">Acesso ao Sistema</a> <!-- Classe ajustada para sub-link -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Terceiro Bloco de Botões (Separado pela margem do container anterior) -->
+        
+    </div>
+
+    <footer id="Footer_footer" class="page-footer navbar-expand-lg font-small site-background-color"> <!-- Removido style inline -->
+        <div class="footer-copyright text-center py-3">
+           <small class="text-light">Desenvolvido com ❤︎ pelos meninos do TI - <span id="current-year"></span></small>
+        </div>
+     </footer>
+
+    <script src="../js/script.js"></script> <!-- Link pro Javascript -->
+</body>
+</html>
