@@ -15,7 +15,7 @@
     --sublink-bg: #e9ecef;
     --sublink-border: #e9ecef; /* Borda padrão sublink */
     --error-red: red;
-    --footer-height: 54px; /* Altura estimada do rodapé + alguma margem */
+/*  --footer-height: 54px; /* Altura estimada do rodapé + alguma margem */
     --search-bar-height: 52px; /* Altura estimada da barra de pesquisa + bordas + padding */
     --sticky-container-top: 20px; /* Espaço acima do container sticky */
 }
