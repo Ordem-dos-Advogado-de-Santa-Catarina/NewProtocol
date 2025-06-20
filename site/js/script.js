@@ -30,8 +30,6 @@ function updateFooterYear() {
         console.warn("Elemento com ID 'current-year' não encontrado no rodapé.");
     }
 }
-// --- FIM DA FUNÇÃO DO RODAPÉ ---
-
 
 // Função de Debounce genérica
 function debounce(func, wait, immediate) {
@@ -47,7 +45,7 @@ function debounce(func, wait, immediate) {
 		timeout = setTimeout(later, wait);
 		if (callNow) func.apply(context, args);
 	};
-};
+}
 
 // --- FUNÇÃO setElementMaxHeightToScrollHeight - REVISADA PARA MAIOR SUAVIDADE ---
 // Função para definir o max-height de um elemento colapsável para sua altura total
@@ -61,8 +59,8 @@ function setElementMaxHeightToScrollHeight(element) {
     // e que as transições CSS estejam temporariamente desabilitadas para a medição.
     element.style.transition = 'none';
     // Remove limite para medir altura real (incluindo padding do .active se aplicável)
-    // temporariamente definindo para 'none' ou um valor grande
-    element.style.maxHeight = '10000px'; // Use um valor grande em vez de 'none' para garantir medição precisa mesmo com padding
+    // temporariamente definindo para um valor grande (para garantir medição precisa com padding/border)
+    element.style.maxHeight = '10000px';
     const scrollHeight = element.scrollHeight; // Mede a altura total do conteúdo
 
     // Reseta para 0px ANTES de reabilitar a transição e aplicar o valor final.
@@ -73,9 +71,8 @@ function setElementMaxHeightToScrollHeight(element) {
     // antes de iniciar a transição CSS.
     element.offsetHeight; // Leitura de offsetHeight força o reflow
 
-    // Reabilita a transição (usará a definida no CSS) e aplica a altura final
-    // Envolvemos em requestAnimationFrame para dar ao navegador a chance de processar
-    // as mudanças anteriores antes de iniciar a animação.
+    // Reabilita a transição (usará a definida no CSS, que agora inclui max-height, padding e border)
+    // e aplica a altura final. Envolvemos em requestAnimationFrame.
     requestAnimationFrame(() => {
         element.style.transition = ''; // Reabilita transição CSS
         element.style.maxHeight = scrollHeight + "px"; // Aplica altura para animar
@@ -85,18 +82,16 @@ function setElementMaxHeightToScrollHeight(element) {
     // se ele mudar dinamicamente enquanto estiver aberto.
     // Usamos once: true aqui porque este listener é APENHAS para a transição de ABERTURA.
     element.addEventListener('transitionend', function handler(e) {
-        // Verifica se a transição que terminou foi a de max-height
-        if (e.propertyName === 'max-height') {
-            // Só remove o maxHeight inline se ele ainda for o valor calculado,
-            // evitando problemas se o usuário fechar antes de terminar.
-            // E verifica se o elemento ainda está ativo (significa que a abertura foi bem sucedida e não foi interrompida).
+        // Verifica se a transição que terminou foi a de max-height E se o elemento ainda está ativo
+        // (significa que a abertura foi bem sucedida e não foi interrompida/fechada)
+        if (e.propertyName === 'max-height' && element.classList.contains('active')) {
              // Verifica se o elemento é um colapsável normal (não o container de pesquisa)
-             // O container de pesquisa tem seu maxHeight ajustado dinamicamente
-             if (element.classList.contains('active') && (!element.id || element.id !== 'search-results-container')) {
+             // O container de pesquisa tem seu maxHeight ajustado dinamicamente e não deve ter maxHeight: none
+             if (!element.id || element.id !== 'search-results-container') {
                   // Verifica se o max-height calculado é o valor atual no elemento antes de setar para none
                  // (pequena tolerância para floating point issues)
                  if (Math.abs(parseFloat(element.style.maxHeight) - scrollHeight) < 2) {
-                      element.style.maxHeight = 'none';
+                      element.style.maxHeight = 'none'; // Permite fluxo natural do conteúdo
                  }
              }
             // O listener é removido automaticamente por { once: true }
@@ -108,18 +103,16 @@ function setElementMaxHeightToScrollHeight(element) {
 function adjustSearchResultsContainerHeight() {
     const resultsContainer = document.getElementById('search-results-container');
     const searchBar = document.querySelector('.sticky-search-container .search-bar');
-    const footer = document.getElementById('Footer_footer'); // Adicionado ID ao footer no HTML
+    const footer = document.getElementById('Footer_footer');
 
     // Só ajusta se o container de resultados estiver ativo e os elementos necessários existirem
     if (!resultsContainer || !resultsContainer.classList.contains('active') || !searchBar || !footer) {
         // Se não estiver ativo, garante que max-height é 0 para o CSS cuidar da transição de fechamento
-        if(resultsContainer && !resultsContainer.classList.contains('active')){
-             requestAnimationFrame(() => {
-                 // Garante que a transição está habilitada para o fechamento
-                 resultsContainer.style.transition = ''; // Reseta para a transição CSS
-                 resultsContainer.style.maxHeight = '0px';
-            });
-        }
+        // A remoção da classe 'active' no JS antes de chamar esta função ou ao fechar
+        // fará com que o CSS remova o padding e a borda, e a transição de max-height para 0 funcione.
+        // Não precisamos definir maxHeight: 0px explicitamente AQUI se a função for chamada apenas
+        // quando o container estiver ativo ou para fechar via remoção da classe 'active'.
+        // A lógica de fechamento em displayResults e handleClickOutside já define maxHeight para 0px.
         return;
     }
 
@@ -134,27 +127,28 @@ function adjustSearchResultsContainerHeight() {
     const maxPossibleHeight = Math.max(0, availableHeight);
 
     // Temporariamente remove max-height e transição para medir a altura real do conteúdo
-    // Usamos 'none' ou um valor grande para medir a altura natural do conteúdo
+    // Usamos 'none' ou um valor grande para medir a altura natural do conteúdo COM o padding e borda do .active
     resultsContainer.style.transition = 'none';
-    resultsContainer.style.maxHeight = '10000px'; // Permite que o conteúdo ocupe a altura real para medição
+    // Usa um valor grande para permitir a medição da altura total com o padding ativo
+    resultsContainer.style.maxHeight = '10000px';
 
     // Força um reflow para garantir a medição correta
     resultsContainer.offsetHeight;
 
-    const contentScrollHeight = resultsContainer.scrollHeight;
+    const contentScrollHeight = resultsContainer.scrollHeight; // Mede a altura total incluindo padding
 
     // Determina a altura final: o menor entre a altura total do conteúdo e o espaço disponível
+    // (considerando o padding que já está incluído no scrollHeight e no availableHeight)
     const finalHeight = Math.min(contentScrollHeight, maxPossibleHeight);
 
     // Reabilita a transição e aplica a altura final
     requestAnimationFrame(() => {
-         resultsContainer.style.transition = ''; // Reabilita a transição CSS
+         resultsContainer.style.transition = ''; // Reabilita a transição CSS (incluindo padding/border)
          resultsContainer.style.maxHeight = finalHeight + 'px'; // Aplica a altura calculada
     });
 
     // Não remove maxHeight='none' aqui, pois a altura é dinâmica.
     // A transição de fechamento definirá max-height para 0.
-    // O listener transitionend para limpar maxHeight='none' da abertura não se aplica aqui.
 }
 
 
@@ -168,12 +162,16 @@ function adjustActiveCollapsibleHeightsAndSearchResults() {
         }
 
         // Recalcula a altura e aplica diretamente, sem animação durante o resize.
-        activeElement.style.transition = 'none'; // Desabilita para evitar saltos
-        activeElement.style.maxHeight = 'none'; // Mede (permite fluxo natural temporariamente)
+        // Temporariamente desabilita transições (max-height, padding, border)
+        activeElement.style.transition = 'none';
+        // Permite fluxo natural temporariamente para medir a altura real com padding/border ativo
+        activeElement.style.maxHeight = 'none';
+        // Mede a altura real com o padding e border do .active aplicados
         const scrollHeight = activeElement.scrollHeight;
-        activeElement.style.maxHeight = scrollHeight + "px"; // Define novo valor
+        // Define o novo valor de max-height
+        activeElement.style.maxHeight = scrollHeight + "px";
 
-        // Reabilita transição após um pequeno delay ou no próximo frame para futuras interações
+        // Reabilita transições após um pequeno delay ou no próximo frame
         requestAnimationFrame(() => {
             activeElement.style.transition = '';
              // Em resize, remove a style inline 'maxHeight: none' dos collapsibles normais
@@ -224,32 +222,41 @@ function setupCollapsible() {
                     // Fecha apenas se for OUTRO botão e se ele ESTIVER ativo
                     if (otherButton && otherButton !== currentButton && otherButton.classList.contains('active')) {
                         // Lógica de fechamento suave para o outro botão/conteúdo
+                        // Adiciona/mantém a classe 'active' temporariamente para medir com padding/border
+                        otherButton.classList.add('active'); // Garante classe para medição
+                        otherContent.classList.add('active'); // Garante classe para medição
+
+                        // Mede a altura atual enquanto a classe 'active' está presente.
                         const otherScrollHeight = otherContent.scrollHeight;
 
                          // Se a altura for 0 ou quase 0, apenas remove as classes sem animar.
                         if (otherScrollHeight < 5) { // Use um pequeno limiar
                              otherButton.classList.remove('active');
                              otherContent.classList.remove('active');
-                             otherContent.style.maxHeight = ''; // Limpa o estilo inline
+                             // Limpa styles inline apenas se eles existirem e não for animar
+                             otherContent.style.maxHeight = '';
+                             otherContent.style.transition = ''; // Garante transição normal para próxima interação
                              return;
                         }
 
                         // Define o maxHeight para a altura medida antes de iniciar a transição para 0.
-                        otherContent.style.transition = 'none'; // Desabilita temporariamente a transição
+                        otherContent.style.transition = 'none'; // Desabilita temporariamente a transição (max-height, padding, border)
                         otherContent.style.maxHeight = otherScrollHeight + 'px'; // Define a altura inicial
 
                         otherContent.offsetHeight; // Força reflow
 
                         requestAnimationFrame(() => {
-                            otherContent.style.transition = ''; // Reabilita a transição CSS
+                            otherContent.style.transition = ''; // Reabilita a transição CSS (incluindo padding, border)
                             otherButton.classList.remove('active'); // Remove a classe aqui
-                            otherContent.classList.remove('active'); // Remove a classe aqui
+                            otherContent.classList.remove('active'); // Remove a classe aqui (isso remove padding e border via CSS)
                             otherContent.style.maxHeight = '0px'; // Anima para 0px
                         });
 
                          // Listener para limpar maxHeight='0px' após a transição de fechamento do outro elemento
                         otherContent.addEventListener('transitionend', function handler(e) {
-                             if (e.propertyName === 'max-height' && !otherContent.classList.contains('active')) {
+                             // Verifica se a transição foi de max-height e se o elemento não está mais ativo (terminou de fechar)
+                             // E verifica se o maxHeight atual é 0px (garante que a transição de fechamento foi bem sucedida)
+                             if (e.propertyName === 'max-height' && !otherContent.classList.contains('active') && otherContent.style.maxHeight === '0px') {
                                  otherContent.style.maxHeight = ''; // Limpa a propriedade inline 'maxHeight' (agora '0px')
                              }
                         }, { once: true }); // Roda apenas uma vez
@@ -259,31 +266,35 @@ function setupCollapsible() {
 
             // Lógica para o botão clicado
             if (!isAlreadyActive) { // Se NÃO estava ativo antes, significa que está ABRINDO
-                // Adiciona as classes primeiro para que os estilos de .active (como padding) sejam aplicados
+                // Adiciona as classes primeiro para que os estilos de .active (como padding, border) sejam aplicados
                 currentButton.classList.add('active');
-                currentContent.classList.add('active');
+                currentContent.classList.add('active'); // Isso aplica padding e border via CSS
 
                 // Chama a função revisada para definir o max-height e animar a abertura
+                // setElementMaxHeightToScrollHeight vai medir com padding/border e animar max-height
                 setElementMaxHeightToScrollHeight(currentContent);
 
             } else { // Se estava ativo antes, significa que está FECHANDO
-                const currentContent = currentButton.nextElementSibling; // Garante acesso ao elemento correto
+                // Garante acesso ao elemento correto e que a classe 'active' esteja presente para medição
+                const currentContent = currentButton.nextElementSibling;
+                 currentButton.classList.add('active'); // Garante classe para medição
+                 currentContent.classList.add('active'); // Garante classe para medição (aplica padding/border)
 
                 // 1. Mede a altura atual enquanto a classe 'active' ainda está presente.
-                const startHeight = currentContent.scrollHeight;
+                const startHeight = currentContent.scrollHeight; // Mede com padding/border do .active
 
                  // Se a altura inicial for 0 ou quase 0, apenas remove as classes sem animar.
                 if (startHeight < 5) { // Use um pequeno limiar
                     currentButton.classList.remove('active');
                     currentContent.classList.remove('active');
-                    currentContent.style.maxHeight = ''; // Limpa o estilo inline
-                    // Não precisa de transitionend se não animou
+                    // Limpa styles inline apenas se eles existirem e não for animar
+                    currentContent.style.maxHeight = '';
+                    currentContent.style.transition = ''; // Garante transição normal
                     return;
                 }
 
-
                 // 2. Define o maxHeight explicitamente para a altura medida para garantir o ponto de partida da animação.
-                // Temporariamente desabilita a transição para aplicar o valor inicial sem animação
+                // Temporariamente desabilita a transição (max-height, padding, border) para aplicar o valor inicial sem animação
                 currentContent.style.transition = 'none';
                 currentContent.style.maxHeight = startHeight + 'px';
 
@@ -292,22 +303,23 @@ function setupCollapsible() {
 
                 // 4. Remove as classes e define maxHeight para 0px dentro de requestAnimationFrame para iniciar a animação suave.
                 requestAnimationFrame(() => {
-                    // Reabilita a transição (usará a definida no CSS)
+                    // Reabilita a transição (usará a definida no CSS, incluindo padding e border)
                     currentContent.style.transition = '';
 
-                    // Remove as classes 'active' para desativar estilos dependentes e resetar maxHeight no CSS para 0.
+                    // Remove as classes 'active' para desativar estilos dependentes (padding, border)
                     currentButton.classList.remove('active');
                     currentContent.classList.remove('active');
 
                     // Explicitamente define maxHeight para 0px para garantir a animação a partir da altura inicial.
-                    currentContent.style.maxHeight = '0px';
+                    currentContent.style.maxHeight = '0px'; // Anima para 0
                 });
 
                 // 5. Adiciona listener para limpar o style.maxHeight='0px' após a transição de fechamento terminar.
                 // Usa once: true para garantir que rode apenas uma vez para este fechamento.
                 currentContent.addEventListener('transitionend', function handler(e) {
-                    // Verifica se a transição foi de max-height e se o elemento não está mais ativo (terminou de fechar)
-                    if (e.propertyName === 'max-height' && !currentContent.classList.contains('active')) {
+                    // Verifica se a transição foi de max-height, se o elemento não está mais ativo (terminou de fechar),
+                    // E se o maxHeight atual é 0px (garante que a transição de fechamento foi bem sucedida)
+                    if (e.propertyName === 'max-height' && !currentContent.classList.contains('active') && currentContent.style.maxHeight === '0px') {
                         // Limpa a propriedade maxHeight inline
                         currentContent.style.maxHeight = '';
                          // Remove o listener (já garantido por once: true)
@@ -342,25 +354,25 @@ function setupSearch() {
     }
 
     const filesToSearch = [
-        'https://portal.oab-sc.org.br/site/index.html',
-        'https://portal.oab-sc.org.br/site/setores/secretaria.html',
-        'https://portal.oab-sc.org.br/site/setores/tesouraria.html',
-        'https://portal.oab-sc.org.br/site/setores/conselho.html',
-        'https://portal.oab-sc.org.br/site/setores/comissoes.html',
-        'https://portal.oab-sc.org.br/site/setores/consultas.html',
-        'https://portal.oab-sc.org.br/site/setores/prerrogativas.html',
-        'https://portal.oab-sc.org.br/site/setores/protocolos.html',
-        'https://portal.oab-sc.org.br/site/setores/examedeordem.html',
-        'https://portal.oab-sc.org.br/site/setores/inssdigital.html',
-        'https://portal.oab-sc.org.br/site/setores/tecnologia.html',
-        'https://portal.oab-sc.org.br/site/setores/esa.html',
-        'https://portal.oab-sc.org.br/site/setores/ted.html',
-        'https://portal.oab-sc.org.br/site/setores/cursoseventos.html',
-        'https://portal.oab-sc.org.br/site/setores/controladoria.html',
-        'https://portal.oab-sc.org.br/site/setores/fiscalizacao.html',
-        'https://portal.oab-sc.org.br/site/manuais/manuais.html',
+        'https://intranet.oab-sc.org.br/portal/site/index.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/secretaria.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/tesouraria.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/conselho.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/comissoes.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/consultas.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/prerrogativas.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/protocolos.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/examedeordem.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/inssdigital.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/tecnologia.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/esa.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/ted.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/cursoseventos.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/controladoria.html',
+        'https://intranet.oab-sc.org.br/portal/site/setores/fiscalizacao.html',
+        'https://intranet.oab-sc.org.br/portal/site/manuais/manuais.html',
     ];
-    
+
     async function fetchAndSearchFile(rootRelativePath, searchTerm) {
         try {
             const urlWithCacheBuster = `${rootRelativePath}?v=${Date.now()}`;
@@ -428,13 +440,21 @@ function setupSearch() {
     // --- FUNÇÃO displayResults (REVISADA PARA ABERTURA CORRETA, ESTADO DE ERRO E ANIMAÇÃO) ---
     function displayResults(results) {
         // Remove todas as classes de estado antes de aplicar as novas
-        resultsContainer.classList.remove('active', 'no-results-found');
+        // Remove a classe 'active' primeiro para iniciar a transição de fechamento no CSS (padding, border)
+        resultsContainer.classList.remove('active');
+        resultsContainer.classList.remove('no-results-found');
         searchBar.classList.remove('results-visible', 'no-results-found');
         stickyContainer.classList.remove('search-no-results'); // Remove a classe do container pai
 
         const hasInput = searchInput.value.trim().length >= 2;
 
         if (hasInput) {
+             // Adiciona a classe active primeiro para que os estilos de .active (padding, border) sejam aplicados antes de medir
+             resultsContainer.classList.add('active');
+             searchBar.classList.add('results-visible');
+             // Garante que a classe de erro é removida se houver resultados
+             stickyContainer.classList.remove('search-no-results');
+
              resultsContainer.innerHTML = ''; // Limpa o conteúdo anterior (incluindo "Buscando...")
 
              // Desduplica resultados
@@ -447,14 +467,10 @@ function setupSearch() {
                 uniqueResults.forEach(result => {
                     resultsContainer.appendChild(result.element);
                 });
-                // Adiciona a classe active para iniciar a animação de abertura CSS (padding)
-                resultsContainer.classList.add('active');
-                searchBar.classList.add('results-visible');
-                 // Garante que a classe de erro é removida se houver resultados
-                 stickyContainer.classList.remove('search-no-results');
 
                 // Ajusta o max-height dinamicamente para a altura do conteúdo, limitada pelo espaço disponível
-                // Isso também inicia a animação de abertura (max-height de 0 para o calculado)
+                // Isso também inicia a animação de abertura (max-height de 0 para o calculado).
+                // adjustSearchResultsContainerHeight mede o scrollHeight com padding e border do .active.
                 adjustSearchResultsContainerHeight();
 
                  // --- ADICIONA LÓGICA DE ANIMAÇÃO SEQUENCIAL PARA RESULTADOS ---
@@ -490,31 +506,39 @@ function setupSearch() {
                 resultsContainer.appendChild(noResultsMsg);
 
                 // Adiciona as classes para estado "sem resultados"
-                resultsContainer.classList.add('active', 'no-results-found');
+                resultsContainer.classList.add('no-results-found'); // Mantém a classe 'active' já adicionada no início
                 searchBar.classList.add('results-visible'); // Barra visível
                  stickyContainer.classList.add('search-no-results'); // Adiciona classe no container pai para borda vermelha
 
                 // Ajusta o max-height para a mensagem "Nenhum resultado", limitada pelo espaço
-                 // Isso também inicia a animação de abertura
-                adjustSearchResultsContainerHeight();
+                 // Isso também inicia a animação de abertura.
+                 // adjustSearchResultsContainerHeight mede o scrollHeight com padding e border do .active.
+                 adjustSearchResultsContainerHeight();
             }
 
         } else {
              // Input vazio ou menos de 2 caracteres
              // Remove todas as classes de estado
-             resultsContainer.classList.remove('active', 'no-results-found');
+             // Remove a classe 'active' primeiro para iniciar a transição de fechamento no CSS (padding, border)
+             resultsContainer.classList.remove('active');
+             resultsContainer.classList.remove('no-results-found');
              searchBar.classList.remove('results-visible', 'no-results-found');
              stickyContainer.classList.remove('search-no-results'); // Garante que a classe de erro seja removida
 
-             // Anima o fechamento definindo para 0px
+             // Anima o fechamento definindo para 0px.
+             // Como a classe 'active' foi removida, o CSS já removeu o padding e a borda.
+             // A transição de max-height para 0 fará o resto.
              requestAnimationFrame(() => {
-                 // Garante que a transição está habilitada para o fechamento
+                 // Garante que a transição está habilitada para o fechamento (max-height, padding, border)
                  resultsContainer.style.transition = ''; // Reseta para a transição CSS
-                 resultsContainer.style.maxHeight = '0px'; // Anima para 0
+                 // Define para 0px explicitamente para garantir a animação a partir do valor calculado anteriormente.
+                 resultsContainer.style.maxHeight = '0px';
              });
+
              // Limpa o conteúdo após a animação de fechamento (opcional, mas bom para performance)
              resultsContainer.addEventListener('transitionend', function handler(e) {
                   // Verifica se a transição que terminou foi a de max-height
+                  // E se o maxHeight atual é 0px (garante que a transição de fechamento foi bem sucedida)
                   if (e.propertyName === 'max-height' && resultsContainer.style.maxHeight === '0px') {
                        resultsContainer.innerHTML = ''; // Limpa o conteúdo
                        resultsContainer.removeEventListener('transitionend', handler);
@@ -546,27 +570,28 @@ function setupSearch() {
         loadingMsg.textContent = 'Buscando...';
         resultsContainer.appendChild(loadingMsg);
 
-
-        resultsContainer.classList.add('active'); // Ativa para mostrar "Buscando"
+        // Adiciona a classe 'active' para mostrar a mensagem "Buscando..." e aplicar padding/border
+        resultsContainer.classList.add('active');
         searchBar.classList.add('results-visible');
+
 
         // Define uma altura MÍNIMA enquanto busca para a msg "Buscando..." ser visível
         // Isso ajuda a evitar que o container feche e reabra se uma busca for feita rapidamente após outra
-        // Mede a altura da mensagem de loading APÓS adicioná-la
+        // Mede a altura da mensagem de loading APÓS adicioná-la e APÓS adicionar a classe 'active' (para incluir padding/border)
         resultsContainer.style.transition = 'none'; // Desabilita transição para medir
-        resultsContainer.style.maxHeight = '10000px'; // Temporariamente grande para medir
+        // Usa um valor grande para permitir a medição da altura total com o padding ativo
+        resultsContainer.style.maxHeight = '10000px';
         resultsContainer.offsetHeight; // Força reflow
-        const loadingHeight = resultsContainer.scrollHeight; // Pega a altura real da mensagem de loading (com padding etc.)
-        resultsContainer.style.maxHeight = '0px'; // Reseta para 0 antes de animar (para a transição de abertura do container)
+        const loadingHeight = resultsContainer.scrollHeight; // Pega a altura real da mensagem de loading (com padding/border do .active)
 
+        // Agora define o max-height para o valor medido e reabilita a transição
         requestAnimationFrame(() => {
-             resultsContainer.style.transition = ''; // Reabilita transição (usará a do CSS)
-             // Define max-height para a altura medida da mensagem de loading, limitada pelo espaço disponível
-             // Usa adjustSearchResultsContainerHeight para calcular a altura máxima baseada no espaço,
-             // mas garante que seja pelo menos a altura da mensagem de loading.
-             // Passa a altura mínima (da mensagem "Buscando...") para o ajustador se necessário
-             // NOTA: adjustSearchResultsContainerHeight já calcula a altura baseada no conteúdo ATUAL.
-             // Apenas chamá-la já fará o container abrir para a altura da mensagem "Buscando...".
+             resultsContainer.style.transition = ''; // Reabilita transição (incluindo padding, border)
+             // Define max-height para a altura medida da mensagem de loading, limitada pelo espaço disponível.
+             // adjustSearchResultsContainerHeight calculará a altura máxima baseada no espaço
+             // e usará o scrollHeight atual (da mensagem "Buscando...") como conteúdo,
+             // aplicando o menor entre scrollHeight e o espaço disponível.
+             // Não precisamos definir explicitamente loadingHeight aqui, adjustSearchResultsContainerHeight já faz isso.
              adjustSearchResultsContainerHeight();
         });
 
@@ -580,14 +605,19 @@ function setupSearch() {
 
         } catch (error) {
             console.error("Erro geral durante a pesquisa:", error);
+            // Remove a classe 'active' primeiro para iniciar a transição de fechamento (padding, border)
+            resultsContainer.classList.remove('active');
+
             resultsContainer.innerHTML = '<p class="no-results-message">Ocorreu um erro durante a pesquisa.</p>';
 
             // Adiciona as classes para estado "sem resultados" / erro
+            // Re-adiciona 'active' para mostrar a mensagem de erro e aplicar padding/border
             resultsContainer.classList.add('active', 'no-results-found');
             searchBar.classList.add('results-visible'); // Barra visível
-             stickyContainer.classList.add('search-no-results'); // Adiciona classe no container pai para borda vermelha
+            stickyContainer.classList.add('search-no-results'); // Adiciona classe no container pai para borda vermelha
 
              // Ajusta altura para a mensagem de erro usando a função auxiliar
+             // adjustSearchResultsContainerHeight medirá o scrollHeight da mensagem de erro (com padding/border do .active)
              adjustSearchResultsContainerHeight();
         }
     }
@@ -620,7 +650,9 @@ function setupSearch() {
                  clearTimeout(debouncedSearch.__timeout);
                  debouncedSearch.__timeout = null;
             }
-           displayResults([]); // Limpa e fecha (isso já remove a classe de erro)
+            // Remove a classe 'active' para iniciar a transição de fechamento no CSS (padding, border)
+            resultsContainer.classList.remove('active');
+           displayResults([]); // Limpa e fecha (isso já remove a classe de erro e define maxHeight para 0px)
         } else if (searchInput.value.trim().length >= 2 && !resultsContainer.classList.contains('active')) {
              // O input agora tem >= 2 caracteres, mas o container está fechado (ex: fechado pelo clique fora)
              // Dispara uma nova busca imediata para reabrir os resultados
@@ -638,24 +670,25 @@ function handleClickOutside(event) {
 
     // Verifica se o clique foi FORA do container sticky (que inclui barra e resultados)
     if (stickyContainer && resultsContainer && resultsContainer.classList.contains('active') && !stickyContainer.contains(event.target)) {
-        // Remove classes de estado (isso faz o CSS aplicar a transição de fechamento)
+        // Remove classes de estado (isso faz o CSS aplicar a transição de fechamento para padding e border)
         resultsContainer.classList.remove('active', 'no-results-found');
         searchBar.classList.remove('results-visible', 'no-results-found');
         stickyContainer.classList.remove('search-no-results'); // Remove a classe de erro do container pai
 
         // Anima o fechamento definindo para 0px.
-        // Como a classe 'active' foi removida, o max-height padrão no CSS é 0,
-        // mas definir explicitamente '0px' aqui garante que a transição ocorra
-        // a partir do valor atual calculado por adjustSearchResultsContainerHeight().
+        // Como a classe 'active' foi removida, o padding e a borda já estão transitando para 0/transparent.
+        // A transição de max-height para 0 fará o resto.
          requestAnimationFrame(() => {
-             // Garante que a transição esteja habilitada para animar o fechamento
+             // Garante que a transição esteja habilitada para animar o fechamento (max-height, padding, border)
              resultsContainer.style.transition = ''; // Reseta para a transição CSS
-             resultsContainer.style.maxHeight = '0px'; // Define para 0px para animar
+             // Define para 0px explicitamente para garantir a animação a partir do valor calculado anteriormente.
+             resultsContainer.style.maxHeight = '0px';
          });
 
          // Limpa o conteúdo após a animação de fechamento
         resultsContainer.addEventListener('transitionend', function handler(e) {
              // Verifica se a transição que terminou foi a de max-height
+             // E se o maxHeight atual é 0px (garante que a transição de fechamento foi bem sucedida)
              if (e.propertyName === 'max-height' && resultsContainer.style.maxHeight === '0px') {
                   resultsContainer.innerHTML = ''; // Limpa o conteúdo após fechar
                   resultsContainer.removeEventListener('transitionend', handler);
@@ -674,12 +707,16 @@ function adjustActiveCollapsibleHeightsAndSearchResults() {
         }
 
         // Recalcula a altura e aplica diretamente, sem animação durante o resize.
-        activeElement.style.transition = 'none'; // Desabilita para evitar saltos
-        activeElement.style.maxHeight = 'none'; // Mede (permite fluxo natural temporariamente)
+        // Temporariamente desabilita transições (max-height, padding, border)
+        activeElement.style.transition = 'none';
+        // Permite fluxo natural temporariamente para medir a altura real com padding/border ativo
+        activeElement.style.maxHeight = 'none';
+        // Mede a altura real com o padding e border do .active aplicados
         const scrollHeight = activeElement.scrollHeight;
-        activeElement.style.maxHeight = scrollHeight + "px"; // Define novo valor
+        // Define o novo valor de max-height
+        activeElement.style.maxHeight = scrollHeight + "px";
 
-        // Reabilita transição após um pequeno delay ou no próximo frame para futuras interações
+        // Reabilita transições após um pequeno delay ou no próximo frame
         requestAnimationFrame(() => {
             activeElement.style.transition = '';
              // Em resize, remove a style inline 'maxHeight: none' dos collapsibles normais
@@ -749,4 +786,3 @@ function animateButtonsSequentially() {
         });
     }
 }
-// --- FIM DA NOVA FUNÇÃO DE ANIMAÇÃO ---
