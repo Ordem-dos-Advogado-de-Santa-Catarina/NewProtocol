@@ -27,38 +27,48 @@
         body, html {
             margin: 0;
             padding: 0;
-            /* Esta regra impede scrollbars na página principal (fora dos iframes) */
+            /* Impede scrollbars na página principal (fora dos iframes) */
             overflow: hidden;
             height: 100%; /* Garante que body e html ocupem 100% da altura */
             width: 100%; /* Garante que body e html ocupem 100% da largura */
             font-family: sans-serif; /* Define uma fonte padrão */
         }
 
-        /* Estiliza os iframes */
+        /* Estilo para os wrappers dos iframes */
+        /* Eles definem a área visível e escondem o overflow (onde a barra de scroll será empurrada) */
+        .iframe-wrapper {
+            width: 100%; /* Ocupa a largura total do seu container */
+            height: 100%; /* Ocupa a altura total do seu container */
+            overflow: hidden; /* ESSENCIAL: Esconde o conteúdo (incluindo a barra de scroll do iframe interno) que excede esta div */
+            position: relative; /* Necessário se você posicionar o iframe de forma absoluta dentro dele (não é o caso aqui, mas boa prática) */
+        }
+
+        /* Estilo dos iframes DENTRO dos wrappers */
         #main-iframe,
         #chat-iframe {
-            width: 100%; /* Largura total */
-            height: 100%; /* Altura total */
+            width: calc(100% + 17px); /* Aumenta a largura para empurrar a barra de scroll nativa (aprox. 17px) para fora da área visível do wrapper */
+            height: 100%; /* Ocupa a altura total do wrapper */
             border: none; /* Remove a borda padrão do iframe */
             display: block; /* Garante que o iframe ocupe o espaço sem gaps */
 
-            /* PERMITE o scroll vertical se o conteúdo exceder a altura */
+            /* Permite o scroll vertical DENTRO do iframe */
             overflow-y: auto;
-            /* Esconde scroll horizontal, geralmente não necessário */
+            /* Esconde scroll horizontal dentro do iframe, geralmente não necessário */
             overflow-x: hidden;
 
-            /* Esconder a barra de scroll para Firefox */
-            scrollbar-width: none; /* Esta regra é ignorada por WebKit (Chrome, Safari, novos Edge), como o debugger informou */
-
-            /* Esconder a barra de scroll para IE/Edge antigos */
-            -ms-overflow-style: none;
+            /* As regras abaixo para esconder a barra nativa no *elemento* iframe são mantidas,
+               mas o wrapper é a solução mais robusta para iframes cross-origin. */
+            scrollbar-width: none; /* Para Firefox */
+            -ms-overflow-style: none;  /* Para IE/Edge antigos */
         }
 
-        /* Esconder a barra de scroll para WebKit (Chrome, Safari, novos Edge) */
+        /* Esconder a barra de scroll nativa do elemento iframe para WebKit (Chrome, Safari, novos Edge)
+           Novamente, o wrapper é mais confiável para conteúdo cross-origin. */
         #main-iframe::-webkit-scrollbar,
         #chat-iframe::-webkit-scrollbar {
             display: none;
         }
+
 
         /* Estilo do botão de chat */
         #chat-button {
@@ -92,9 +102,8 @@
             z-index: 1001; /* Acima do botão e da Mila */
             display: none; /* Inicialmente escondido */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-            /* Este overflow é no container, não no iframe interno.
-               Pode ser hidden, mas se houver bordas arredondadas no iframe,
-               overflow: hidden aqui ajuda a cortar o conteúdo que sairia das bordas. */
+            /* O overflow: hidden aqui é para o container, e não para o scrollbar do iframe.
+               Ele ajuda a manter as bordas arredondadas limpas. */
             overflow: hidden;
             transition: all 0.3s ease-in-out; /* Transição para abertura/fechamento mais suave */
             opacity: 0; /* Começa invisível para transição */
@@ -139,8 +148,10 @@
 
     <!-- Site principal - Carregado em um iframe -->
     <!-- O atributo sandbox="allow-scripts" impede que o conteúdo deste iframe salve cookies/localStorage -->
-    <!-- As barras de scroll são ocultas por CSS, mas o scroll é permitido dentro do iframe -->
-    <iframe id="main-iframe" src="https://portal.oab-sc.org.br/site" sandbox="allow-scripts"></iframe>
+    <!-- A barra de scroll é escondida usando um wrapper -->
+    <div class="iframe-wrapper">
+        <iframe id="main-iframe" src="https://portal.oab-sc.org.br/portal/site" sandbox="allow-scripts"></iframe>
+    </div>
 
     <!-- Imagem da Mila - Assistente Virtual -->
     <img id="mila-assistant-image" src="https://portal.oab-sc.org.br/site/images/mila.png" alt="Mila Virtual Assistant">
@@ -150,11 +161,14 @@
 
     <!-- Container para o iframe do Chat -->
     <div id="chat-container">
-        <!-- Iframe do Chatbot -->
-        <!-- O atributo sandbox="allow-scripts" impede que o conteúdo deste iframe salve cookies/localStorage -->
-        <!-- allow="microphone" é necessário para permitir o acesso ao microfone pelo chatbot -->
-        <!-- As barras de scroll são ocultas por CSS, mas o scroll é permitido dentro do iframe -->
-        <iframe id="chat-iframe" src="https://udify.app/chatbot/nfkcvW4U6uqBclGK" sandbox="allow-scripts" allow="microphone"></iframe>
+        <!-- Usamos o mesmo wrapper dentro do container do chat -->
+        <div class="iframe-wrapper">
+            <!-- Iframe do Chatbot -->
+            <!-- O atributo sandbox="allow-scripts" impede que o conteúdo deste iframe salve cookies/localStorage -->
+            <!-- allow="microphone" é necessário para permitir o acesso ao microfone pelo chatbot -->
+            <!-- A barra de scroll é escondida usando o wrapper -->
+            <iframe id="chat-iframe" src="https://udify.app/chatbot/nfkcvW4U6uqBclGK" sandbox="allow-scripts" allow="microphone"></iframe>
+        </div>
     </div>
 
     <!-- Script para controlar a exibição do chat e a posição da imagem da Mila -->
