@@ -1,0 +1,12 @@
+[
+    {
+        "user": "advogado",
+        "senha": "123",
+        "permissao": "advogado"
+    },
+    {
+        "user": "INSS",
+        "senha": "321",
+        "permissao": "admin"
+    }
+]

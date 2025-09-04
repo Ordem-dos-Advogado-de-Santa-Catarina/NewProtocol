@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda - Sistema de Agendamento</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- NOVO: Modal de Login -->
+    <div id="modal-overlay" class="hidden"></div>
+    <div id="login-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Login no Sistema</h3>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Usuário" required>
+                <input type="password" id="password" placeholder="Senha" required>
+                <button type="submit">Entrar</button>
+                <p id="login-error" class="error-message"></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="agenda-container">
+        <header class="agenda-header">
+            <div class="nav-controls">
+                <button id="today-btn">Hoje</button>
+                <button id="prev-month-btn">&lt;</button>
+                <button id="next-month-btn">&gt;</button>
+                <h2 id="current-month-year"></h2>
+            </div>
+            <!-- NOVO: Área de sessão do usuário -->
+            <div id="user-session">
+                <span id="welcome-message"></span>
+                <button id="login-logout-btn"></button>
+            </div>
+            <div class="view-controls">
+                <button id="month-view-btn" class="active">Mês</button>
+                <button id="day-view-btn">Dia</button>
+            </div>
+        </header>
+
+        <div id="month-view" class="view active">
+            <div class="days-of-week">
+                <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+            </div>
+            <div id="calendar-grid" class="calendar-grid"></div>
+        </div>
+
+        <div id="day-view" class="view">
+            <div class="day-view-header">
+                <button id="prev-day-btn">&lt;</button>
+                <h3 id="day-view-date"></h3>
+                <button id="next-day-btn">&gt;</button>
+            </div>
+            <div class="day-view-content">
+                <div id="day-timeline"></div>
+                <div id="day-slots"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

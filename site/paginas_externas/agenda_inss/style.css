@@ -1,0 +1,315 @@
+/* --- GERAL --- */
+:root {
+    --primary-color: #4285F4;
+    --border-color: #dadce0;
+    --text-color: #3c4043;
+    --background-color: #f8f9fa;
+    --hover-color: #f1f3f4;
+}
+
+body {
+    font-family: 'Roboto', sans-serif, Arial;
+    background-color: #fff;
+    color: var(--text-color);
+    margin: 0;
+    padding: 1em;
+}
+
+.agenda-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+/* --- CABEÇALHO --- */
+.agenda-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-controls, .view-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#current-month-year {
+    font-size: 22px;
+    font-weight: 400;
+    margin: 0 10px;
+    min-width: 200px;
+}
+
+button {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: var(--hover-color);
+}
+
+.view-controls button.active {
+    background-color: #e8f0fe;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* --- VISUALIZAÇÕES (CONTROLE DE EXIBIÇÃO) --- */
+.view {
+    display: none;
+}
+.view.active {
+    display: block;
+}
+
+/* --- VISUALIZAÇÃO DE MÊS --- */
+.days-of-week, .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+}
+
+.days-of-week div {
+    font-weight: 500;
+    color: #70757a;
+    padding: 12px 0;
+}
+
+.calendar-grid {
+    border-top: 1px solid var(--border-color);
+}
+
+.calendar-day {
+    border-right: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
+    padding: 8px;
+    min-height: 120px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.calendar-day:nth-child(7n) {
+    border-right: none;
+}
+
+.calendar-day:hover {
+    background-color: var(--hover-color);
+}
+
+.calendar-day.other-month {
+    color: #aaa;
+    background-color: var(--background-color);
+}
+
+.calendar-day .day-number {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 50%;
+    margin-bottom: 8px;
+}
+
+.calendar-day.current-day .day-number {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.appointment-info {
+    font-size: 11px;
+    font-weight: 500;
+    background-color: #f4e6e6;
+    color: #731313;
+    border-radius: 4px;
+    padding: 2px 6px;
+    align-self: stretch;
+    text-align: center;
+}
+
+/* --- VISUALIZAÇÃO DE DIA --- */
+#day-view {
+    padding: 20px;
+}
+
+/* NOVO: Estilos para o cabeçalho da visualização de dia */
+.day-view-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+#day-view-date {
+    font-size: 20px;
+    font-weight: 400;
+    margin: 0;
+    white-space: nowrap; /* Evita que a data quebre em telas menores */
+}
+
+.day-view-content {
+    display: flex;
+    border-top: 1px solid var(--border-color);
+}
+
+#day-timeline {
+    padding-right: 15px;
+    text-align: right;
+    font-size: 12px;
+    color: #70757a;
+}
+
+#day-timeline .hour-marker {
+    height: 60px;
+    position: relative;
+}
+#day-timeline .hour-marker::before {
+    content: attr(data-hour);
+    position: relative;
+    top: -8px;
+}
+
+#day-slots {
+    flex-grow: 1;
+    border-left: 1px solid var(--border-color);
+}
+
+.time-slot {
+    height: 30px;
+    border-bottom: 1px dotted var(--border-color);
+    box-sizing: border-box;
+    transition: background-color 0.2s;
+}
+.time-slot:nth-child(odd) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.time-slot.available:hover {
+    background-color: #e8f0fe;
+    cursor: pointer;
+}
+
+.time-slot.booked {
+    background-color: #ef9a9a;
+    border: 1px solid #e57373;
+    color: #c62828;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: not-allowed;
+}
+
+/* NOVO: Estilos do Modal de Login */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 1001;
+    width: 90%;
+    max-width: 400px;
+}
+.modal.hidden { display: none; }
+
+#modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    z-index: 1000;
+}
+#modal-overlay.hidden { display: none; }
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+#login-form input {
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 16px;
+}
+#login-form button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+}
+.error-message {
+    color: #d93025;
+    font-size: 14px;
+    text-align: center;
+    min-height: 20px;
+}
+
+/* NOVO: Estilos da Sessão do Usuário */
+#user-session {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+#welcome-message {
+    font-weight: 500;
+}
+
+/* NOVO: Estilo para horários bloqueados */
+.time-slot.blocked {
+    background-image: repeating-linear-gradient(
+        45deg,
+        #e0e0e0,
+        #e0e0e0 10px,
+        #f5f5f5 10px,
+        #f5f5f5 20px
+    );
+    color: #757575;
+    cursor: pointer; /* Admin pode clicar para desbloquear */
+    border: 1px solid #bdbdbd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+}
+.time-slot.blocked:hover {
+    opacity: 0.8;
+}
+
+/* NOVO: Indicador de bloqueio no mês */
+.block-info {
+    font-size: 11px;
+    font-weight: 500;
+    background-color: #f1f3f4;
+    color: #5f6368;
+    border-radius: 4px;
+    padding: 2px 6px;
+    align-self: stretch;
+    text-align: center;
+    margin-top: 4px;
+}
