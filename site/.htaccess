@@ -1,1 +1,20 @@
+# Habilita o módulo de headers se não estiver já habilitado globalmente
+<IfModule mod_headers.c>
+    # Define o cabeçalho de permissão de origem para permitir requisições de QUALQUER origem.
+    # Atenção: Para produção em um site específico, é mais seguro restringir a origem,
+    # por exemplo: Header set Access-Control-Allow-Origin "https://seu-dominio-onde-o-script-roda.com"
+    # Se o seu script JS está rodando no MESMO domínio portal.oab-sc.org.br, '*' é aceitável,
+    # ou o próprio nome do domínio. Se o script está em um domínio diferente (ex: localhost),
+    # você PRECISA permitir explicitamente essa origem aqui.
+    Header set Access-Control-Allow-Origin "*"
+
+    # Você também pode precisar de outros cabeçalhos CORS se estiver fazendo requisições
+    # com métodos diferentes de GET/POST ou com cabeçalhos customizados (não parece ser o caso aqui).
+    # Exemplo:
+    # Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    # Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept"
+    # Header set Access-Control-Allow-Credentials "true" # Se precisar de cookies/autenticação
+</IfModule>
+
+# Redirecionamento erro 404
 ErrorDocument 404 http://portal.oab-sc.org.br/site/404.html
