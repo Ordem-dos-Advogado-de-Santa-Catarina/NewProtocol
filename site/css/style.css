@@ -15,7 +15,7 @@
     --sublink-bg: #e9ecef;
     --sublink-border: #e9ecef; /* Borda padrão sublink */
     --error-red: red;
-    --footer-height: 54px; /* Altura estimada do rodapé + alguma margem */
+   /* --footer-height: 54px; /* Altura estimada do rodapé + alguma margem */
     --search-bar-height: 52px; /* Altura estimada da barra de pesquisa + bordas + padding */
     --sticky-container-top: 20px; /* Espaço acima do container sticky */
 }
@@ -178,25 +178,23 @@ body {
     left: 0;
     right: 0;
     background-color: var(--white);
-    border-radius: 0 0 8px 8px; /* Cantos arredondados apenas embaixo */
+    /* Removido border-radius 0 0 8px 8px; daqui */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     z-index: 99; /* Abaixo da barra de pesquisa */
     max-height: 0; /* Começa fechado */
     overflow: hidden; /* Esconder o conteúdo por padrão */
     /* Transições Sincronizadas - Apenas max-height */
     /* Ajustado: max-height agora com 0.5s para animação um pouco mais suave */
-    transition: max-height 0.5s ease-out; /* Opacidade e Transform serão controlados pela classe 'button-initial-state' nos itens */
+    transition: max-height 0.5s ease-out, padding 0.5s ease-out, border-color 0.5s ease, border-width 0.5s ease; /* Adiciona transição para padding e borda */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 5px;
-    padding: 0 15px; /* Padding horizontal, vertical será aplicado pela classe .active */
-    /* Borda padrão (azul) */
-    border-left: 2px solid var(--primary-blue);
-    border-right: 2px solid var(--primary-blue);
-    border-bottom: 2px solid var(--primary-blue);
-    border-top: none; /* Garante que não haja borda superior */
-    /* opacity: 0; <-- Removido daqui, o controle de visibilidade é feito por max-height e pointer-events */
+    /* Padding e Borda definidos em 0 no estado padrão */
+    padding: 0;
+    border: 0 solid transparent;
+    border-bottom-left-radius: 8px; /* Mantém arredondamento no estado padrão */
+    border-bottom-right-radius: 8px; /* Mantém arredondamento no estado padrão */
     pointer-events: none; /* Não interagir quando escondido */
 
     /* Estilos para ocultar a barra de scroll */
@@ -217,15 +215,24 @@ body {
     /* CONSIDERAR A ALTURA DO H1 AQUI TAMBÉM */
     max-height: calc(100vh - var(--sticky-container-top) - var(--search-bar-height) - var(--footer-height) - 100px); /* Ajuste este valor conforme necessário */
     overflow-y: auto; /* MOSTRA scroll APENAS se o conteúdo exceder max-height (mas a barra está oculta) */
-    padding-top: 10px; /* Adiciona padding superior (SEM TRANSICAO)*/
-    padding-bottom: 10px; /* Adiciona padding inferior (SEM TRANSICAO)*/
-    /* opacity: 1; <-- Removido daqui, a visibilidade é controlada por max-height e pointer-events */
+    /* Adiciona padding e borda SOMENTE quando ativo */
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-left: 2px solid var(--primary-blue);
+    border-right: 2px solid var(--primary-blue);
+    border-bottom: 2px solid var(--primary-blue);
+     /* Garante que o border-radius inferior aparece apenas no estado ativo */
+     border-bottom-left-radius: 8px;
+     border-bottom-right-radius: 8px;
     pointer-events: auto; /* Permite interação */
     min-height: 50px; /* Altura mínima para mensagens como "Buscando..." ou "Nenhum resultado" */
 }
 
 /* Estilo para quando não houver resultados (classe no PARENT) */
 .sticky-search-container.search-no-results #search-results-container {
+    /* Altera apenas a cor da borda quando ativo e sem resultados */
     border-left-color: var(--error-red);
     border-right-color: var(--error-red);
     border-bottom-color: var(--error-red);
@@ -441,15 +448,12 @@ body {
     justify-content: space-between; /* Ou flex-start se preferir alinhar à esquerda */
     max-height: 0; /* Começa fechado */
     overflow: hidden;
-    padding: 0 15px; /* Padding horizontal fixo, vertical adicionado com .active */
-    /* Transições Sincronizadas: Apenas max-height */
-    /* Ajustado: max-height agora com 0.4s ease-out para animação */
-    transition: max-height 0.4s ease-out;
+    /* Padding e Borda definidos em 0 no estado padrão, adicionados com .active */
+    padding: 0;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out, border-color 0.4s ease, border-width 0.4s ease; /* Adiciona transição para padding e borda */
     box-sizing: border-box;
-    /* Borda inicial transparente, cor aparece com .active */
-    border-left: 2px solid transparent;
-    border-right: 2px solid transparent;
-    border-bottom: 2px solid transparent;
+    /* Borda inicial transparente */
+    border: 0 solid transparent;
     border-bottom-left-radius: 8px; /* Arredonda cantos inferiores para 8px */
     border-bottom-right-radius: 8px; /* Arredonda cantos inferiores para 8px */
     /* Ajuste para alinhar com botão sem margem negativa */
@@ -460,12 +464,17 @@ body {
 
 /* Aplica padding vertical e cor da borda ao conteúdo quando ativo */
 .collapsible-content.active {
-    padding-top: 15px;    /* Adiciona padding superior (SEM TRANSICAO) */
-    padding-bottom: 15px; /* Adiciona padding inferior (SEM TRANSICAO) */
-    border-left-color: var(--primary-blue);
-    border-right-color: var(--primary-blue);
-    border-bottom-color: var(--primary-blue);
-    /* max-height é controlado pelo JS para colapsáveis, mas NÃO para resultados da pesquisa */
+    padding-top: 15px;    /* Adiciona padding superior */
+    padding-bottom: 15px; /* Adiciona padding inferior */
+    padding-left: 15px;   /* Adiciona padding horizontal */
+    padding-right: 15px;  /* Adiciona padding horizontal */
+    border-left: 2px solid var(--primary-blue); /* Adiciona borda */
+    border-right: 2px solid var(--primary-blue); /* Adiciona borda */
+    border-bottom: 2px solid var(--primary-blue); /* Adiciona borda */
+    /* Garante que o border-radius inferior aparece apenas no estado ativo */
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    /* max-height é controlado pelo JS */
 }
 
 .sub-link {
@@ -529,13 +538,13 @@ body {
      bottom: 0;
      z-index: 102; /* Acima do conteúdo e da pesquisa */
      margin-top: auto; /* Garante que vá para o final se o conteúdo for pequeno */
-     border: 2 handleClickpx solid transparent; /* Consistência */
+     border: 2px solid transparent; /* Consistência */
      box-sizing: border-box;
      height: var(--footer-height); /* Define altura explícita para cálculo de max-height */
 }
 /* FIM DOS ESTILOS DO RODAPÉ */
 
-/* AJUSTES RESPONSIVOS - SEM ALTERAÇÕES RELEVANTES PARA O PEDIDO */
+/* AJUSTES RESPONSIVOS */
 @media (max-width: 768px) {
      :root {
          --sticky-container-top: 15px; /* Ajusta no mobile */
@@ -599,7 +608,8 @@ body {
      .search-bar { padding: 6px; }
      .search-bar input { font-size: 15px; padding: 8px; }
      .search-bar button { font-size: 16px; padding: 6px 10px; }
-     #search-results-container { padding-left: 10px; padding-right: 10px; gap: 4px; }
+     #search-results-container { /* Removido padding daqui, definido apenas em .active */ gap: 4px; }
+     #search-results-container.active { padding-left: 10px; padding-right: 10px; } /* Ajusta padding horizontal para mobile */
      .search-result-item { padding: 8px 12px; font-size: 14px; }
      .no-results-message { padding: 12px; font-size: 14px; }
      .page-footer { padding: 10px 0; font-size: 13px; height: var(--footer-height); }

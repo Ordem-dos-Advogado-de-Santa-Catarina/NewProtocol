@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat com a Mila</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none; 
+            font-family: sans-serif;
+        }
+
+        /* 
+           SUA CORREÇÃO APLICADA AO BOTÃO:
+           Adicionado um z-index alto para garantir que ele esteja sempre acima de tudo.
+        */
+        #chat-button {
+            position: fixed;
+            bottom: 40px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            z-index: 3000; /* Botão sempre visível, acima do chat */
+            transition: background-color 0.3s ease;
+            min-width: 150px;
+            pointer-events: auto;
+        }
+
+        #chat-button.chat-open {
+            background-color: #d9534f;
+        }
+
+        /* A imagem da Mila mantém sua posição correta */
+        #mila-assistant-image {
+            position: fixed;
+            right: 20px;
+            bottom: 70px; 
+            height: 290px;
+            width: auto;
+            z-index: 999; /* Fica abaixo do botão e do chat */
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            pointer-events: none;
+        }
+
+        #mila-assistant-image.chat-open {
+            right: 370px;
+            bottom: 110px;
+        }
+
+        #cw-widget-holder {
+            pointer-events: auto;
+        }
+
+        /* 
+           SUA CORREÇÃO APLICADA AO WIDGET DO CHAT:
+           Mais espaço no 'bottom', altura ajustada e z-index explícito.
+        */
+        #cw-widget-holder .woot-widget-wrap {
+            bottom: 500px !important;       /* Aumenta o espaço entre o botão e o chat */
+            right: 20px !important;
+            width: 380px !important;
+            height: 120px !important;       /* Reduz a altura para não ultrapassar o topo da tela */
+            border-radius: 18px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+            z-index: 2000 !important;       /* Hierarquia de camada explícita, abaixo do botão */
+        }
+    </style>
+</head>
+<body>
+
+    <img id="mila-assistant-image" src="https://portal.oab-sc.org.br/site/images/mila.png" alt="Mila Virtual Assistant">
+    <button id="chat-button">CHAT ONLINE!</button>
+
+    <script>
+        // Configuração padrão do Chatwoot (voltado para a direita)
+        window.chatwootSettings = {
+            hideMessageBubble: true,
+            position: "right",
+            type: "standard",
+            launcherTitle: "Chat com a Mila"
+        };
+        
+        (function(d,t) {
+            var BASE_URL="https://chat.oab-sc.org.br";
+            var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=BASE_URL+"/packs/js/sdk.js";
+            g.defer = true;
+            g.async = true;
+            s.parentNode.insertBefore(g,s);
+            g.onload=function(){
+                window.chatwootSDK.run({
+                    websiteToken: '7sZnCxydxqbTSbU8sP2AXg8t',
+                    baseUrl: BASE_URL
+                })
+            }
+        })(document,"script");
+
+        window.addEventListener('chatwoot:ready', function () {
+            const chatButton = document.getElementById('chat-button');
+            const milaImage = document.getElementById('mila-assistant-image');
+            const widgetHolder = document.querySelector('#cw-widget-holder');
+
+            if (!widgetHolder) {
+                console.error("Chatwoot widget holder não foi encontrado. A interação falhará.");
+                return;
+            }
+            
+            window.$chatwoot.toggle('close');
+
+            const syncUIWithChatState = () => {
+                const isChatHidden = widgetHolder.classList.contains('woot--hide');
+
+                if (isChatHidden) {
+                    milaImage.classList.remove('chat-open');
+                    chatButton.classList.remove('chat-open');
+                    chatButton.textContent = "CHAT ONLINE!";
+                } else {
+                    milaImage.classList.add('chat-open');
+                    chatButton.classList.add('chat-open');
+                    chatButton.textContent = "FECHAR CHAT";
+                }
+            };
+
+            chatButton.addEventListener('click', () => {
+                window.$chatwoot.toggle();
+            });
+            
+            const classObserver = new MutationObserver(syncUIWithChatState);
+            classObserver.observe(widgetHolder, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+
+            syncUIWithChatState();
+        });
+    </script>
+
+</body>
+</html>
