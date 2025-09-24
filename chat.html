@@ -11,13 +11,80 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            pointer-events: none; 
+            font-family: sans-serif;
+        }
+
+        /* 
+           SUA CORREÇÃO APLICADA AO BOTÃO:
+           Adicionado um z-index alto para garantir que ele esteja sempre acima de tudo.
+        */
+        #chat-button {
+            position: fixed;
+            bottom: 40px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            z-index: 3000; /* Botão sempre visível, acima do chat */
+            transition: background-color 0.3s ease;
+            min-width: 150px;
+            pointer-events: auto;
+        }
+
+        #chat-button.chat-open {
+            background-color: #d9534f;
+        }
+
+        /* A imagem da Mila mantém sua posição correta */
+        #mila-assistant-image {
+            position: fixed;
+            right: 20px;
+            bottom: 70px; 
+            height: 290px;
+            width: auto;
+            z-index: 999; /* Fica abaixo do botão e do chat */
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            pointer-events: none;
+        }
+
+        #mila-assistant-image.chat-open {
+            right: 370px;
+            bottom: 110px;
+        }
+
+        #cw-widget-holder {
+            pointer-events: auto;
+        }
+
+        /* 
+           SUA CORREÇÃO APLICADA AO WIDGET DO CHAT:
+           Mais espaço no 'bottom', altura ajustada e z-index explícito.
+        */
+        #cw-widget-holder .woot-widget-wrap {
+            bottom: 500px !important;       /* Aumenta o espaço entre o botão e o chat */
+            right: 20px !important;
+            width: 380px !important;
+            height: 120px !important;       /* Reduz a altura para não ultrapassar o topo da tela */
+            border-radius: 18px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+            z-index: 2000 !important;       /* Hierarquia de camada explícita, abaixo do botão */
         }
     </style>
 </head>
 <body>
 
+    <img id="mila-assistant-image" src="https://portal.oab-sc.org.br/site/images/mila.png" alt="Mila Virtual Assistant">
+    <button id="chat-button">CHAT ONLINE!</button>
+
     <script>
-        // PARTE 1: Configurações e inicialização do Chatwoot (sem alterações)
+        // Configuração padrão do Chatwoot (voltado para a direita)
         window.chatwootSettings = {
             hideMessageBubble: true,
             position: "right",
@@ -41,52 +108,43 @@
         })(document,"script");
 
         window.addEventListener('chatwoot:ready', function () {
-            window.$chatwoot.toggle('open');
-        });
-
-        // =====================================================================
-        // PARTE 2: A SOLUÇÃO FINAL - O VIGIA DE CLASSE
-        // =====================================================================
-
-        const setupAntiCloseObserver = () => {
+            const chatButton = document.getElementById('chat-button');
+            const milaImage = document.getElementById('mila-assistant-image');
             const widgetHolder = document.querySelector('#cw-widget-holder');
 
-            if (widgetHolder) {
-                console.log('Container do Chatwoot encontrado. Anexando o vigia de classe.');
-
-                // 1. Criamos o observador que vai reagir a mudanças.
-                const classObserver = new MutationObserver((mutationsList) => {
-                    // Loop através de cada mutação detectada (geralmente será apenas uma)
-                    for (const mutation of mutationsList) {
-                        // Verificamos se a mutação foi no atributo 'class'
-                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                            const targetElement = mutation.target;
-                            
-                            // 2. A CONDIÇÃO: Se a classe 'woot--hide' foi adicionada...
-                            if (targetElement.classList.contains('woot--hide')) {
-                                console.log("Ação de fechar detectada. Revertendo...");
-                                
-                                // 3. A AÇÃO: ...nós a removemos imediatamente!
-                                targetElement.classList.remove('woot--hide');
-                            }
-                        }
-                    }
-                });
-
-                // 4. Dizemos ao observador para começar a vigiar o container do widget.
-                classObserver.observe(widgetHolder, {
-                    attributes: true, // Queremos observar mudanças de atributos.
-                    attributeFilter: ['class'] // E SÓ nos importamos com o atributo 'class'.
-                });
-
-            } else {
-                // Se o container ainda não existe, tenta de novo em breve.
-                setTimeout(setupAntiCloseObserver, 200);
+            if (!widgetHolder) {
+                console.error("Chatwoot widget holder não foi encontrado. A interação falhará.");
+                return;
             }
-        };
+            
+            window.$chatwoot.toggle('close');
 
-        // Inicia o processo de busca pelo container do chat.
-        setupAntiCloseObserver();
+            const syncUIWithChatState = () => {
+                const isChatHidden = widgetHolder.classList.contains('woot--hide');
+
+                if (isChatHidden) {
+                    milaImage.classList.remove('chat-open');
+                    chatButton.classList.remove('chat-open');
+                    chatButton.textContent = "CHAT ONLINE!";
+                } else {
+                    milaImage.classList.add('chat-open');
+                    chatButton.classList.add('chat-open');
+                    chatButton.textContent = "FECHAR CHAT";
+                }
+            };
+
+            chatButton.addEventListener('click', () => {
+                window.$chatwoot.toggle();
+            });
+            
+            const classObserver = new MutationObserver(syncUIWithChatState);
+            classObserver.observe(widgetHolder, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+
+            syncUIWithChatState();
+        });
     </script>
 
 </body>

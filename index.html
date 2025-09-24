@@ -4,196 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Meta tags para compartilhamento social (OGP e Twitter Cards) -->
-        <!-- Atualize 'URL_COMPLETA_DO_SEU_SITE' com o endereço real do seu site -->
         <meta property="og:title" content="Portal de Acesso - OAB/SC">
         <meta property="og:description" content="Centralize e organize seus protocolos de atendimento na OAB/SC de forma eficiente.">
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://portal.oab-sc.org.br/">
-        <!-- Substitua URL_COMPLETA_DA_SUA_LOGO pelo caminho completo da sua imagem de logo (incluindo o domínio) -->
         <meta property="og:image" content="https://portal.oab-sc.org.br/site/images/portal.jpg">
         <meta property="og:image:alt" content="Logo OAB/SC">
 
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="Portal de Acesso - OAB/SC">
         <meta name="twitter:description" content="Centralize e organize seus protocolos de atendimento na OAB/SC de forma eficiente.">
-        <!-- Substitua URL_COMPLETA_DA_SUA_LOGO pelo caminho completo da sua imagem de logo (incluindo o domínio) -->
         <meta name="twitter:image" content="https://portal.oab-sc.org.br/site/images/portal.jpg">
         <meta name="twitter:image:alt" content="Logo OAB/SC">
     <title>Portal de Acesso OAB-SC</title>
     <!-- Define o favicon da página -->
     <link rel="icon" href="https://portal.oab-sc.org.br/site/images/fav.png" type="image/png">
     <style>
-        /* Remove margens e preenchimento padrão */
+        /* Estilos gerais */
         body, html {
             margin: 0;
             padding: 0;
-            /* Impede scrollbars na página principal (fora dos iframes) */
             overflow: hidden;
-            height: 100%; /* Garante que body e html ocupem 100% da altura */
-            width: 100%; /* Garante que body e html ocupem 100% da largura */
-            font-family: sans-serif; /* Define uma fonte padrão */
+            height: 100%;
+            width: 100%;
+            font-family: sans-serif;
         }
 
-        /* Estilo para os wrappers dos iframes */
-        /* Eles definem a área visível e escondem o overflow (onde a barra de scroll será empurrada) */
+        /* Wrapper para o iframe principal (para esconder a barra de rolagem) */
         .iframe-wrapper {
-            width: 100%; /* Ocupa a largura total do seu container */
-            height: 100%; /* Ocupa a altura total do seu container */
-            overflow: hidden; /* ESSENCIAL: Esconde o conteúdo (incluindo a barra de scroll do iframe interno) que excede esta div */
-            position: relative; /* Necessário se você posicionar o iframe de forma absoluta dentro dele (não é o caso aqui, mas boa prática) */
-        }
-
-        /* Estilo dos iframes DENTRO dos wrappers */
-        #main-iframe,
-        #chat-iframe {
-            width: calc(100% + 17px); /* Aumenta a largura para empurrar a barra de scroll nativa (aprox. 17px) para fora da área visível do wrapper */
-            height: 100%; /* Ocupa a altura total do wrapper */
-            border: none; /* Remove a borda padrão do iframe */
-            display: block; /* Garante que o iframe ocupe o espaço sem gaps */
-
-            /* Permite o scroll vertical DENTRO do iframe */
-            overflow-y: auto;
-            /* Esconde scroll horizontal dentro do iframe, geralmente não necessário */
-            overflow-x: hidden;
-
-            /* As regras abaixo para esconder a barra nativa no *elemento* iframe são mantidas,
-               mas o wrapper é a solução mais robusta para iframes cross-origin. */
-            scrollbar-width: none; /* Para Firefox */
-            -ms-overflow-style: none;  /* Para IE/Edge antigos */
-        }
-
-        /* Esconder a barra de scroll nativa do elemento iframe para WebKit (Chrome, Safari, novos Edge)
-           Novamente, o wrapper é mais confiável para conteúdo cross-origin. */
-        #main-iframe::-webkit-scrollbar,
-        #chat-iframe::-webkit-scrollbar {
-            display: none;
-        }
-
-
-        /* Estilo do botão de chat */
-        #chat-button {
-            position: fixed;
-            bottom: 40px; /* Mantém o botão a 20px da parte inferior */
-            right: 20px; /* Mantém o botão a 20px da direita */
-            background-color: #4CAF50; /* Verde */
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            z-index: 1000; /* Garante que o botão fique acima de outros elementos */
-        }
-
-        /* Estilo do container do chat */
-        #chat-container {
-            position: fixed;
-            /* Ajustado para ter 20px de distância do rodapé e um pouco acima do botão */
-            bottom: 76px; /* Altura do botão (aprox 36px) + 20px (rodapé) + 20px (gap) = 76px */
-            right: 20px;
-            width: 380px; /* Largura ajustada para parecer mais com a imagem */
-            height: 550px; /* Altura ajustada para parecer mais com a imagem */
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 18px; /* Adiciona bordas arredondadas */
-            z-index: 1001; /* Acima do botão e da Mila */
-            display: none; /* Inicialmente escondido */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-            /* O overflow: hidden aqui é para o container, e não para o scrollbar do iframe.
-               Ele ajuda a manter as bordas arredondadas limpas. */
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            transition: all 0.3s ease-in-out; /* Transição para abertura/fechamento mais suave */
-            opacity: 0; /* Começa invisível para transição */
-            transform: translateY(10px); /* Leve deslocamento para transição */
         }
 
-        /* Estilo para tornar o container do chat visível */
-        #chat-container.active {
+        /* Iframe do site principal */
+        #main-iframe {
+            width: calc(100% + 17px);
+            height: 100%;
+            border: none;
             display: block;
-            opacity: 1; /* Fica visível */
-            transform: translateY(0); /* Volta para a posição original */
         }
 
-        /* Estilo da Imagem da Mila */
-        #mila-assistant-image {
+        /* --- ESTILO CORRIGIDO PARA O IFRAME DO CHAT --- */
+        #chat-overlay-iframe {
+            /* Posiciona o iframe como uma camada sobre toda a página */
             position: fixed;
-            right: 20px;
-            /* Calcula a posição abaixo do botão (20px do rodapé + aprox 40px de altura do botão + 10px de gap) */
-            bottom: calc(20px + 40px + 10px);
-            height: 290px; /* Altura da imagem, ajuste conforme necessário */
-            width: auto; /* Mantém a proporção da imagem */
-            z-index: 999; /* Abaixo do botão (1000) e do chat container (1001) */
-            transition: all 0.3s ease-in-out; /* Transição suave para movimento */
-            pointer-events: none; /* Não interfere com cliques em outros elementos */
-        }
-
-        /* Estilo da Imagem da Mila quando o chat está aberto */
-        #mila-assistant-image.chat-open {
-             /* Move a Mila para a esquerda do chat */
-            /* Chat está em right: 20px, width: 380px. */
-            /* A borda esquerda do chat está em viewport_width - (20px + 380px) = viewport_width - 400px. */
-            /* A imagem da Mila tem aproximadamente 114px de largura (com height: 290px). */
-            /* Para ter parte dela atrás do chat (ex: 30px), sua borda direita deve estar em (viewport_width - 400px + 30px). */
-            /* Então, right = 400px - 30px = 370px */
-            right: 370px; /* Ajustado ligeiramente */
-            /* Ajuste a posição vertical se necessário quando o chat está aberto */
-            bottom: 76px; /* Alinha a base da Mila com a base do chat container */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            
+            /* Garante que ele fique acima do conteúdo principal */
+            z-index: 9999; 
+            
+            /* Remove a borda padrão */
+            border: none;
+            
+            /* 
+               A MUDANÇA MAIS IMPORTANTE:
+               A propriedade 'pointer-events: none' foi REMOVIDA daqui.
+               Agora, o próprio arquivo 'chat.html' controla o que é clicável ou não,
+               tornando o fundo do seu iframe transparente para cliques, mas mantendo
+               o botão e a janela do chat interativos.
+            */
         }
     </style>
 </head>
 <body>
 
-    <!-- Site principal - Carregado em um iframe -->
+    <!-- Site principal - Carregado no iframe de baixo -->
     <div class="iframe-wrapper">
         <iframe id="main-iframe" src="https://portal.oab-sc.org.br/site" sandbox="allow-scripts"></iframe>
     </div>
 
-    <!-- Imagem da Mila - Assistente Virtual -->
-    <img id="mila-assistant-image" src="https://portal.oab-sc.org.br/site/images/mila.png" alt="Mila Virtual Assistant">
-
-    <!-- Botão para abrir o Chat -->
-    <button id="chat-button">CHAT ONLINE!</button>
-
-    <!-- Container para o iframe do Chat -->
-    <div id="chat-container">
-        <div class="iframe-wrapper">
-            <!-- MODIFICADO: O 'src' agora aponta para o seu arquivo local chat.html -->
-            <iframe id="chat-iframe" src="chat.html" allow="microphone"></iframe>
-        </div>
-    </div>
-
-    <!-- Script para controlar a exibição do chat e a posição da imagem da Mila -->
-    <script>
-        const chatButton = document.getElementById('chat-button');
-        const chatContainer = document.getElementById('chat-container');
-        const milaImage = document.getElementById('mila-assistant-image'); // Obtenha o elemento da imagem
-
-        chatButton.addEventListener('click', () => {
-            // Verifica se o container do chat está ativo (visível)
-            const isActive = chatContainer.classList.contains('active');
-
-            if (isActive) {
-                // Se estiver ativo, significa que o chat está fechando
-                chatContainer.classList.remove('active');
-                milaImage.classList.remove('chat-open'); // Remove a classe para a Mila voltar à posição inicial
-                // Aguarda a transição para realmente esconder o elemento do chat (match CSS transition duration)
-                setTimeout(() => {
-                    chatContainer.style.display = 'none';
-                }, 300);
-            } else {
-                // Se não estiver ativo, significa que o chat está abrindo
-                chatContainer.style.display = 'block';
-                // Pequeno atraso para garantir que o display:block seja aplicado antes da transição de opacidade/transform
-                setTimeout(() => {
-                    chatContainer.classList.add('active');
-                    milaImage.classList.add('chat-open'); // Adiciona a classe para a Mila se mover
-                }, 10); // Pequeno atraso
-            }
-        });
-    </script>
+    <!-- 
+      Camada do Chat:
+      Este iframe carrega o seu 'chat.html' por cima de tudo.
+      Como o 'chat.html' tem um fundo transparente a cliques, você consegue interagir
+      com o site principal que está por baixo sem problemas.
+    -->
+    <iframe id="chat-overlay-iframe" src="chat.html" allow="microphone"></iframe>
 
 </body>
 </html>
