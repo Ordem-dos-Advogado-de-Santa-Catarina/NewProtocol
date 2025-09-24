@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat com a Mila</title>
+    <style>
+        /* Remove margens e preenchimentos para que o chat ocupe todo o espaço do iframe */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Esconde barras de rolagem desnecessárias */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Script original do Chatwoot -->
+    <script>
+      window.chatwootSettings = {
+        "position": "right", 
+        // ATENÇÃO: Mudamos para "standard" para que o balão apareça primeiro e possa ser clicado.
+        // Se fosse "expanded_bubble", o script tentaria abrir algo que já está aberto, o que pode causar comportamento inesperado.
+        "type": "expanded_bubble", 
+        "launcherTitle": "Chat com a Mila"
+      };
+
+      (function(d,t) {
+        var BASE_URL="https://chat.oab-sc.org.br";
+        var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+        g.src=BASE_URL+"/packs/js/sdk.js";
+        g.defer = true;
+        g.async = true;
+        s.parentNode.insertBefore(g,s);
+        g.onload=function(){
+          window.chatwootSDK.run({
+            websiteToken: '7sZnCxydxqbTSbU8sP2AXg8t',
+            baseUrl: BASE_URL
+          })
+        }
+      })(document,"script");
+    </script>
+
+    <!-- NOVO SCRIPT PARA CLICAR AUTOMATICAMENTE NO BALÃO -->
+    <script>
+        // O seletor do balão de chat do Chatwoot.
+        const chatBubbleSelector = '.woot-widget-bubble';
+
+        // A função que será chamada quando a página mudar.
+        const callback = (mutationsList, observer) => {
+            // Procuramos pelo balão do chat na página.
+            const chatBubble = document.querySelector(chatBubbleSelector);
+
+            // Se o balão for encontrado...
+            if (chatBubble) {
+                // ...clicamos nele para abrir a janela do chat.
+                chatBubble.click();
+                
+                // ...e paramos de observar, pois nosso trabalho está feito. Isso economiza recursos.
+                observer.disconnect();
+            }
+        };
+
+        // Criamos um "observador" que vai vigiar o corpo da página por qualquer adição de novos elementos.
+        const observer = new MutationObserver(callback);
+
+        // Iniciamos a observação no corpo (body) da página, olhando para adições na árvore de elementos.
+        observer.observe(document.body, { childList: true, subtree: true });
+    </script>
+
+</body>
+</html>

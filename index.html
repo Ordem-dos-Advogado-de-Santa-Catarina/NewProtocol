@@ -147,8 +147,6 @@
 <body>
 
     <!-- Site principal - Carregado em um iframe -->
-    <!-- O atributo sandbox="allow-scripts" impede que o conteúdo deste iframe salve cookies/localStorage -->
-    <!-- A barra de scroll é escondida usando um wrapper -->
     <div class="iframe-wrapper">
         <iframe id="main-iframe" src="https://portal.oab-sc.org.br/site" sandbox="allow-scripts"></iframe>
     </div>
@@ -161,13 +159,9 @@
 
     <!-- Container para o iframe do Chat -->
     <div id="chat-container">
-        <!-- Usamos o mesmo wrapper dentro do container do chat -->
         <div class="iframe-wrapper">
-            <!-- Iframe do Chatbot -->
-            <!-- O atributo sandbox="allow-scripts" impede que o conteúdo deste iframe salve cookies/localStorage -->
-            <!-- allow="microphone" é necessário para permitir o acesso ao microfone pelo chatbot -->
-            <!-- A barra de scroll é escondida usando o wrapper -->
-            <iframe id="chat-iframe" src="https://udify.app/chatbot/nfkcvW4U6uqBclGK" allow="microphone"></iframe>
+            <!-- MODIFICADO: O 'src' agora aponta para o seu arquivo local chat.html -->
+            <iframe id="chat-iframe" src="chat.html" allow="microphone"></iframe>
         </div>
     </div>
 
