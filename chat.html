@@ -5,69 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat com a Mila</title>
     <style>
-        /* Remove margens e preenchimentos para que o chat ocupe todo o espaço do iframe */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Esconde barras de rolagem desnecessárias */
+            overflow: hidden;
         }
     </style>
 </head>
 <body>
 
-    <!-- Script original do Chatwoot -->
     <script>
-      window.chatwootSettings = {
-        "position": "right", 
-        // ATENÇÃO: Mudamos para "standard" para que o balão apareça primeiro e possa ser clicado.
-        // Se fosse "expanded_bubble", o script tentaria abrir algo que já está aberto, o que pode causar comportamento inesperado.
-        "type": "expanded_bubble", 
-        "launcherTitle": "Chat com a Mila"
-      };
+        // PARTE 1: Configurações e inicialização do Chatwoot (sem alterações)
+        window.chatwootSettings = {
+            hideMessageBubble: true,
+            position: "right",
+            type: "standard",
+            launcherTitle: "Chat com a Mila"
+        };
+        
+        (function(d,t) {
+            var BASE_URL="https://chat.oab-sc.org.br";
+            var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=BASE_URL+"/packs/js/sdk.js";
+            g.defer = true;
+            g.async = true;
+            s.parentNode.insertBefore(g,s);
+            g.onload=function(){
+                window.chatwootSDK.run({
+                    websiteToken: '7sZnCxydxqbTSbU8sP2AXg8t',
+                    baseUrl: BASE_URL
+                })
+            }
+        })(document,"script");
 
-      (function(d,t) {
-        var BASE_URL="https://chat.oab-sc.org.br";
-        var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-        g.src=BASE_URL+"/packs/js/sdk.js";
-        g.defer = true;
-        g.async = true;
-        s.parentNode.insertBefore(g,s);
-        g.onload=function(){
-          window.chatwootSDK.run({
-            websiteToken: '7sZnCxydxqbTSbU8sP2AXg8t',
-            baseUrl: BASE_URL
-          })
-        }
-      })(document,"script");
-    </script>
+        window.addEventListener('chatwoot:ready', function () {
+            window.$chatwoot.toggle('open');
+        });
 
-    <!-- NOVO SCRIPT PARA CLICAR AUTOMATICAMENTE NO BALÃO -->
-    <script>
-        // O seletor do balão de chat do Chatwoot.
-        const chatBubbleSelector = '.woot-widget-bubble';
+        // =====================================================================
+        // PARTE 2: A SOLUÇÃO FINAL - O VIGIA DE CLASSE
+        // =====================================================================
 
-        // A função que será chamada quando a página mudar.
-        const callback = (mutationsList, observer) => {
-            // Procuramos pelo balão do chat na página.
-            const chatBubble = document.querySelector(chatBubbleSelector);
+        const setupAntiCloseObserver = () => {
+            const widgetHolder = document.querySelector('#cw-widget-holder');
 
-            // Se o balão for encontrado...
-            if (chatBubble) {
-                // ...clicamos nele para abrir a janela do chat.
-                chatBubble.click();
-                
-                // ...e paramos de observar, pois nosso trabalho está feito. Isso economiza recursos.
-                observer.disconnect();
+            if (widgetHolder) {
+                console.log('Container do Chatwoot encontrado. Anexando o vigia de classe.');
+
+                // 1. Criamos o observador que vai reagir a mudanças.
+                const classObserver = new MutationObserver((mutationsList) => {
+                    // Loop através de cada mutação detectada (geralmente será apenas uma)
+                    for (const mutation of mutationsList) {
+                        // Verificamos se a mutação foi no atributo 'class'
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            const targetElement = mutation.target;
+                            
+                            // 2. A CONDIÇÃO: Se a classe 'woot--hide' foi adicionada...
+                            if (targetElement.classList.contains('woot--hide')) {
+                                console.log("Ação de fechar detectada. Revertendo...");
+                                
+                                // 3. A AÇÃO: ...nós a removemos imediatamente!
+                                targetElement.classList.remove('woot--hide');
+                            }
+                        }
+                    }
+                });
+
+                // 4. Dizemos ao observador para começar a vigiar o container do widget.
+                classObserver.observe(widgetHolder, {
+                    attributes: true, // Queremos observar mudanças de atributos.
+                    attributeFilter: ['class'] // E SÓ nos importamos com o atributo 'class'.
+                });
+
+            } else {
+                // Se o container ainda não existe, tenta de novo em breve.
+                setTimeout(setupAntiCloseObserver, 200);
             }
         };
 
-        // Criamos um "observador" que vai vigiar o corpo da página por qualquer adição de novos elementos.
-        const observer = new MutationObserver(callback);
-
-        // Iniciamos a observação no corpo (body) da página, olhando para adições na árvore de elementos.
-        observer.observe(document.body, { childList: true, subtree: true });
+        // Inicia o processo de busca pelo container do chat.
+        setupAntiCloseObserver();
     </script>
 
 </body>
